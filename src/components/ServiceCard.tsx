@@ -1,24 +1,31 @@
 
 import { ReactNode } from 'react';
+import { Card, CardContent } from "@/components/ui/card";
 
 interface ServiceCardProps {
   title: string;
   description: string;
   icon: ReactNode;
+  color: string;
   delay?: number;
 }
 
-const ServiceCard = ({ title, description, icon, delay = 0 }: ServiceCardProps) => {
+const ServiceCard = ({ title, description, icon, color, delay = 0 }: ServiceCardProps) => {
   const delayClass = delay ? `animate-delay-${delay}` : '';
   
   return (
-    <div className={`bg-white rounded-xl p-6 card-shadow animate-fade-in animate-slide-in ${delayClass}`}>
-      <div className="bg-blue-50 p-3 rounded-lg w-12 h-12 flex items-center justify-center text-conneqt-blue mb-4">
-        {icon}
-      </div>
-      <h3 className="text-xl font-semibold mb-3">{title}</h3>
-      <p className="text-conneqt-slate">{description}</p>
-    </div>
+    <Card className={`group hover:shadow-lg transition-all duration-300 animate-fade-in ${delayClass} overflow-hidden`}>
+      <div className={`absolute inset-0 opacity-0 group-hover:opacity-5 transition-opacity duration-300 ${color}`} />
+      <CardContent className="p-6">
+        <div className={`${color} bg-opacity-10 p-4 rounded-xl w-14 h-14 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300`}>
+          <div className="text-conneqt-blue">
+            {icon}
+          </div>
+        </div>
+        <h3 className="text-xl font-semibold mb-3 group-hover:text-conneqt-blue transition-colors duration-300">{title}</h3>
+        <p className="text-conneqt-slate leading-relaxed">{description}</p>
+      </CardContent>
+    </Card>
   );
 };
 
