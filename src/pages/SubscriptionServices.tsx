@@ -1,56 +1,90 @@
 
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
-import { Check } from 'lucide-react';
+import { Check, Users, Database, Brain } from 'lucide-react';
 import { Button } from "@/components/ui/button";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 
 const SubscriptionServices = () => {
   const plans = [
     {
-      name: "Basic",
-      price: "$79",
-      description: "Perfect for small businesses getting started",
+      name: "Starter",
+      price: "€99",
+      description: "Perfect for individual users getting started",
       features: [
-        "24/7 Customer Support",
-        "Up to 100 tickets per month",
-        "Basic reporting and analytics",
+        "Dashboard access",
+        "View-only AI features",
+        "Basic insights",
+        "Single user account",
         "Email support",
-        "Single language support",
       ],
+      users: "1",
       color: "bg-blue-500",
-      buttonVariant: "outline" as const
+      buttonVariant: "outline" as const,
+      icon: Users
     },
     {
       name: "Professional",
-      price: "$199",
-      description: "Ideal for growing businesses",
+      price: "€199",
+      description: "Ideal for growing teams",
       features: [
-        "Everything in Basic, plus:",
-        "Up to 1000 tickets per month",
-        "Advanced analytics",
-        "Priority email & phone support",
-        "Multilingual support (3 languages)",
-        "Custom workflows",
+        "Full ticketing system",
+        "Interactive AI chat",
+        "Export capabilities",
+        "Comprehensive reports",
+        "User role management",
+        "Up to 3 user accounts",
       ],
+      users: "Up to 3",
       color: "bg-conneqt-blue",
       isPopular: true,
-      buttonVariant: "default" as const
+      buttonVariant: "default" as const,
+      icon: Database
     },
     {
       name: "Enterprise",
-      price: "$499",
-      description: "For large-scale operations",
+      price: "€349",
+      description: "For established organizations",
       features: [
-        "Everything in Professional, plus:",
-        "Unlimited tickets",
-        "Dedicated account manager",
-        "Custom API integration",
-        "24/7 priority support",
-        "Full access to AI Guardian",
-        "Custom language support",
+        "Advanced analytics dashboard",
+        "CRM/API integration access",
+        "Custom branding options",
+        "Workflow builder",
+        "Priority support",
+        "Up to 10 user accounts",
       ],
+      users: "Up to 10",
       color: "bg-indigo-600",
-      buttonVariant: "outline" as const
+      buttonVariant: "outline" as const,
+      icon: Brain
+    }
+  ];
+
+  const addOns = [
+    {
+      name: "Extra Users",
+      price: "€20",
+      period: "per user/month",
+      description: "Add more users to your plan"
+    },
+    {
+      name: "CRM/API Integration",
+      price: "€79",
+      period: "per month",
+      description: "Connect with your existing tools"
+    },
+    {
+      name: "Custom AI Tuning",
+      price: "€99",
+      period: "one-time",
+      description: "Customize AI behavior for your needs"
     }
   ];
 
@@ -63,10 +97,10 @@ const SubscriptionServices = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-3xl mx-auto">
             <h1 className="text-4xl font-bold mb-6">
-              Choose Your <span className="text-conneqt-blue">Subscription</span> Plan
+              Choose Your <span className="text-conneqt-blue">Plan</span>
             </h1>
             <p className="text-xl text-conneqt-slate mb-4">
-              Scale your customer service with our flexible subscription plans
+              Fixed monthly tiers designed to scale with your business
             </p>
           </div>
         </div>
@@ -81,6 +115,7 @@ const SubscriptionServices = () => {
                 key={plan.name}
                 className={`relative bg-white rounded-2xl shadow-lg overflow-hidden border border-gray-100
                   ${plan.isPopular ? 'ring-2 ring-conneqt-blue scale-105 z-10' : ''}
+                  transition-all duration-300 hover:shadow-xl
                 `}
               >
                 {plan.isPopular && (
@@ -92,18 +127,25 @@ const SubscriptionServices = () => {
                 <div className={`${plan.color} h-2 w-full`} />
                 
                 <div className="p-6">
-                  <h3 className="text-2xl font-bold mb-2">{plan.name}</h3>
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className={`${plan.color} bg-opacity-10 p-2 rounded-lg`}>
+                      <plan.icon className={`h-6 w-6 ${plan.color.replace('bg-', 'text-')}`} />
+                    </div>
+                    <h3 className="text-2xl font-bold">{plan.name}</h3>
+                  </div>
+                  
                   <div className="mb-4">
                     <span className="text-4xl font-bold">{plan.price}</span>
                     <span className="text-gray-500">/month</span>
                   </div>
+                  
                   <p className="text-gray-600 mb-6">{plan.description}</p>
                   
                   <Button 
                     variant={plan.buttonVariant}
                     className="w-full mb-6"
                   >
-                    Choose {plan.name}
+                    Get Started
                   </Button>
                   
                   <ul className="space-y-3">
@@ -117,6 +159,34 @@ const SubscriptionServices = () => {
                     ))}
                   </ul>
                 </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Add-ons Section */}
+      <section className="py-16 bg-gray-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-bold mb-4">Available Add-ons</h2>
+            <p className="text-lg text-conneqt-slate">
+              Enhance your plan with these additional features
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-8">
+            {addOns.map((addon) => (
+              <div 
+                key={addon.name}
+                className="bg-white rounded-lg p-6 shadow-md hover:shadow-lg transition-shadow"
+              >
+                <h3 className="text-xl font-semibold mb-2">{addon.name}</h3>
+                <div className="mb-3">
+                  <span className="text-2xl font-bold text-conneqt-blue">{addon.price}</span>
+                  <span className="text-gray-500"> {addon.period}</span>
+                </div>
+                <p className="text-gray-600">{addon.description}</p>
               </div>
             ))}
           </div>
