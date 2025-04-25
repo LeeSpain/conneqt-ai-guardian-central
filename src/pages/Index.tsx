@@ -1,5 +1,4 @@
-
-import { ArrowRight, MessageCircle, Bell, Phone, Database, Brain } from 'lucide-react';
+import { ArrowRight, MessageCircle, Bell, Phone, Database, Brain, Check } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import Hero from '@/components/Hero';
 import ServiceCard from '@/components/ServiceCard';
