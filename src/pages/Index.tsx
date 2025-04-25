@@ -105,8 +105,6 @@ const Index = () => {
                   ))}
                 </ul>
                 
-                <p className="font-semibold mb-4">From €28/hour + 21% VAT</p>
-                
                 <Link 
                   to="/quote" 
                   className="block text-center bg-conneqt-blue hover:bg-blue-500 text-white px-6 py-3 rounded-md font-medium transition-colors"
@@ -141,8 +139,6 @@ const Index = () => {
                     </li>
                   ))}
                 </ul>
-                
-                <p className="font-semibold mb-4">From €99/month</p>
                 
                 <Link 
                   to="/quote" 

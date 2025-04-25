@@ -1,7 +1,14 @@
-
 import { useState } from 'react';
 import { toast } from 'sonner';
 import { Check } from 'lucide-react';
+
+interface QuotePrice {
+  basePrice: number;
+  discount: number;
+  finalPrice: number;
+  vat: number;
+  total: number;
+}
 
 const QuoteForm = () => {
   const [formData, setFormData] = useState({
@@ -17,6 +24,34 @@ const QuoteForm = () => {
   });
   
   const [submitting, setSubmitting] = useState(false);
+  const [quotePrice, setQuotePrice] = useState<QuotePrice | null>(null);
+
+  const calculatePrice = () => {
+    if (!formData.hoursPerDay || !formData.daysPerWeek) return null;
+
+    const baseHourlyRate = 28; // €28/hour
+    const hoursPerDay = Number(formData.hoursPerDay);
+    const daysPerWeek = Number(formData.daysPerWeek);
+    const totalHours = hoursPerDay * daysPerWeek * 4; // Monthly hours
+    
+    let discount = 0;
+    if (hoursPerDay >= 12) discount = 0.05; // 5% discount
+    if (hoursPerDay === 24 && daysPerWeek === 7) discount = 0.10; // 10% discount
+    
+    const basePrice = totalHours * baseHourlyRate;
+    const discountAmount = basePrice * discount;
+    const finalPrice = basePrice - discountAmount;
+    const vat = finalPrice * 0.21; // 21% VAT
+    const total = finalPrice + vat;
+
+    return {
+      basePrice,
+      discount: discountAmount,
+      finalPrice,
+      vat,
+      total
+    };
+  };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -24,19 +59,26 @@ const QuoteForm = () => {
       ...prev,
       [name]: value
     }));
+
+    // Recalculate price when hours or days change
+    if (name === 'hoursPerDay' || name === 'daysPerWeek') {
+      const newPrice = calculatePrice();
+      setQuotePrice(newPrice);
+    }
   };
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setSubmitting(true);
     
-    // Simulate form submission
+    // Simulate form and email submission
     setTimeout(() => {
-      console.log('Form submitted:', formData);
+      console.log('Form submitted:', { ...formData, pricing: quotePrice });
       toast.success('Quote request submitted successfully!', {
-        description: "We'll get back to you shortly."
+        description: "We'll send you the detailed quote via email shortly."
       });
       setSubmitting(false);
+      // Reset form
       setFormData({
         name: '',
         company: '',
@@ -48,6 +90,7 @@ const QuoteForm = () => {
         language: '',
         message: ''
       });
+      setQuotePrice(null);
     }, 1500);
   };
 
@@ -144,13 +187,14 @@ const QuoteForm = () => {
           
           <div>
             <label htmlFor="hoursPerDay" className="block text-sm font-medium text-conneqt-slate mb-1">
-              Hours Per Day
+              Hours Per Day*
             </label>
             <select
               id="hoursPerDay"
               name="hoursPerDay"
               value={formData.hoursPerDay}
               onChange={handleChange}
+              required
               className="w-full rounded-md border border-gray-300 px-4 py-2 focus:border-conneqt-blue focus:ring-conneqt-blue focus:outline-none"
             >
               <option value="">Select hours</option>
@@ -162,13 +206,14 @@ const QuoteForm = () => {
           
           <div>
             <label htmlFor="daysPerWeek" className="block text-sm font-medium text-conneqt-slate mb-1">
-              Days Per Week
+              Days Per Week*
             </label>
             <select
               id="daysPerWeek"
               name="daysPerWeek"
               value={formData.daysPerWeek}
               onChange={handleChange}
+              required
               className="w-full rounded-md border border-gray-300 px-4 py-2 focus:border-conneqt-blue focus:ring-conneqt-blue focus:outline-none"
             >
               <option value="">Select days</option>
@@ -200,6 +245,34 @@ const QuoteForm = () => {
         </div>
       </div>
       
+      {/* Price Calculation */}
+      {quotePrice && (
+        <div className="mt-8 p-6 bg-gray-50 rounded-lg">
+          <h4 className="font-semibold mb-4">Estimated Monthly Price</h4>
+          <div className="space-y-2">
+            <div className="flex justify-between">
+              <span>Base Price:</span>
+              <span>€{quotePrice.basePrice.toFixed(2)}</span>
+            </div>
+            {quotePrice.discount > 0 && (
+              <div className="flex justify-between text-green-600">
+                <span>Volume Discount:</span>
+                <span>-€{quotePrice.discount.toFixed(2)}</span>
+              </div>
+            )}
+            <div className="flex justify-between">
+              <span>VAT (21%):</span>
+              <span>€{quotePrice.vat.toFixed(2)}</span>
+            </div>
+            <div className="flex justify-between font-semibold text-lg pt-2 border-t">
+              <span>Total Monthly Price:</span>
+              <span>€{quotePrice.total.toFixed(2)}</span>
+            </div>
+          </div>
+        </div>
+      )}
+      
+      {/* Message Field */}
       <div className="mt-6">
         <label htmlFor="message" className="block text-sm font-medium text-conneqt-slate mb-1">
           Additional Details
@@ -224,7 +297,7 @@ const QuoteForm = () => {
             <>Processing...</>
           ) : (
             <>
-              Submit Request <Check size={18} className="ml-2" />
+              Submit Quote Request <Check size={18} className="ml-2" />
             </>
           )}
         </button>
