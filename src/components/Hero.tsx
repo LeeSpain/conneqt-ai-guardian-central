@@ -34,7 +34,7 @@ const Hero = () => {
             <img 
               src="/lovable-uploads/c56de219-63c2-447c-9b95-00b80e9cba45.png" 
               alt="Customer service team" 
-              className="rounded-lg shadow-xl object-cover w-full h-[500px]"
+              className="rounded-lg shadow-xl object-cover w-full max-h-[400px]"
             />
           </div>
         </div>
