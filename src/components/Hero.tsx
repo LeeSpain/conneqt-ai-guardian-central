@@ -32,9 +32,9 @@ const Hero = () => {
           </div>
           <div className="hidden lg:block animate-fade-in animate-delay-300">
             <img 
-              src="https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&fit=crop&q=80&w=600&h=500" 
+              src="/lovable-uploads/c56de219-63c2-447c-9b95-00b80e9cba45.png" 
               alt="Customer service team" 
-              className="rounded-lg shadow-xl"
+              className="rounded-lg shadow-xl object-cover w-full h-[500px]"
             />
           </div>
         </div>
