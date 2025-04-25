@@ -1,4 +1,3 @@
-
 import { ArrowRight, MessageCircle, Bell, Phone, Database, Brain, Check } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import Hero from '@/components/Hero';
@@ -150,10 +149,10 @@ const Index = () => {
                 </ul>
                 
                 <Link 
-                  to="/quote" 
+                  to="/subscriptions" 
                   className="block text-center bg-gradient-to-r from-conneqt-blue to-blue-500 text-white px-6 py-3 rounded-md font-medium transition-all hover:shadow-lg"
                 >
-                  Request Subscription Quote
+                  View Subscription Plans
                 </Link>
               </div>
             </div>
