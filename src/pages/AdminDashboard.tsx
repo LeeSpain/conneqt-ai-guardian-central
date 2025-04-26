@@ -141,75 +141,78 @@ const AdminDashboard = () => {
             </Card>
           </div>
 
-          {/* AI Guardian Chat */}
-          <Card className="bg-gradient-to-r from-blue-50 to-indigo-50 border-none">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Bot className="w-6 h-6 text-blue-600" />
-                Chat with AI Guardian
-              </CardTitle>
-              <CardDescription>
-                Get instant assistance and insights
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="bg-white rounded-lg p-4 h-[300px] mb-4 overflow-y-auto">
-                {chatMessages.map((msg, index) => (
-                  <div
-                    key={index}
-                    className={`mb-3 p-3 rounded-lg ${
-                      msg.isAI 
-                        ? "bg-blue-50 mr-12" 
-                        : "bg-green-50 ml-12"
-                    }`}
-                  >
-                    <div className="flex items-start gap-2">
-                      {msg.isAI && <Bot className="w-4 h-4 mt-1" />}
-                      <p>{msg.text}</p>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {/* AI Guardian Chat */}
+            <Card className="md:col-span-2 bg-gradient-to-r from-blue-50 to-indigo-50 border-none">
+              <CardHeader className="pb-2">
+                <CardTitle className="flex items-center gap-2 text-lg">
+                  <Bot className="w-5 h-5 text-blue-600" />
+                  Chat with AI Guardian
+                </CardTitle>
+                <CardDescription className="text-sm">
+                  Get instant assistance
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="bg-white rounded-lg p-3 h-[200px] mb-3 overflow-y-auto">
+                  {chatMessages.map((msg, index) => (
+                    <div
+                      key={index}
+                      className={`mb-2 p-2 rounded-lg text-sm ${
+                        msg.isAI 
+                          ? "bg-blue-50 mr-8" 
+                          : "bg-green-50 ml-8"
+                      }`}
+                    >
+                      <div className="flex items-start gap-2">
+                        {msg.isAI && <Bot className="w-3 h-3 mt-1" />}
+                        <p className="text-sm">{msg.text}</p>
+                      </div>
                     </div>
-                  </div>
-                ))}
-              </div>
-              <div className="flex gap-2">
-                <Input
-                  placeholder="Type your message..."
-                  value={message}
-                  onChange={(e) => setMessage(e.target.value)}
-                  onKeyPress={(e) => e.key === "Enter" && handleSendMessage()}
-                />
-                <Button onClick={handleSendMessage}>
-                  <Send className="w-4 h-4" />
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
+                  ))}
+                </div>
+                <div className="flex gap-2">
+                  <Input
+                    placeholder="Type your message..."
+                    value={message}
+                    onChange={(e) => setMessage(e.target.value)}
+                    onKeyPress={(e) => e.key === "Enter" && handleSendMessage()}
+                    className="text-sm"
+                  />
+                  <Button size="sm" onClick={handleSendMessage}>
+                    <Send className="w-4 h-4" />
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
 
-          {/* Platform Activity */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Recent Activity</CardTitle>
-              <CardDescription>Your platform's latest updates and events</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                {[
-                  { title: "New client registered", time: "5 minutes ago", icon: Users },
-                  { title: "Support ticket resolved", time: "1 hour ago", icon: PhoneCall },
-                  { title: "AI Guardian update completed", time: "2 hours ago", icon: Bot },
-                ].map((activity, i) => (
-                  <div key={i} className="flex items-center gap-4 p-2 hover:bg-gray-50 rounded-md">
-                    <div className="bg-blue-100 p-2 rounded-full">
-                      <activity.icon className="w-4 h-4 text-blue-600" />
+            {/* Platform Activity */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-lg">Recent Activity</CardTitle>
+                <CardDescription>Latest updates and events</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-3">
+                  {[
+                    { title: "New client registered", time: "5 minutes ago", icon: Users },
+                    { title: "Support ticket resolved", time: "1 hour ago", icon: PhoneCall },
+                    { title: "AI Guardian update completed", time: "2 hours ago", icon: Bot },
+                  ].map((activity, i) => (
+                    <div key={i} className="flex items-center gap-3 p-2 hover:bg-gray-50 rounded-md">
+                      <div className="bg-blue-100 p-1.5 rounded-full">
+                        <activity.icon className="w-3 h-3 text-blue-600" />
+                      </div>
+                      <div>
+                        <p className="font-medium text-sm">{activity.title}</p>
+                        <p className="text-xs text-gray-500">{activity.time}</p>
+                      </div>
                     </div>
-                    <div>
-                      <p className="font-medium">{activity.title}</p>
-                      <p className="text-sm text-gray-500">{activity.time}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          </div>
         </div>
       </div>
     </DashboardLayout>
