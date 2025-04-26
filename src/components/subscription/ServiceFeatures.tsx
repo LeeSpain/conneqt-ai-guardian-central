@@ -45,17 +45,19 @@ const ServiceFeatures = () => {
   return (
     <div className="grid md:grid-cols-3 gap-8">
       {serviceFeatures.map((feature) => (
-        <Card key={feature.title}>
-          <CardHeader>
-            <CardTitle>{feature.title}</CardTitle>
-            <CardDescription>{feature.description}</CardDescription>
+        <Card key={feature.title} className="transform transition-all duration-300 hover:scale-105 hover:shadow-lg">
+          <CardHeader className="space-y-1 pb-4">
+            <CardTitle className="text-2xl text-conneqt-blue">{feature.title}</CardTitle>
+            <CardDescription className="text-conneqt-slate">{feature.description}</CardDescription>
           </CardHeader>
           <CardContent>
-            <ul className="space-y-2">
+            <ul className="space-y-3">
               {feature.details.map((detail) => (
-                <li key={detail} className="flex items-center gap-2">
-                  <Check className="h-4 w-4 text-green-500" />
-                  <span>{detail}</span>
+                <li key={detail} className="flex items-start">
+                  <div className="bg-green-100 rounded-full p-1 mr-3 mt-1 flex-shrink-0">
+                    <Check className="h-4 w-4 text-green-600" />
+                  </div>
+                  <span className="text-gray-600 text-sm">{detail}</span>
                 </li>
               ))}
             </ul>
