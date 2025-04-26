@@ -55,7 +55,7 @@ const ServiceSection = () => {
           </p>
         </div>
         
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-10 relative">
+        <div className="grid md:grid-cols-3 gap-10 place-items-center relative">
           <div className="absolute inset-0 bg-gradient-to-br from-blue-50 to-purple-50 opacity-30 -z-10 blur-3xl" />
           {services.map((service) => (
             <ServiceCard
@@ -74,3 +74,4 @@ const ServiceSection = () => {
 };
 
 export default ServiceSection;
+
