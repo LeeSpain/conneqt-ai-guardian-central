@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Client, Ticket } from '@/types/client';
 import { ConnectBusinessDialog } from '@/components/client/ConnectBusinessDialog';
@@ -60,7 +59,8 @@ import {
   X, 
   ArrowUpDown,
   Database,
-  Plus
+  Plus,
+  LockIcon
 } from 'lucide-react';
 
 // Mock data for clients
@@ -837,123 +837,4 @@ const ClientManagement = () => {
                       >
                         <Database className="h-6 w-6 mb-2" />
                         <span>Sync Data</span>
-                        {subscriptionTier !== 'enterprise' && (
-                          <span className="text-xs mt-1 text-muted-foreground">Enterprise only</span>
-                        )}
-                      </Button>
-                      <Button 
-                        variant="outline" 
-                        className="h-auto flex flex-col items-center justify-center py-4"
-                        disabled={subscriptionTier !== 'enterprise'}
-                      >
-                        <Settings className="h-6 w-6 mb-2" />
-                        <span>Automation</span>
-                        {subscriptionTier !== 'enterprise' && (
-                          <span className="text-xs mt-1 text-muted-foreground">Enterprise only</span>
-                        )}
-                      </Button>
-                    </div>
-                  </CardContent>
-                </Card>
-              )}
-            </TabsContent>
-            
-            {/* Tickets Tab */}
-            <TabsContent value="tickets" className="space-y-6">
-              <Card>
-                <CardHeader className="flex flex-row items-center justify-between space-y-0">
-                  <div>
-                    <CardTitle>All Tickets</CardTitle>
-                    <CardDescription>
-                      Manage support tickets across all clients
-                    </CardDescription>
-                  </div>
-                  <div className="flex gap-2">
-                    <Button variant="outline">
-                      <Filter className="mr-2 h-4 w-4" />
-                      Filter
-                    </Button>
-                    <Button>
-                      <Plus className="mr-2 h-4 w-4" />
-                      New Ticket
-                    </Button>
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <div className="rounded-md border">
-                    <Table>
-                      <TableHeader>
-                        <TableRow>
-                          <TableHead>ID</TableHead>
-                          <TableHead>Client</TableHead>
-                          <TableHead className="hidden md:table-cell">Subject</TableHead>
-                          <TableHead>Status</TableHead>
-                          <TableHead>Priority</TableHead>
-                          <TableHead className="text-right">Actions</TableHead>
-                        </TableRow>
-                      </TableHeader>
-                      <TableBody>
-                        {/* Table content for tickets */}
-                      </TableBody>
-                    </Table>
-                  </div>
-                </CardContent>
-              </Card>
-            </TabsContent>
-            
-            {/* Analytics Tab */}
-            <TabsContent value="analytics" className="space-y-6">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Client Analytics</CardTitle>
-                  <CardDescription>
-                    Track and analyze client interactions and performance metrics
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-muted-foreground text-center py-12">
-                    Analytics dashboard content goes here
-                  </p>
-                </CardContent>
-              </Card>
-            </TabsContent>
-            
-            {/* Automation Tab */}
-            <TabsContent value="automation" className="space-y-6">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Workflow Automation</CardTitle>
-                  <CardDescription>
-                    Build and manage automated workflows for client interactions
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-muted-foreground text-center py-12">
-                    {subscriptionTier === 'starter' ? (
-                      <>
-                        <Lock className="mx-auto h-12 w-12 text-muted-foreground/50 mb-4" />
-                        Workflow automation is available on Professional and Enterprise plans
-                      </>
-                    ) : (
-                      "Automation tools and workflows go here"
-                    )}
-                  </p>
-                </CardContent>
-              </Card>
-            </TabsContent>
-          </Tabs>
-        </main>
-        
-        {/* Connect Business Dialog */}
-        <ConnectBusinessDialog
-          open={isConnectBusinessOpen}
-          onClose={() => setIsConnectBusinessOpen(false)}
-          onConnect={handleConnectBusiness}
-        />
-      </div>
-      <Footer />
-    </>
-  );
-};
-
-export default ClientManagement;
+                        {subscriptionTier
