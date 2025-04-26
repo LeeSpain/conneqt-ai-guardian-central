@@ -1,6 +1,6 @@
-
 import { ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { AspectRatio } from '@/components/ui/aspect-ratio';
 
 const Hero = () => {
   return (
@@ -30,12 +30,18 @@ const Hero = () => {
               </Link>
             </div>
           </div>
+          
           <div className="hidden lg:block animate-fade-in animate-delay-300">
-            <img 
-              src="/lovable-uploads/c56de219-63c2-447c-9b95-00b80e9cba45.png" 
-              alt="Customer service team" 
-              className="rounded-lg shadow-xl object-cover w-full max-h-[400px]"
-            />
+            <AspectRatio ratio={16 / 9} className="overflow-hidden rounded-lg shadow-xl">
+              <img 
+                src="/lovable-uploads/c56de219-63c2-447c-9b95-00b80e9cba45.png" 
+                alt="Customer service team"
+                loading="eager"
+                decoding="async"
+                className="object-cover w-full h-full"
+                fetchPriority="high"
+              />
+            </AspectRatio>
           </div>
         </div>
       </div>
