@@ -11,6 +11,7 @@ import NotFound from "./pages/NotFound";
 import SubscriptionServices from "./pages/SubscriptionServices";
 import QuoteConfirmation from "./pages/QuoteConfirmation";
 import AdminDashboard from "./pages/AdminDashboard";
+import ClientManagement from "./pages/ClientManagement";
 
 const queryClient = new QueryClient();
 
@@ -24,6 +25,7 @@ const AppRoutes = () => {
       <Route path="/quote-confirmation" element={<QuoteConfirmation />} />
       <Route path="/subscriptions" element={<SubscriptionServices />} />
       <Route path="/admin-dashboard" element={<AdminDashboard />} />
+      <Route path="/client-management" element={<ClientManagement />} />
       <Route path="*" element={<NotFound />} />
     </Routes>
   );

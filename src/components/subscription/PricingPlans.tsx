@@ -105,7 +105,7 @@ const PricingPlans = () => {
               className="w-full mb-6"
               asChild
             >
-              <Link to="/admin-dashboard">Get Started</Link>
+              <Link to="/client-management">Get Started</Link>
             </Button>
             
             <ul className="space-y-3">

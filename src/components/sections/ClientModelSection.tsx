@@ -74,10 +74,10 @@ const ClientModelSection = () => {
               </ul>
               
               <Link 
-                to="/subscriptions" 
+                to="/client-management" 
                 className="block text-center bg-gradient-to-r from-conneqt-blue to-blue-500 text-white px-6 py-3 rounded-md font-medium transition-all hover:shadow-lg"
               >
-                View Subscription Plans
+                Try Client Management Dashboard
               </Link>
             </div>
           </div>
