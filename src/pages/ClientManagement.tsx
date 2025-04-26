@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
@@ -808,7 +809,10 @@ const ClientManagement = () => {
                       <Filter className="mr-2 h-4 w-4" />
                       Filter
                     </Button>
-                    <Button>New Ticket</Button>
+                    <Button>
+                      <Plus className="mr-2 h-4 w-4" />
+                      New Ticket
+                    </Button>
                   </div>
                 </CardHeader>
                 <CardContent>
@@ -828,3 +832,320 @@ const ClientManagement = () => {
                       <TableBody>
                         {tickets.map((ticket) => {
                           const client = clients.find(c => c.id === ticket.clientId);
+                          return (
+                            <TableRow key={ticket.id}>
+                              <TableCell>#{ticket.id}</TableCell>
+                              <TableCell>
+                                {client ? (
+                                  <div className="flex items-center gap-2">
+                                    <Avatar className="h-6 w-6">
+                                      <AvatarFallback className="bg-conneqt-blue text-white text-xs">
+                                        {client.name.split(' ').map(n => n[0]).join('').toUpperCase()}
+                                      </AvatarFallback>
+                                    </Avatar>
+                                    <span className="truncate max-w-[100px]">{client.name}</span>
+                                  </div>
+                                ) : (
+                                  "Unknown Client"
+                                )}
+                              </TableCell>
+                              <TableCell className="hidden md:table-cell">{ticket.subject}</TableCell>
+                              <TableCell>
+                                <Badge 
+                                  variant={
+                                    ticket.status === 'Open' ? 'default' : 
+                                    ticket.status === 'In Progress' ? 'outline' : 'secondary'
+                                  }
+                                  className={
+                                    ticket.status === 'Open' ? 'bg-blue-500' : 
+                                    ticket.status === 'In Progress' ? 'border-orange-400 text-orange-500' : ''
+                                  }
+                                >
+                                  {ticket.status}
+                                </Badge>
+                              </TableCell>
+                              <TableCell className="hidden md:table-cell">
+                                <Badge 
+                                  variant="outline"
+                                  className={
+                                    ticket.priority === 'Low' ? 'border-green-400 text-green-600' :
+                                    ticket.priority === 'Medium' ? 'border-blue-400 text-blue-600' :
+                                    ticket.priority === 'High' ? 'border-orange-400 text-orange-600' :
+                                    'border-red-500 text-red-600'
+                                  }
+                                >
+                                  {ticket.priority}
+                                </Badge>
+                              </TableCell>
+                              <TableCell className="hidden md:table-cell">{ticket.created}</TableCell>
+                              <TableCell className="text-right">
+                                <Button variant="ghost" size="sm">
+                                  <MoreVertical className="h-4 w-4" />
+                                </Button>
+                              </TableCell>
+                            </TableRow>
+                          );
+                        })}
+                      </TableBody>
+                    </Table>
+                  </div>
+                </CardContent>
+              </Card>
+            </TabsContent>
+            
+            {/* Analytics Tab */}
+            <TabsContent value="analytics" className="space-y-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Clients Overview</CardTitle>
+                  <CardDescription>
+                    {subscriptionTier === 'starter' ? 
+                      "Basic analytics available in Starter plan" : 
+                      "Advanced insights into client activity and performance"}
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div className="bg-white p-4 rounded-lg border shadow-sm">
+                      <h3 className="text-sm font-medium text-muted-foreground mb-2">Total Clients</h3>
+                      <p className="text-3xl font-bold">{clients.length}</p>
+                      <p className="text-xs text-muted-foreground mt-2">
+                        {subscriptionTier === 'starter' ? '5 max in Starter plan' : 'Unlimited in your plan'}
+                      </p>
+                    </div>
+                    <div className="bg-white p-4 rounded-lg border shadow-sm">
+                      <h3 className="text-sm font-medium text-muted-foreground mb-2">Active Clients</h3>
+                      <p className="text-3xl font-bold">
+                        {clients.filter(c => c.status === "Active").length}
+                      </p>
+                      <p className="text-xs text-muted-foreground mt-2">
+                        {Math.round((clients.filter(c => c.status === "Active").length / clients.length) * 100)}% of total
+                      </p>
+                    </div>
+                    <div className="bg-white p-4 rounded-lg border shadow-sm">
+                      <h3 className="text-sm font-medium text-muted-foreground mb-2">Open Tickets</h3>
+                      <p className="text-3xl font-bold">
+                        {tickets.filter(t => t.status === "Open").length}
+                      </p>
+                      <p className="text-xs text-muted-foreground mt-2">
+                        Across {new Set(tickets.filter(t => t.status === "Open").map(t => t.clientId)).size} clients
+                      </p>
+                    </div>
+                  </div>
+
+                  {subscriptionTier !== 'starter' && (
+                    <div className="mt-8">
+                      <h3 className="text-lg font-medium mb-4">Client Activity</h3>
+                      <div className="h-64 bg-gray-100 rounded-md flex items-center justify-center">
+                        <p className="text-muted-foreground">Advanced analytics visualization would appear here</p>
+                      </div>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            </TabsContent>
+            
+            {/* Automation Tab */}
+            <TabsContent value="automation" className="space-y-6">
+              {subscriptionTier === 'starter' ? (
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Automation Features</CardTitle>
+                    <CardDescription>
+                      Upgrade your plan to access automation features
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="flex flex-col items-center py-8">
+                    <div className="bg-gray-100 rounded-full p-4 mb-4">
+                      <Settings className="h-10 w-10 text-conneqt-blue" />
+                    </div>
+                    <h3 className="text-xl font-medium mb-2">Unlock Automation</h3>
+                    <p className="text-muted-foreground text-center max-w-md mb-6">
+                      Automate client onboarding, ticket assignment, notifications, and more with our Professional or Enterprise plans.
+                    </p>
+                    <Button onClick={() => window.location.href = '/subscriptions'}>
+                      View Upgrade Options
+                    </Button>
+                  </CardContent>
+                </Card>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <Card>
+                    <CardHeader>
+                      <CardTitle>Automation Rules</CardTitle>
+                      <CardDescription>
+                        Create custom automation workflows
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="space-y-4">
+                        <div className="bg-white border rounded-md p-3">
+                          <div className="flex justify-between items-start">
+                            <div>
+                              <h4 className="font-medium">New Client Welcome</h4>
+                              <p className="text-sm text-muted-foreground">
+                                Automatically send welcome email and setup guide when a new client is added
+                              </p>
+                            </div>
+                            <Badge variant="outline" className="bg-green-50 text-green-700">Active</Badge>
+                          </div>
+                        </div>
+                        
+                        <div className="bg-white border rounded-md p-3">
+                          <div className="flex justify-between items-start">
+                            <div>
+                              <h4 className="font-medium">Ticket Escalation</h4>
+                              <p className="text-sm text-muted-foreground">
+                                Escalate tickets that remain open for more than 24 hours
+                              </p>
+                            </div>
+                            <Badge variant="outline" className="bg-green-50 text-green-700">Active</Badge>
+                          </div>
+                        </div>
+                        
+                        {subscriptionTier === 'enterprise' && (
+                          <>
+                            <div className="bg-white border rounded-md p-3">
+                              <div className="flex justify-between items-start">
+                                <div>
+                                  <h4 className="font-medium">Weekly Client Reports</h4>
+                                  <p className="text-sm text-muted-foreground">
+                                    Generate and send activity reports to clients every Monday
+                                  </p>
+                                </div>
+                                <Badge variant="outline" className="bg-green-50 text-green-700">Active</Badge>
+                              </div>
+                            </div>
+                            
+                            <div className="bg-white border rounded-md p-3">
+                              <div className="flex justify-between items-start">
+                                <div>
+                                  <h4 className="font-medium">AI Ticket Assignment</h4>
+                                  <p className="text-sm text-muted-foreground">
+                                    Use AI to automatically assign tickets to the right team member
+                                  </p>
+                                </div>
+                                <Badge variant="outline" className="bg-green-50 text-green-700">Active</Badge>
+                              </div>
+                            </div>
+                          </>
+                        )}
+                      </div>
+                      
+                      <Button className="w-full mt-6">
+                        <Plus className="mr-2 h-4 w-4" />
+                        Create New Automation
+                      </Button>
+                    </CardContent>
+                  </Card>
+                  
+                  <Card>
+                    <CardHeader>
+                      <CardTitle>Notifications</CardTitle>
+                      <CardDescription>
+                        Manage automatic notifications
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="space-y-4">
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <h4 className="font-medium">New Ticket Alerts</h4>
+                            <p className="text-sm text-muted-foreground">
+                              Receive email when new tickets are created
+                            </p>
+                          </div>
+                          <div>
+                            <input type="checkbox" id="new-ticket-alerts" className="sr-only" defaultChecked />
+                            <label 
+                              htmlFor="new-ticket-alerts" 
+                              className="relative inline-flex h-6 w-11 cursor-pointer rounded-full bg-gray-200 transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-conneqt-blue"
+                            >
+                              <span className="translate-x-5 inline-block h-5 w-5 transform rounded-full bg-white shadow-lg ring-0 transition duration-200 ease-in-out mt-0.5 ml-0.5" />
+                            </label>
+                          </div>
+                        </div>
+                        
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <h4 className="font-medium">Weekly Summaries</h4>
+                            <p className="text-sm text-muted-foreground">
+                              Receive weekly account activity summaries
+                            </p>
+                          </div>
+                          <div>
+                            <input type="checkbox" id="weekly-summaries" className="sr-only" defaultChecked />
+                            <label 
+                              htmlFor="weekly-summaries" 
+                              className="relative inline-flex h-6 w-11 cursor-pointer rounded-full bg-gray-200 transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-conneqt-blue"
+                            >
+                              <span className="translate-x-5 inline-block h-5 w-5 transform rounded-full bg-white shadow-lg ring-0 transition duration-200 ease-in-out mt-0.5 ml-0.5" />
+                            </label>
+                          </div>
+                        </div>
+                        
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <h4 className="font-medium">Client Responses</h4>
+                            <p className="text-sm text-muted-foreground">
+                              Get notified when clients respond to tickets
+                            </p>
+                          </div>
+                          <div>
+                            <input type="checkbox" id="client-responses" className="sr-only" defaultChecked />
+                            <label 
+                              htmlFor="client-responses" 
+                              className="relative inline-flex h-6 w-11 cursor-pointer rounded-full bg-gray-200 transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-conneqt-blue"
+                            >
+                              <span className="translate-x-5 inline-block h-5 w-5 transform rounded-full bg-white shadow-lg ring-0 transition duration-200 ease-in-out mt-0.5 ml-0.5" />
+                            </label>
+                          </div>
+                        </div>
+                        
+                        {subscriptionTier === 'enterprise' && (
+                          <div className="flex items-center justify-between">
+                            <div>
+                              <h4 className="font-medium">SLA Breaches</h4>
+                              <p className="text-sm text-muted-foreground">
+                                Get urgent alerts for SLA breaches
+                              </p>
+                            </div>
+                            <div>
+                              <input type="checkbox" id="sla-breaches" className="sr-only" defaultChecked />
+                              <label 
+                                htmlFor="sla-breaches" 
+                                className="relative inline-flex h-6 w-11 cursor-pointer rounded-full bg-gray-200 transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-conneqt-blue"
+                              >
+                                <span className="translate-x-5 inline-block h-5 w-5 transform rounded-full bg-white shadow-lg ring-0 transition duration-200 ease-in-out mt-0.5 ml-0.5" />
+                              </label>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                      
+                      <div className="mt-6 pt-4 border-t">
+                        <h4 className="font-medium mb-2">Notification Channels</h4>
+                        <div className="flex flex-wrap gap-2">
+                          <Badge variant="outline" className="bg-blue-50 text-blue-700">Email</Badge>
+                          <Badge variant="outline" className="bg-gray-100">SMS</Badge>
+                          <Badge variant="outline" className="bg-gray-100">Slack</Badge>
+                          {subscriptionTier === 'enterprise' && (
+                            <Badge variant="outline" className="bg-gray-100">Custom Webhooks</Badge>
+                          )}
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </div>
+              )}
+            </TabsContent>
+          </Tabs>
+        </main>
+      </div>
+      <Footer />
+    </>
+  );
+};
+
+export default ClientManagement;
+
