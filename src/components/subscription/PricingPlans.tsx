@@ -1,6 +1,7 @@
 
 import { Check, Users, Database, Brain } from 'lucide-react';
 import { Button } from "@/components/ui/button";
+import { Link } from 'react-router-dom';
 
 const PricingPlans = () => {
   const plans = [
@@ -15,6 +16,7 @@ const PricingPlans = () => {
         "Basic email & chat support",
         "Standard response time (24h)",
         "Essential reporting features",
+        "Single user access",
       ],
       users: "1",
       color: "bg-blue-500",
@@ -34,6 +36,7 @@ const PricingPlans = () => {
         "Export & analytics features",
         "Custom workflow creation",
         "Team collaboration tools",
+        "Multiple user dashboard access",
       ],
       users: "Up to 3",
       color: "bg-conneqt-blue",
@@ -55,6 +58,7 @@ const PricingPlans = () => {
         "Automated workflow builder",
         "Advanced security features",
         "Dedicated account manager",
+        "Extended team access",
       ],
       users: "Up to 10",
       color: "bg-indigo-600",
@@ -99,8 +103,9 @@ const PricingPlans = () => {
             <Button 
               variant={plan.buttonVariant}
               className="w-full mb-6"
+              asChild
             >
-              Get Started
+              <Link to="/admin-dashboard">Get Started</Link>
             </Button>
             
             <ul className="space-y-3">

@@ -10,6 +10,7 @@ import Quote from "./pages/Quote";
 import NotFound from "./pages/NotFound";
 import SubscriptionServices from "./pages/SubscriptionServices";
 import QuoteConfirmation from "./pages/QuoteConfirmation";
+import AdminDashboard from "./pages/AdminDashboard";
 
 const queryClient = new QueryClient();
 
@@ -22,6 +23,7 @@ const AppRoutes = () => {
       <Route path="/quote" element={<Quote />} />
       <Route path="/quote-confirmation" element={<QuoteConfirmation />} />
       <Route path="/subscriptions" element={<SubscriptionServices />} />
+      <Route path="/admin-dashboard" element={<AdminDashboard />} />
       <Route path="*" element={<NotFound />} />
     </Routes>
   );
