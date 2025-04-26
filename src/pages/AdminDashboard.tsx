@@ -1,11 +1,23 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { DashboardLayout } from '@/components/layouts/DashboardLayout';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Bot, BarChart3, Users, PhoneCall, ArrowUp, ArrowDown, MessageCircle } from 'lucide-react';
+import { Bot, BarChart3, Users, PhoneCall, ArrowUp, ArrowDown, MessageCircle, LogOut, Home } from 'lucide-react';
 
 const AdminDashboard = () => {
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    // TODO: Add actual logout logic (e.g., clearing authentication tokens)
+    navigate('/');
+  };
+
+  const handleHomepage = () => {
+    navigate('/');
+  };
+
   return (
     <DashboardLayout>
       <div className="min-h-screen bg-gray-50 p-6">
@@ -16,10 +28,24 @@ const AdminDashboard = () => {
               <h1 className="text-3xl font-bold text-gray-900">Welcome Back</h1>
               <p className="text-gray-500 mt-1">Here's what's happening with your platform today.</p>
             </div>
-            <Button onClick={() => window.location.href = '/ai-guardian'} className="flex items-center gap-2">
-              <Bot className="w-4 h-4" />
-              Open AI Guardian
-            </Button>
+            <div className="flex gap-2">
+              <Button 
+                onClick={handleHomepage} 
+                variant="outline" 
+                className="flex items-center gap-2"
+              >
+                <Home className="w-4 h-4" />
+                Homepage
+              </Button>
+              <Button 
+                onClick={handleLogout} 
+                variant="destructive" 
+                className="flex items-center gap-2"
+              >
+                <LogOut className="w-4 h-4" />
+                Logout
+              </Button>
+            </div>
           </div>
 
           {/* Quick Stats */}
