@@ -1,10 +1,9 @@
-
 import { useState } from 'react';
 import { DashboardLayout } from '@/components/layouts/DashboardLayout';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Bot, BarChart3, Users, PhoneCall, ArrowUp, ArrowDown } from 'lucide-react';
+import { Bot, BarChart3, Users, PhoneCall, ArrowUp, ArrowDown, MessageCircle } from 'lucide-react';
 
 const AdminDashboard = () => {
   return (
