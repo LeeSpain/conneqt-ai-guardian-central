@@ -15,7 +15,6 @@ const queryClient = new QueryClient();
 
 // Create a wrapper component that uses the scroll to top hook
 const AppRoutes = () => {
-  // The hook is used here, inside the Router context
   return (
     <Routes>
       <Route path="/" element={<Index />} />

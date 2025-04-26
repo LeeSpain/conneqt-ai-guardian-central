@@ -11,8 +11,11 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import useScrollToTop from '@/hooks/useScrollToTop';
 
 const SubscriptionServices = () => {
+  useScrollToTop();
+  
   const plans = [
     {
       name: "Starter",

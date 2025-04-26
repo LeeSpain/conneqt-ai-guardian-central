@@ -3,8 +3,11 @@ import { Users, Globe, HeartHandshake } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
+import useScrollToTop from '@/hooks/useScrollToTop';
 
 const About = () => {
+  useScrollToTop();
+  
   return (
     <>
       <Navbar />
