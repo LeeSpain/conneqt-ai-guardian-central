@@ -50,18 +50,21 @@ const Index = () => {
       <Hero />
       
       {/* Services Section */}
-      <section className="section-padding bg-gradient-to-b from-gray-50 to-white">
+      <section className="section-padding bg-gradient-to-b from-gray-50 via-white to-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold mb-6 bg-gradient-to-r from-conneqt-blue to-blue-600 bg-clip-text text-transparent">
-              Our Core Services
+            <h2 className="text-4xl font-bold mb-6">
+              <span className="bg-gradient-to-r from-conneqt-blue via-blue-500 to-blue-600 bg-clip-text text-transparent">
+                Our Core Services
+              </span>
             </h2>
             <p className="text-conneqt-slate text-lg max-w-2xl mx-auto">
               Comprehensive multilingual customer service solutions tailored to your business needs.
             </p>
           </div>
           
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-10 relative">
+            <div className="absolute inset-0 bg-gradient-to-br from-blue-50 to-purple-50 opacity-30 -z-10 blur-3xl" />
             {services.map((service) => (
               <ServiceCard
                 key={service.title}
