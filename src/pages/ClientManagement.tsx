@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { Client, Ticket } from '@/types/client';
 import { ConnectBusinessDialog } from '@/components/client/ConnectBusinessDialog';
@@ -13,8 +14,9 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { LockIcon } from 'lucide-react';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog";
+import { LockIcon, Users, Check, Settings } from 'lucide-react';
+import { Input } from "@/components/ui/input";
 
 // Mock data for clients
 const mockClients: Client[] = [
