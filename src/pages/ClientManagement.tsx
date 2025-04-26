@@ -1,6 +1,8 @@
+
 import { useState } from 'react';
 import { Client, Ticket } from '@/types/client';
 import { ConnectBusinessDialog } from '@/components/client/ConnectBusinessDialog';
+import { BusinessDetails } from '@/components/client/BusinessDetails';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import useScrollToTop from '@/hooks/useScrollToTop';
@@ -205,11 +207,37 @@ const ClientManagement = () => {
     registrationNumber: string;
     phoneNumbers: string[];
   }) => {
-    // In a real app, this would be connected to your backend
-    toast({
-      title: "Business Connected",
-      description: `Successfully connected ${businessDetails.businessName} to the platform.`,
-    });
+    if (selectedClient) {
+      // Update the selected client with business details
+      const updatedClients = clients.map(client => 
+        client.id === selectedClient.id 
+          ? { 
+              ...client, 
+              businessDetails: {
+                businessName: businessDetails.businessName,
+                registrationNumber: businessDetails.registrationNumber,
+                phoneNumbers: businessDetails.phoneNumbers,
+              }
+            } 
+          : client
+      );
+      
+      setClients(updatedClients);
+      setSelectedClient(null);
+      
+      toast({
+        title: "Business Connected",
+        description: `Successfully connected ${businessDetails.businessName} to ${selectedClient.name}.`,
+      });
+    } else {
+      // In a real app, this would be connected to your backend
+      toast({
+        title: "Business Connected",
+        description: `Successfully connected ${businessDetails.businessName} to the platform.`,
+      });
+    }
+    
+    setIsConnectBusinessOpen(false);
   };
 
   return (
@@ -348,6 +376,15 @@ const ClientManagement = () => {
                           Export
                         </Button>
                       )}
+                      <Button 
+                        variant="outline" 
+                        size="sm" 
+                        onClick={() => setIsConnectBusinessOpen(true)}
+                        className="hidden md:flex"
+                      >
+                        <Database className="mr-2 h-4 w-4" />
+                        Connect Business
+                      </Button>
                     </div>
                   </div>
                   
@@ -487,6 +524,16 @@ const ClientManagement = () => {
                                             </div>
                                           </DialogContent>
                                         </Dialog>
+                                        <DropdownMenuItem
+                                          onClick={() => {
+                                            setSelectedClient(client);
+                                            setIsConnectBusinessOpen(true);
+                                          }}
+                                          className="cursor-pointer"
+                                        >
+                                          <Database className="mr-2 h-4 w-4" />
+                                          Connect Business
+                                        </DropdownMenuItem>
                                       </>
                                     )}
                                     <DropdownMenuSeparator />
@@ -617,6 +664,15 @@ const ClientManagement = () => {
                               </div>
                             </CardContent>
                           </Card>
+                          
+                          {/* Display business details if available */}
+                          {selectedClient.businessDetails && (
+                            <Card className="md:col-span-2">
+                              <CardHeader className="pb-2">
+                                <BusinessDetails details={selectedClient.businessDetails} />
+                              </CardHeader>
+                            </Card>
+                          )}
                           
                           {subscriptionTier === 'enterprise' && (
                             <>
@@ -831,4 +887,73 @@ const ClientManagement = () => {
                           <TableHead>ID</TableHead>
                           <TableHead>Client</TableHead>
                           <TableHead className="hidden md:table-cell">Subject</TableHead>
-                          <TableHead>Status</
+                          <TableHead>Status</TableHead>
+                          <TableHead>Priority</TableHead>
+                          <TableHead className="text-right">Actions</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {/* Table content for tickets */}
+                      </TableBody>
+                    </Table>
+                  </div>
+                </CardContent>
+              </Card>
+            </TabsContent>
+            
+            {/* Analytics Tab */}
+            <TabsContent value="analytics" className="space-y-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Client Analytics</CardTitle>
+                  <CardDescription>
+                    Track and analyze client interactions and performance metrics
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-muted-foreground text-center py-12">
+                    Analytics dashboard content goes here
+                  </p>
+                </CardContent>
+              </Card>
+            </TabsContent>
+            
+            {/* Automation Tab */}
+            <TabsContent value="automation" className="space-y-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Workflow Automation</CardTitle>
+                  <CardDescription>
+                    Build and manage automated workflows for client interactions
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-muted-foreground text-center py-12">
+                    {subscriptionTier === 'starter' ? (
+                      <>
+                        <Lock className="mx-auto h-12 w-12 text-muted-foreground/50 mb-4" />
+                        Workflow automation is available on Professional and Enterprise plans
+                      </>
+                    ) : (
+                      "Automation tools and workflows go here"
+                    )}
+                  </p>
+                </CardContent>
+              </Card>
+            </TabsContent>
+          </Tabs>
+        </main>
+        
+        {/* Connect Business Dialog */}
+        <ConnectBusinessDialog
+          open={isConnectBusinessOpen}
+          onClose={() => setIsConnectBusinessOpen(false)}
+          onConnect={handleConnectBusiness}
+        />
+      </div>
+      <Footer />
+    </>
+  );
+};
+
+export default ClientManagement;
