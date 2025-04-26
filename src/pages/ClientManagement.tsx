@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { Client, Ticket } from '@/types/client';
 import { ConnectBusinessDialog } from '@/components/client/ConnectBusinessDialog';
@@ -294,7 +295,11 @@ const ClientManagement = () => {
               <TabsTrigger value="tickets">Tickets</TabsTrigger>
               <TabsTrigger value="analytics">Analytics</TabsTrigger>
               <TabsTrigger value="automation" disabled={subscriptionTier === 'starter'}>
-                {subscriptionTier === 'starter' ? '🔒 Automation' : 'Automation'}
+                {subscriptionTier === 'starter' ? (
+                  <>
+                    <LockIcon className="h-4 w-4 mr-1" /> Automation
+                  </>
+                ) : 'Automation'}
               </TabsTrigger>
             </TabsList>
             
@@ -837,4 +842,26 @@ const ClientManagement = () => {
                       >
                         <Database className="h-6 w-6 mb-2" />
                         <span>Sync Data</span>
-                        {subscriptionTier
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
+            </TabsContent>
+          </Tabs>
+        </main>
+      </div>
+      
+      {/* Connect Business Dialog */}
+      <ConnectBusinessDialog
+        open={isConnectBusinessOpen}
+        onClose={() => setIsConnectBusinessOpen(false)}
+        onConnect={handleConnectBusiness}
+      />
+      
+      <Footer />
+    </>
+  );
+};
+
+export default ClientManagement;
