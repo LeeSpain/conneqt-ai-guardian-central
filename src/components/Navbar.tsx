@@ -26,7 +26,10 @@ const Navbar = () => {
               About Us
             </Link>
             <Link to="/admin-dashboard" className="text-conneqt-slate hover:text-conneqt-blue px-3 py-2 font-medium transition-colors">
-              Dashboard
+              Admin Dashboard
+            </Link>
+            <Link to="/healthcare-dashboard" className="text-conneqt-slate hover:text-conneqt-blue px-3 py-2 font-medium transition-colors">
+              Healthcare Dashboard
             </Link>
             <Link to="/quote" className="bg-conneqt-blue hover:bg-blue-500 text-white px-4 py-2 rounded-md font-medium transition-colors">
               Request a Quote
@@ -68,7 +71,14 @@ const Navbar = () => {
               className="block px-3 py-2 text-conneqt-slate hover:text-conneqt-blue font-medium"
               onClick={() => setIsMenuOpen(false)}
             >
-              Dashboard
+              Admin Dashboard
+            </Link>
+            <Link 
+              to="/healthcare-dashboard" 
+              className="block px-3 py-2 text-conneqt-slate hover:text-conneqt-blue font-medium"
+              onClick={() => setIsMenuOpen(false)}
+            >
+              Healthcare Dashboard
             </Link>
             <Link 
               to="/quote" 

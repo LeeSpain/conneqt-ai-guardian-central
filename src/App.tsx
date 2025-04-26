@@ -1,3 +1,4 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -10,6 +11,7 @@ import NotFound from "./pages/NotFound";
 import SubscriptionServices from "./pages/SubscriptionServices";
 import QuoteConfirmation from "./pages/QuoteConfirmation";
 import AdminDashboard from "./pages/AdminDashboard";
+import HealthcareDashboard from "./pages/HealthcareDashboard";
 import ClientManagement from "./pages/ClientManagement";
 import CallCenter from "./pages/CallCenter";
 import PlatformSettings from "./pages/PlatformSettings";
@@ -29,6 +31,7 @@ const AppRoutes = () => {
       <Route path="/quote-confirmation" element={<QuoteConfirmation />} />
       <Route path="/subscriptions" element={<SubscriptionServices />} />
       <Route path="/admin-dashboard" element={<AdminDashboard />} />
+      <Route path="/healthcare-dashboard" element={<HealthcareDashboard />} />
       <Route path="/client-management" element={<ClientManagement />} />
       <Route path="/call-center" element={<CallCenter />} />
       <Route path="/platform-settings" element={<PlatformSettings />} />
