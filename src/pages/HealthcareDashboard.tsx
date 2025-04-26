@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { DashboardLayout } from '@/components/layouts/DashboardLayout';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -12,7 +11,7 @@ import {
   Clock, 
   Activity, 
   CalendarCheck, 
-  Pills,
+  Pill,  // Changed from Pills to Pill
   Heart,
   PhoneCall,
   Shield,
@@ -81,7 +80,7 @@ const HealthcareDashboard = () => {
                 <span className="hidden sm:inline">Overview</span>
               </TabsTrigger>
               <TabsTrigger value="medication" className="flex items-center gap-2">
-                <Pills className="w-4 h-4" />
+                <Pill className="w-4 h-4" />
                 <span className="hidden sm:inline">Medication</span>
               </TabsTrigger>
               <TabsTrigger value="health" className="flex items-center gap-2">
@@ -108,7 +107,7 @@ const HealthcareDashboard = () => {
                           <ArrowUp className="w-4 h-4 mr-1" /> 5% increase
                         </p>
                       </div>
-                      <Pills className="w-8 h-8 text-blue-500" />
+                      <Pill className="w-8 h-8 text-blue-500" />
                     </div>
                   </CardContent>
                 </Card>
