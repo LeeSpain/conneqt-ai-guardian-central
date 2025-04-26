@@ -1,3 +1,4 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -11,6 +12,9 @@ import SubscriptionServices from "./pages/SubscriptionServices";
 import QuoteConfirmation from "./pages/QuoteConfirmation";
 import AdminDashboard from "./pages/AdminDashboard";
 import ClientManagement from "./pages/ClientManagement";
+import CallCenter from "./pages/CallCenter";
+import PlatformSettings from "./pages/PlatformSettings";
+import WebsiteIntegration from "./pages/WebsiteIntegration";
 
 const queryClient = new QueryClient();
 
