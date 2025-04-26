@@ -1,5 +1,13 @@
 
-import { Home, Users, Settings, PhoneCall, Globe, LayoutDashboard } from "lucide-react";
+import { 
+  Home, 
+  Users, 
+  Settings, 
+  PhoneCall, 
+  Globe, 
+  Bot,
+  MessageCircle 
+} from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
@@ -12,12 +20,12 @@ import {
   SidebarTrigger,
 } from "@/components/ui/sidebar";
 import { Link } from "react-router-dom";
-import { useState } from "react";
 
 const menuItems = [
   { title: "Overview", icon: Home, path: "/admin-dashboard" },
   { title: "Client Management", icon: Users, path: "/client-management" },
   { title: "Call Center", icon: PhoneCall, path: "/call-center" },
+  { title: "AI Guardian", icon: Bot, path: "/ai-guardian" },
   { title: "Platform Settings", icon: Settings, path: "/platform-settings" },
   { title: "Website Integration", icon: Globe, path: "/website-integration" },
 ];

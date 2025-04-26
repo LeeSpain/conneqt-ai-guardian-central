@@ -15,10 +15,10 @@ import ClientManagement from "./pages/ClientManagement";
 import CallCenter from "./pages/CallCenter";
 import PlatformSettings from "./pages/PlatformSettings";
 import WebsiteIntegration from "./pages/WebsiteIntegration";
+import AIGuardian from "./pages/AIGuardian";
 
 const queryClient = new QueryClient();
 
-// Create a wrapper component that uses the scroll to top hook
 const AppRoutes = () => {
   return (
     <Routes>
@@ -32,6 +32,7 @@ const AppRoutes = () => {
       <Route path="/call-center" element={<CallCenter />} />
       <Route path="/platform-settings" element={<PlatformSettings />} />
       <Route path="/website-integration" element={<WebsiteIntegration />} />
+      <Route path="/ai-guardian" element={<AIGuardian />} />
       <Route path="*" element={<NotFound />} />
     </Routes>
   );
