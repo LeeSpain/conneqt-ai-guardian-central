@@ -3,11 +3,14 @@ import { useNavigate } from 'react-router-dom';
 import { DashboardLayout } from '@/components/layouts/DashboardLayout';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Bot, BarChart3, Users, PhoneCall, ArrowUp, ArrowDown, MessageCircle, LogOut, Home } from 'lucide-react';
+import { Input } from "@/components/ui/input";
+import { Bot, BarChart3, Users, PhoneCall, ArrowUp, ArrowDown, MessageCircle, LogOut, Home, Send } from 'lucide-react';
+import { format } from 'date-fns';
 
 const AdminDashboard = () => {
   const navigate = useNavigate();
+  const [message, setMessage] = useState('');
+  const [chatMessages, setChatMessages] = useState<{ text: string; isAI: boolean }[]>([]);
 
   const handleLogout = () => {
     // TODO: Add actual logout logic (e.g., clearing authentication tokens)
@@ -18,6 +21,29 @@ const AdminDashboard = () => {
     navigate('/');
   };
 
+  const handleSendMessage = () => {
+    if (!message.trim()) return;
+    
+    setChatMessages([...chatMessages, { text: message, isAI: false }]);
+    setMessage('');
+    
+    // Simulate AI response (Replace with actual AI integration)
+    setTimeout(() => {
+      setChatMessages(prev => [...prev, { 
+        text: "Thanks for your message. How can I assist you today?", 
+        isAI: true 
+      }]);
+    }, 1000);
+  };
+
+  const currentTime = new Date();
+  const timeOfDay = () => {
+    const hour = currentTime.getHours();
+    if (hour < 12) return "Good morning";
+    if (hour < 18) return "Good afternoon";
+    return "Good evening";
+  };
+
   return (
     <DashboardLayout>
       <div className="min-h-screen bg-gray-50 p-6">
@@ -25,8 +51,12 @@ const AdminDashboard = () => {
           {/* Welcome Section */}
           <div className="flex justify-between items-center mb-8">
             <div>
-              <h1 className="text-3xl font-bold text-gray-900">Welcome Back</h1>
-              <p className="text-gray-500 mt-1">Here's what's happening with your platform today.</p>
+              <h1 className="text-3xl font-bold text-gray-900">
+                {timeOfDay()}, Admin
+              </h1>
+              <p className="text-gray-500 mt-1">
+                {format(currentTime, "EEEE, MMMM do yyyy, h:mm a")}
+              </p>
             </div>
             <div className="flex gap-2">
               <Button 
@@ -111,39 +141,45 @@ const AdminDashboard = () => {
             </Card>
           </div>
 
-          {/* AI Guardian Integration */}
+          {/* AI Guardian Chat */}
           <Card className="bg-gradient-to-r from-blue-50 to-indigo-50 border-none">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Bot className="w-6 h-6 text-blue-600" />
-                AI Guardian Quick Access
+                Chat with AI Guardian
               </CardTitle>
               <CardDescription>
-                Start a conversation or check recent interactions
+                Get instant assistance and insights
               </CardDescription>
             </CardHeader>
-            <CardContent className="grid md:grid-cols-2 gap-6 p-6">
-              <div className="bg-white p-4 rounded-lg shadow-sm">
-                <h3 className="font-medium mb-2">Recent AI Interactions</h3>
-                <div className="space-y-2">
-                  {["Client inquiry about pricing", "Support ticket resolution", "Website integration help"].map((item, i) => (
-                    <div key={i} className="flex items-center gap-2 text-sm p-2 hover:bg-gray-50 rounded-md">
-                      <MessageCircle className="w-4 h-4 text-blue-500" />
-                      <span>{item}</span>
+            <CardContent>
+              <div className="bg-white rounded-lg p-4 h-[300px] mb-4 overflow-y-auto">
+                {chatMessages.map((msg, index) => (
+                  <div
+                    key={index}
+                    className={`mb-3 p-3 rounded-lg ${
+                      msg.isAI 
+                        ? "bg-blue-50 mr-12" 
+                        : "bg-green-50 ml-12"
+                    }`}
+                  >
+                    <div className="flex items-start gap-2">
+                      {msg.isAI && <Bot className="w-4 h-4 mt-1" />}
+                      <p>{msg.text}</p>
                     </div>
-                  ))}
-                </div>
+                  </div>
+                ))}
               </div>
-              <div className="bg-white p-4 rounded-lg shadow-sm">
-                <h3 className="font-medium mb-4">Quick Actions</h3>
-                <div className="space-y-3">
-                  <Button className="w-full justify-start" variant="outline">
-                    <Bot className="w-4 h-4 mr-2" /> Start New Conversation
-                  </Button>
-                  <Button className="w-full justify-start" variant="outline">
-                    <Users className="w-4 h-4 mr-2" /> Review Client Interactions
-                  </Button>
-                </div>
+              <div className="flex gap-2">
+                <Input
+                  placeholder="Type your message..."
+                  value={message}
+                  onChange={(e) => setMessage(e.target.value)}
+                  onKeyPress={(e) => e.key === "Enter" && handleSendMessage()}
+                />
+                <Button onClick={handleSendMessage}>
+                  <Send className="w-4 h-4" />
+                </Button>
               </div>
             </CardContent>
           </Card>
