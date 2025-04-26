@@ -1,3 +1,4 @@
+
 import { ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { AspectRatio } from '@/components/ui/aspect-ratio';
@@ -9,11 +10,11 @@ const Hero = () => {
         <div className="grid lg:grid-cols-2 gap-10 items-center">
           <div className="animate-fade-in">
             <h1 className="mb-6">
-              <span className="text-conneqt-blue">Multilingual</span> Customer Service <span className="text-conneqt-blue">Enhanced by AI</span>
+              <span className="text-conneqt-blue">AI-Powered</span> Customer Service Platform: <span className="text-conneqt-blue">The Future of Support</span>
             </h1>
             <p className="text-xl text-conneqt-slate mb-8 max-w-lg">
-              Professional customer service solutions in English, Spanish, and Dutch with 
-              AI-powered insights to maximize efficiency and scalability.
+              Fully Autonomous AI Customer Service with Human Oversight in English, Spanish, and Dutch with 
+              seamless integration to your existing business systems.
             </p>
             <div className="flex flex-wrap gap-4">
               <Link 
@@ -23,10 +24,10 @@ const Hero = () => {
                 Request a Quote <ArrowRight size={18} className="ml-2" />
               </Link>
               <Link 
-                to="/about" 
+                to="/ai-guardian" 
                 className="bg-white hover:bg-gray-50 text-conneqt-navy border border-conneqt-navy px-6 py-3 rounded-md font-medium transition-colors"
               >
-                Learn More
+                AI Agent Demo
               </Link>
             </div>
           </div>
@@ -35,7 +36,7 @@ const Hero = () => {
             <AspectRatio ratio={16 / 9} className="overflow-hidden rounded-lg shadow-xl">
               <img 
                 src="/lovable-uploads/c56de219-63c2-447c-9b95-00b80e9cba45.png" 
-                alt="Customer service team"
+                alt="AI agent handling customer interactions"
                 loading="eager"
                 decoding="async"
                 className="object-cover w-full h-full"
