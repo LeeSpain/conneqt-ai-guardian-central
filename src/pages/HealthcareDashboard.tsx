@@ -11,7 +11,7 @@ import {
   Clock, 
   Activity, 
   CalendarCheck, 
-  Pill,  // Changed from Pills to Pill
+  Pill,
   Heart,
   PhoneCall,
   Shield,
@@ -21,6 +21,8 @@ import {
   ArrowDown,
   Gauge
 } from 'lucide-react';
+import { MedicationManagement } from '@/components/healthcare/MedicationManagement';
+import { HealthMonitoring } from '@/components/healthcare/HealthMonitoring';
 
 const HealthcareDashboard = () => {
   const [activeTab, setActiveTab] = useState("overview");
@@ -296,42 +298,12 @@ const HealthcareDashboard = () => {
 
             {/* Medication Tab Content */}
             <TabsContent value="medication">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Medication Management</CardTitle>
-                  <CardDescription>
-                    Monitor and manage patient medication schedules and adherence
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <p>Medication management content would go here, including:</p>
-                  <ul className="list-disc pl-5 mt-2 space-y-2">
-                    <li>Automated dispensing monitoring</li>
-                    <li>Medication pouch verification</li>
-                    <li>Medication schedule management</li>
-                  </ul>
-                </CardContent>
-              </Card>
+              <MedicationManagement />
             </TabsContent>
 
             {/* Health Monitoring Tab Content */}
             <TabsContent value="health">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Health Monitoring</CardTitle>
-                  <CardDescription>
-                    Track patient vitals and health trends
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <p>Health monitoring content would go here, including:</p>
-                  <ul className="list-disc pl-5 mt-2 space-y-2">
-                    <li>Glucose level monitoring</li>
-                    <li>Health trend analysis</li>
-                    <li>Intervention management</li>
-                  </ul>
-                </CardContent>
-              </Card>
+              <HealthMonitoring />
             </TabsContent>
 
             {/* Customer Service Tab Content */}
