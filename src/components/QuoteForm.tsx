@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { toast } from 'sonner';
 import { Check } from 'lucide-react';
@@ -22,8 +23,6 @@ const QuoteForm = () => {
   });
   
   const [submitting, setSubmitting] = useState(false);
-  const [quotePrice, setQuotePrice] = useState<QuotePrice | null>(null);
-
   const navigate = useNavigate();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
@@ -32,21 +31,28 @@ const QuoteForm = () => {
       ...prev,
       [name]: value
     }));
-
-    if (name === 'hoursPerDay' || name === 'daysPerWeek') {
-      const newPrice = calculateQuotePrice(
-        name === 'hoursPerDay' ? value : formData.hoursPerDay,
-        name === 'daysPerWeek' ? value : formData.daysPerWeek
-      );
-      setQuotePrice(newPrice);
-    }
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    
+    // Validate that required fields are filled
+    if (!formData.name || !formData.company || !formData.email || 
+        !formData.serviceType || !formData.hoursPerDay || 
+        !formData.daysPerWeek || !formData.language) {
+      toast.error('Please fill out all required fields');
+      return;
+    }
+    
     setSubmitting(true);
     
     try {
+      // Calculate the quote price only when submitting
+      const quotePrice = calculateQuotePrice(
+        formData.hoursPerDay,
+        formData.daysPerWeek
+      );
+      
       // Here we'd typically make an API call to send the email
       // For now, we'll simulate it with a timeout
       await new Promise(resolve => setTimeout(resolve, 1500));
@@ -76,8 +82,6 @@ const QuoteForm = () => {
         <ContactInformation formData={formData} onChange={handleChange} />
         <ServiceRequirements formData={formData} onChange={handleChange} />
       </div>
-      
-      {quotePrice && <PriceBreakdown quotePrice={quotePrice} />}
       
       <div className="mt-6">
         <label htmlFor="message" className="block text-sm font-medium text-conneqt-slate mb-1">
