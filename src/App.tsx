@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -26,6 +25,9 @@ const AppRoutes = () => {
       <Route path="/subscriptions" element={<SubscriptionServices />} />
       <Route path="/admin-dashboard" element={<AdminDashboard />} />
       <Route path="/client-management" element={<ClientManagement />} />
+      <Route path="/call-center" element={<CallCenter />} />
+      <Route path="/platform-settings" element={<PlatformSettings />} />
+      <Route path="/website-integration" element={<WebsiteIntegration />} />
       <Route path="*" element={<NotFound />} />
     </Routes>
   );

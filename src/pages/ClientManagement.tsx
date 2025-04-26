@@ -1,15 +1,10 @@
-
 import { useState } from 'react';
 import { Client, Ticket } from '@/types/client';
 import { ConnectBusinessDialog } from '@/components/client/ConnectBusinessDialog';
 import { BusinessDetails } from '@/components/client/BusinessDetails';
-import { ClientHeader } from '@/components/client/ClientHeader';
 import { ClientList } from '@/components/client/ClientList';
 import { TicketList } from '@/components/client/TicketList';
 import { ClientContactInfo } from '@/components/client/ClientContactInfo';
-import Navbar from '@/components/Navbar';
-import Footer from '@/components/Footer';
-import useScrollToTop from '@/hooks/useScrollToTop';
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -17,6 +12,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog";
 import { LockIcon, Users, Check, Settings } from 'lucide-react';
 import { Input } from "@/components/ui/input";
+import { DashboardLayout } from '@/components/layouts/DashboardLayout';
 
 // Mock data for clients
 const mockClients: Client[] = [
@@ -55,7 +51,6 @@ const mockTickets: Ticket[] = [
 ];
 
 const ClientManagement = () => {
-  useScrollToTop();
   const { toast } = useToast();
   
   // State management
@@ -178,14 +173,8 @@ const ClientManagement = () => {
   };
 
   return (
-    <>
-      <Navbar />
+    <DashboardLayout>
       <div className="min-h-screen bg-gray-50">
-        <ClientHeader
-          subscriptionTier={subscriptionTier}
-          onSubscriptionChange={changeSubscriptionTier}
-        />
-        
         <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
           <Tabs defaultValue="clients" className="w-full">
             <TabsList className="grid w-full grid-cols-4 md:w-auto mb-8">
@@ -390,9 +379,7 @@ const ClientManagement = () => {
         onClose={() => setIsConnectBusinessOpen(false)}
         onConnect={handleConnectBusiness}
       />
-      
-      <Footer />
-    </>
+    </DashboardLayout>
   );
 };
 
