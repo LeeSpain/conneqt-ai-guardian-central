@@ -1,12 +1,14 @@
 
 import { useLocation, useNavigate } from 'react-router-dom';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import { Button } from '@/components/ui/button';
 import { PriceBreakdown } from '@/components/quote/PriceBreakdown';
+import { ServiceRequirements } from '@/components/quote/ServiceRequirements';
 import type { QuoteFormData, QuotePrice } from '@/types/quote';
 import useScrollToTop from '@/hooks/useScrollToTop';
+import { calculateQuotePrice } from '@/utils/pricing';
 
 interface LocationState {
   formData: QuoteFormData;
@@ -17,15 +19,38 @@ const QuoteConfirmation = () => {
   useScrollToTop();
   const location = useLocation();
   const navigate = useNavigate();
-  const state = location.state as LocationState;
+  const [formData, setFormData] = useState<QuoteFormData>(() => 
+    (location.state as LocationState)?.formData || null
+  );
+  const [quotePrice, setQuotePrice] = useState<QuotePrice>(() => 
+    (location.state as LocationState)?.quotePrice || null
+  );
 
   useEffect(() => {
-    if (!state?.formData || !state?.quotePrice) {
+    if (!formData || !quotePrice) {
       navigate('/quote');
     }
-  }, [state, navigate]);
+  }, [formData, quotePrice, navigate]);
 
-  if (!state?.formData || !state?.quotePrice) {
+  const handleServiceChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const { name, value } = e.target;
+    const updatedFormData = {
+      ...formData,
+      [name]: value
+    };
+    setFormData(updatedFormData);
+    
+    // Recalculate quote price when service requirements change
+    if (name === 'hoursPerDay' || name === 'daysPerWeek') {
+      const newQuotePrice = calculateQuotePrice(
+        updatedFormData.hoursPerDay,
+        updatedFormData.daysPerWeek
+      );
+      setQuotePrice(newQuotePrice);
+    }
+  };
+
+  if (!formData || !quotePrice) {
     return null;
   }
 
@@ -37,7 +62,7 @@ const QuoteConfirmation = () => {
           <div className="text-center mb-12">
             <h1 className="mb-4">Thank You for Your Quote Request</h1>
             <p className="text-lg text-conneqt-slate">
-              We've sent a copy of this quote to {state.formData.email}
+              We've sent a copy of this quote to {formData.email}
             </p>
           </div>
 
@@ -48,30 +73,25 @@ const QuoteConfirmation = () => {
               <div>
                 <h3 className="font-semibold mb-4">Contact Information</h3>
                 <div className="space-y-2 text-conneqt-slate">
-                  <p><span className="font-medium">Name:</span> {state.formData.name}</p>
-                  <p><span className="font-medium">Company:</span> {state.formData.company}</p>
-                  <p><span className="font-medium">Email:</span> {state.formData.email}</p>
-                  <p><span className="font-medium">Phone:</span> {state.formData.phone}</p>
+                  <p><span className="font-medium">Name:</span> {formData.name}</p>
+                  <p><span className="font-medium">Company:</span> {formData.company}</p>
+                  <p><span className="font-medium">Email:</span> {formData.email}</p>
+                  <p><span className="font-medium">Phone:</span> {formData.phone}</p>
                 </div>
               </div>
               
               <div>
                 <h3 className="font-semibold mb-4">Service Requirements</h3>
-                <div className="space-y-2 text-conneqt-slate">
-                  <p><span className="font-medium">Service Type:</span> {state.formData.serviceType}</p>
-                  <p><span className="font-medium">Hours Per Day:</span> {state.formData.hoursPerDay}</p>
-                  <p><span className="font-medium">Days Per Week:</span> {state.formData.daysPerWeek}</p>
-                  <p><span className="font-medium">Language:</span> {state.formData.language}</p>
-                </div>
+                <ServiceRequirements formData={formData} onChange={handleServiceChange} />
               </div>
             </div>
 
-            <PriceBreakdown quotePrice={state.quotePrice} />
+            <PriceBreakdown quotePrice={quotePrice} />
 
-            {state.formData.message && (
+            {formData.message && (
               <div className="mt-8">
                 <h3 className="font-semibold mb-2">Additional Notes</h3>
-                <p className="text-conneqt-slate">{state.formData.message}</p>
+                <p className="text-conneqt-slate">{formData.message}</p>
               </div>
             )}
 
@@ -89,3 +109,4 @@ const QuoteConfirmation = () => {
 };
 
 export default QuoteConfirmation;
+
