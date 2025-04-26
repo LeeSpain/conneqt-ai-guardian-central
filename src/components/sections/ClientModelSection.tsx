@@ -1,4 +1,3 @@
-
 import { Check } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
@@ -40,7 +39,7 @@ const ClientModelSection = () => {
               </ul>
               
               <Link 
-                to="/quote" 
+                to="/managed-services" 
                 className="block text-center bg-conneqt-blue hover:bg-blue-500 text-white px-6 py-3 rounded-md font-medium transition-colors"
               >
                 Request Managed Service Quote

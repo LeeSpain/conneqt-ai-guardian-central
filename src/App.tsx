@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -16,6 +15,7 @@ import CallCenter from "./pages/CallCenter";
 import PlatformSettings from "./pages/PlatformSettings";
 import WebsiteIntegration from "./pages/WebsiteIntegration";
 import AIGuardian from "./pages/AIGuardian";
+import ManagedServices from "./pages/ManagedServices";
 
 const queryClient = new QueryClient();
 
@@ -25,6 +25,7 @@ const AppRoutes = () => {
       <Route path="/" element={<Index />} />
       <Route path="/about" element={<About />} />
       <Route path="/quote" element={<Quote />} />
+      <Route path="/managed-services" element={<ManagedServices />} />
       <Route path="/quote-confirmation" element={<QuoteConfirmation />} />
       <Route path="/subscriptions" element={<SubscriptionServices />} />
       <Route path="/admin-dashboard" element={<AdminDashboard />} />
