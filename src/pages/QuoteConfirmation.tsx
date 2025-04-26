@@ -1,6 +1,7 @@
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { Video, CalendarDays, Clock } from 'lucide-react';
+import { format } from "date-fns";
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import { Button } from '@/components/ui/button';
@@ -13,9 +14,23 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { Calendar } from "@/components/ui/calendar";
 import type { QuoteFormData, QuotePrice } from '@/types/quote';
 import useScrollToTop from '@/hooks/useScrollToTop';
 import { calculateQuotePrice } from '@/utils/pricing';
+import { useToast } from "@/hooks/use-toast";
 
 interface LocationState {
   formData: QuoteFormData;
@@ -26,12 +41,15 @@ const QuoteConfirmation = () => {
   useScrollToTop();
   const location = useLocation();
   const navigate = useNavigate();
+  const { toast } = useToast();
   const [formData, setFormData] = useState<QuoteFormData>(() => 
     (location.state as LocationState)?.formData || null
   );
   const [quotePrice, setQuotePrice] = useState<QuotePrice>(() => 
     (location.state as LocationState)?.quotePrice || null
   );
+  const [selectedDate, setSelectedDate] = useState<Date>();
+  const [selectedTime, setSelectedTime] = useState<string>();
 
   useEffect(() => {
     if (!formData || !quotePrice) {
@@ -57,18 +75,28 @@ const QuoteConfirmation = () => {
     }
   };
 
-  // Hardcoded available slots - in a real app these would come from an API
-  const availableSlots = [
-    { date: "Tuesday, May 7", time: "10:00 AM", timezone: "EST" },
-    { date: "Wednesday, May 8", time: "2:00 PM", timezone: "EST" },
-    { date: "Thursday, May 9", time: "11:00 AM", timezone: "EST" }
+  const availableTimes = [
+    "09:00 AM",
+    "10:00 AM",
+    "11:00 AM",
+    "02:00 PM",
+    "03:00 PM",
+    "04:00 PM"
   ];
 
-  const handleBooking = (date: string, time: string) => {
-    // In a real application, this would integrate with a booking system
-    console.log(`Booking appointment for ${date} at ${time}`);
-    // For now, we'll just show a success message
-    window.alert(`Thank you! We'll send you a calendar invite for your video appointment on ${date} at ${time}`);
+  const handleBooking = () => {
+    if (!selectedDate || !selectedTime) {
+      toast({
+        title: "Please select both date and time",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    toast({
+      title: "Appointment Scheduled!",
+      description: `Your video consultation is scheduled for ${format(selectedDate, "EEEE, MMMM d")} at ${selectedTime}. You will receive a calendar invite shortly.`,
+    });
   };
 
   if (!formData || !quotePrice) {
@@ -126,43 +154,75 @@ const QuoteConfirmation = () => {
           {/* Video Appointment Section */}
           <div className="mt-12 bg-gradient-to-br from-blue-50 to-white rounded-xl p-8 shadow-lg">
             <div className="text-center mb-8">
-              <h2 className="text-2xl font-bold mb-3">Ready to Move Forward?</h2>
+              <h2 className="text-2xl font-bold mb-3">Schedule Your Video Consultation</h2>
               <p className="text-lg text-conneqt-slate">
-                Schedule a video consultation with our team to discuss your requirements in detail
+                Let's discuss your requirements in detail and create a tailored solution for your business
               </p>
             </div>
 
-            <div className="grid md:grid-cols-3 gap-4">
-              {availableSlots.map((slot, index) => (
-                <Card key={index} className="bg-white">
-                  <CardHeader className="space-y-1">
-                    <CardTitle className="text-xl">{slot.date}</CardTitle>
-                    <CardDescription>Available Slot</CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-4">
-                      <div className="flex items-center gap-2 text-conneqt-slate">
-                        <Clock className="h-4 w-4" />
-                        <span>{slot.time}</span>
-                      </div>
-                      <div className="flex items-center gap-2 text-conneqt-slate">
-                        <Video className="h-4 w-4" />
-                        <span>Video Call</span>
-                      </div>
-                      <div className="flex items-center gap-2 text-conneqt-slate">
-                        <CalendarDays className="h-4 w-4" />
-                        <span>{slot.timezone}</span>
-                      </div>
-                      <Button 
-                        onClick={() => handleBooking(slot.date, slot.time)}
-                        className="w-full bg-conneqt-blue hover:bg-blue-500"
-                      >
-                        Book This Slot
-                      </Button>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
+            <div className="max-w-md mx-auto space-y-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Select Your Preferred Time</CardTitle>
+                  <CardDescription>Choose a date and time that works best for you</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium">Date</label>
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <Button
+                          variant="outline"
+                          className="w-full justify-start text-left font-normal"
+                        >
+                          <CalendarDays className="mr-2 h-4 w-4" />
+                          {selectedDate ? (
+                            format(selectedDate, "PPP")
+                          ) : (
+                            "Select a date"
+                          )}
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-auto p-0">
+                        <Calendar
+                          mode="single"
+                          selected={selectedDate}
+                          onSelect={setSelectedDate}
+                          disabled={(date) => date < new Date() || date < new Date("2024-05-01")}
+                          initialFocus
+                          className="pointer-events-auto"
+                        />
+                      </PopoverContent>
+                    </Popover>
+                  </div>
+
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium">Time</label>
+                    <Select onValueChange={setSelectedTime} value={selectedTime}>
+                      <SelectTrigger className="w-full">
+                        <Clock className="mr-2 h-4 w-4" />
+                        <SelectValue placeholder="Select a time" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {availableTimes.map((time) => (
+                          <SelectItem key={time} value={time}>
+                            {time}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <Button 
+                    onClick={handleBooking}
+                    className="w-full bg-conneqt-blue hover:bg-blue-500"
+                    disabled={!selectedDate || !selectedTime}
+                  >
+                    <Video className="mr-2 h-4 w-4" />
+                    Schedule Consultation
+                  </Button>
+                </CardContent>
+              </Card>
             </div>
           </div>
 
