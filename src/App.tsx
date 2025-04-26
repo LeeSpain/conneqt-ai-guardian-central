@@ -1,3 +1,4 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -9,28 +10,32 @@ import Quote from "./pages/Quote";
 import NotFound from "./pages/NotFound";
 import SubscriptionServices from "./pages/SubscriptionServices";
 import QuoteConfirmation from "./pages/QuoteConfirmation";
-import useScrollToTop from "./hooks/useScrollToTop";
 
 const queryClient = new QueryClient();
 
-const App = () => {
-  // Add the scroll to top hook
-  useScrollToTop();
+// Create a wrapper component that uses the scroll to top hook
+const AppRoutes = () => {
+  // The hook is used here, inside the Router context
+  return (
+    <Routes>
+      <Route path="/" element={<Index />} />
+      <Route path="/about" element={<About />} />
+      <Route path="/quote" element={<Quote />} />
+      <Route path="/quote-confirmation" element={<QuoteConfirmation />} />
+      <Route path="/subscriptions" element={<SubscriptionServices />} />
+      <Route path="*" element={<NotFound />} />
+    </Routes>
+  );
+};
 
+const App = () => {
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
         <Toaster />
         <Sonner />
         <BrowserRouter>
-          <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/about" element={<About />} />
-            <Route path="/quote" element={<Quote />} />
-            <Route path="/quote-confirmation" element={<QuoteConfirmation />} />
-            <Route path="/subscriptions" element={<SubscriptionServices />} />
-            <Route path="*" element={<NotFound />} />
-          </Routes>
+          <AppRoutes />
         </BrowserRouter>
       </TooltipProvider>
     </QueryClientProvider>
