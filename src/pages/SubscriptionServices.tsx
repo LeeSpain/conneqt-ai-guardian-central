@@ -1,17 +1,17 @@
 
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
-import { Check, Users, Database, Brain } from 'lucide-react';
+import { Check, Users, Database, Brain, BadgeEuro } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import useScrollToTop from '@/hooks/useScrollToTop';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const SubscriptionServices = () => {
   useScrollToTop();
@@ -22,11 +22,12 @@ const SubscriptionServices = () => {
       price: "€99",
       description: "Perfect for individual users getting started",
       features: [
-        "Dashboard access",
-        "View-only AI features",
-        "Basic insights",
-        "Single user account",
-        "Email support",
+        "24/7 Basic Customer Support",
+        "View-only AI insights dashboard",
+        "Up to 100 customer interactions/month",
+        "Basic email & chat support",
+        "Standard response time (24h)",
+        "Essential reporting features",
       ],
       users: "1",
       color: "bg-blue-500",
@@ -38,12 +39,14 @@ const SubscriptionServices = () => {
       price: "€199",
       description: "Ideal for growing teams",
       features: [
-        "Full ticketing system",
-        "Interactive AI chat",
-        "Export capabilities",
-        "Comprehensive reports",
-        "User role management",
-        "Up to 3 user accounts",
+        "Advanced ticketing system",
+        "Interactive AI chat assistant",
+        "Up to 500 customer interactions/month",
+        "Priority email & phone support",
+        "Faster response time (12h)",
+        "Export & analytics features",
+        "Custom workflow creation",
+        "Team collaboration tools",
       ],
       users: "Up to 3",
       color: "bg-conneqt-blue",
@@ -56,12 +59,15 @@ const SubscriptionServices = () => {
       price: "€349",
       description: "For established organizations",
       features: [
-        "Advanced analytics dashboard",
-        "CRM/API integration access",
+        "Full-featured AI analytics dashboard",
+        "Unlimited customer interactions",
+        "24/7 dedicated support team",
+        "Instant priority response",
+        "Advanced API integration",
         "Custom branding options",
-        "Workflow builder",
-        "Priority support",
-        "Up to 10 user accounts",
+        "Automated workflow builder",
+        "Advanced security features",
+        "Dedicated account manager",
       ],
       users: "Up to 10",
       color: "bg-indigo-600",
@@ -70,25 +76,37 @@ const SubscriptionServices = () => {
     }
   ];
 
-  const addOns = [
+  const serviceFeatures = [
     {
-      name: "Extra Users",
-      price: "€20",
-      period: "per user/month",
-      description: "Add more users to your plan"
+      title: "Customer Support Excellence",
+      description: "Multi-channel support with AI-powered assistance",
+      details: [
+        "24/7 availability across time zones",
+        "Multiple language support",
+        "Video call support options",
+        "Ticket tracking system",
+      ]
     },
     {
-      name: "CRM/API Integration",
-      price: "€79",
-      period: "per month",
-      description: "Connect with your existing tools"
+      title: "AI-Powered Solutions",
+      description: "Smart automation and intelligent insights",
+      details: [
+        "Predictive analytics",
+        "Automated response suggestions",
+        "Customer behavior analysis",
+        "Smart workload distribution",
+      ]
     },
     {
-      name: "Custom AI Tuning",
-      price: "€99",
-      period: "one-time",
-      description: "Customize AI behavior for your needs"
-    }
+      title: "Integration Capabilities",
+      description: "Seamless connection with your existing tools",
+      details: [
+        "CRM system integration",
+        "API access for custom solutions",
+        "Third-party app compatibility",
+        "Data synchronization",
+      ]
+    },
   ];
 
   return (
@@ -100,16 +118,138 @@ const SubscriptionServices = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-3xl mx-auto">
             <h1 className="text-4xl font-bold mb-6">
-              Choose Your <span className="text-conneqt-blue">Plan</span>
+              Choose Your <span className="text-conneqt-blue">Solution</span>
             </h1>
             <p className="text-xl text-conneqt-slate mb-4">
-              Fixed monthly tiers designed to scale with your business
+              Flexible plans designed to scale with your business needs
             </p>
           </div>
         </div>
       </section>
 
-      {/* Pricing Section */}
+      {/* Features Overview */}
+      <section className="py-16 bg-gray-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <Tabs defaultValue="features" className="w-full">
+            <TabsList className="grid w-full grid-cols-3 mb-8">
+              <TabsTrigger value="features">Service Features</TabsTrigger>
+              <TabsTrigger value="benefits">Key Benefits</TabsTrigger>
+              <TabsTrigger value="comparison">Plan Comparison</TabsTrigger>
+            </TabsList>
+            
+            <TabsContent value="features">
+              <div className="grid md:grid-cols-3 gap-8">
+                {serviceFeatures.map((feature) => (
+                  <Card key={feature.title}>
+                    <CardHeader>
+                      <CardTitle>{feature.title}</CardTitle>
+                      <CardDescription>{feature.description}</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <ul className="space-y-2">
+                        {feature.details.map((detail) => (
+                          <li key={detail} className="flex items-center gap-2">
+                            <Check className="h-4 w-4 text-green-500" />
+                            <span>{detail}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            </TabsContent>
+            
+            <TabsContent value="benefits">
+              <div className="grid md:grid-cols-2 gap-8">
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Business Growth</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <ul className="space-y-2">
+                      <li className="flex items-center gap-2">
+                        <BadgeEuro className="h-4 w-4 text-green-500" />
+                        <span>Reduced operational costs</span>
+                      </li>
+                      <li className="flex items-center gap-2">
+                        <Check className="h-4 w-4 text-green-500" />
+                        <span>Improved customer satisfaction</span>
+                      </li>
+                      <li className="flex items-center gap-2">
+                        <Check className="h-4 w-4 text-green-500" />
+                        <span>Scalable solutions</span>
+                      </li>
+                    </ul>
+                  </CardContent>
+                </Card>
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Operational Excellence</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <ul className="space-y-2">
+                      <li className="flex items-center gap-2">
+                        <Check className="h-4 w-4 text-green-500" />
+                        <span>Streamlined workflows</span>
+                      </li>
+                      <li className="flex items-center gap-2">
+                        <Check className="h-4 w-4 text-green-500" />
+                        <span>Data-driven decisions</span>
+                      </li>
+                      <li className="flex items-center gap-2">
+                        <Check className="h-4 w-4 text-green-500" />
+                        <span>Enhanced team productivity</span>
+                      </li>
+                    </ul>
+                  </CardContent>
+                </Card>
+              </div>
+            </TabsContent>
+            
+            <TabsContent value="comparison">
+              <Card>
+                <CardContent className="pt-6">
+                  <div className="overflow-x-auto">
+                    <table className="w-full">
+                      <thead>
+                        <tr className="border-b">
+                          <th className="text-left p-4">Feature</th>
+                          <th className="p-4">Starter</th>
+                          <th className="p-4">Professional</th>
+                          <th className="p-4">Enterprise</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr className="border-b">
+                          <td className="p-4">Users</td>
+                          <td className="p-4 text-center">1</td>
+                          <td className="p-4 text-center">Up to 3</td>
+                          <td className="p-4 text-center">Up to 10</td>
+                        </tr>
+                        <tr className="border-b">
+                          <td className="p-4">Support Level</td>
+                          <td className="p-4 text-center">Basic</td>
+                          <td className="p-4 text-center">Priority</td>
+                          <td className="p-4 text-center">Dedicated</td>
+                        </tr>
+                        <tr className="border-b">
+                          <td className="p-4">AI Features</td>
+                          <td className="p-4 text-center">Limited</td>
+                          <td className="p-4 text-center">Advanced</td>
+                          <td className="p-4 text-center">Full Access</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </CardContent>
+              </Card>
+            </TabsContent>
+          </Tabs>
+        </div>
+      </section>
+
+      {/* Pricing Plans */}
       <section className="py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid md:grid-cols-3 gap-8">
