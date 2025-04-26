@@ -8,26 +8,33 @@ import About from "./pages/About";
 import Quote from "./pages/Quote";
 import NotFound from "./pages/NotFound";
 import SubscriptionServices from "./pages/SubscriptionServices";
+import QuoteConfirmation from "./pages/QuoteConfirmation";
+import useScrollToTop from "./hooks/useScrollToTop";
 
 const queryClient = new QueryClient();
 
-const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Index />} />
-          <Route path="/about" element={<About />} />
-          <Route path="/quote" element={<Quote />} />
-          <Route path="/subscriptions" element={<SubscriptionServices />} />
-          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </BrowserRouter>
-    </TooltipProvider>
-  </QueryClientProvider>
-);
+const App = () => {
+  // Add the scroll to top hook
+  useScrollToTop();
+
+  return (
+    <QueryClientProvider client={queryClient}>
+      <TooltipProvider>
+        <Toaster />
+        <Sonner />
+        <BrowserRouter>
+          <Routes>
+            <Route path="/" element={<Index />} />
+            <Route path="/about" element={<About />} />
+            <Route path="/quote" element={<Quote />} />
+            <Route path="/quote-confirmation" element={<QuoteConfirmation />} />
+            <Route path="/subscriptions" element={<SubscriptionServices />} />
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </BrowserRouter>
+      </TooltipProvider>
+    </QueryClientProvider>
+  );
+};
 
 export default App;

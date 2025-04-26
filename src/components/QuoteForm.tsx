@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { toast } from 'sonner';
 import { Check } from 'lucide-react';
@@ -7,6 +6,7 @@ import { ServiceRequirements } from './quote/ServiceRequirements';
 import { PriceBreakdown } from './quote/PriceBreakdown';
 import { calculateQuotePrice } from '@/utils/pricing';
 import type { QuoteFormData, QuotePrice } from '@/types/quote';
+import { useNavigate } from 'react-router-dom';
 
 const QuoteForm = () => {
   const [formData, setFormData] = useState<QuoteFormData>({
@@ -24,6 +24,8 @@ const QuoteForm = () => {
   const [submitting, setSubmitting] = useState(false);
   const [quotePrice, setQuotePrice] = useState<QuotePrice | null>(null);
 
+  const navigate = useNavigate();
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({
@@ -40,29 +42,30 @@ const QuoteForm = () => {
     }
   };
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setSubmitting(true);
     
-    setTimeout(() => {
-      console.log('Form submitted:', { ...formData, pricing: quotePrice });
-      toast.success('Quote request submitted successfully!', {
-        description: "We'll send you the detailed quote via email shortly."
+    try {
+      // Here we'd typically make an API call to send the email
+      // For now, we'll simulate it with a timeout
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      
+      toast.success('Quote request submitted successfully!');
+      
+      // Navigate to the confirmation page with the form data and quote
+      navigate('/quote-confirmation', {
+        state: {
+          formData,
+          quotePrice
+        }
       });
+    } catch (error) {
+      console.error('Error submitting form:', error);
+      toast.error('Failed to submit quote request. Please try again.');
+    } finally {
       setSubmitting(false);
-      setFormData({
-        name: '',
-        company: '',
-        email: '',
-        phone: '',
-        serviceType: '',
-        hoursPerDay: '',
-        daysPerWeek: '',
-        language: '',
-        message: ''
-      });
-      setQuotePrice(null);
-    }, 1500);
+    }
   };
 
   return (
