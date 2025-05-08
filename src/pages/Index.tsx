@@ -7,6 +7,7 @@ import AIGuardianSection from '@/components/sections/AIGuardianSection';
 import CTASection from '@/components/sections/CTASection';
 import Footer from '@/components/Footer';
 import useScrollToTop from '@/hooks/useScrollToTop';
+import VideoEmbed from '@/components/VideoEmbed';
 
 const Index = () => {
   // Add the scroll to top hook
@@ -15,6 +16,7 @@ const Index = () => {
   return (
     <>
       <Navbar />
+      <VideoEmbed videoId="4_0Nx6GMLSk" />
       <Hero />
       <ServiceSection />
       <ClientModelSection />
