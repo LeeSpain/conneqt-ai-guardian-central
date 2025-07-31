@@ -8,6 +8,8 @@ import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import ServiceTierSelector from '@/components/solution/ServiceTierSelector';
 import VolumeCalculator from '@/components/solution/VolumeCalculator';
+import IndustryPreview from '@/components/solution/IndustryPreview';
+import TrustElements from '@/components/solution/TrustElements';
 
 const industries = [
   { 
@@ -167,6 +169,9 @@ const SolutionBuilder = () => {
                     ))}
                   </div>
                 </CardContent>
+                
+                {/* Industry-specific preview */}
+                {selectedIndustry && <IndustryPreview industry={selectedIndustry} />}
               </Card>
 
               {/* Volume Selection */}
@@ -234,6 +239,9 @@ const SolutionBuilder = () => {
                   </div>
                 </CardContent>
               </Card>
+
+              {/* Trust Elements */}
+              <TrustElements />
             </div>
 
             {/* Pricing Summary */}
