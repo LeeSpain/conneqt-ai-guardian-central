@@ -2,6 +2,7 @@
 import { 
   LayoutDashboard, 
   Users, 
+  UserCheck,
   Settings, 
   PhoneCall, 
   Globe, 
@@ -29,6 +30,7 @@ import { Link, useLocation } from "react-router-dom";
 const menuItems = [
   { title: "Dashboard", icon: LayoutDashboard, path: "/admin-dashboard" },
   { title: "Client Management", icon: Users, path: "/client-management" },
+  { title: "Team Management", icon: UserCheck, path: "/team-management" },
   { title: "Service Analytics", icon: BarChart3, path: "/call-center" },
   { title: "Reports", icon: FileText, path: "/platform-settings" },
 ];
