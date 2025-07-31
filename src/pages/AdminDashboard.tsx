@@ -1,15 +1,12 @@
-import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { DashboardLayout } from '@/components/layouts/DashboardLayout';
+import { DashboardHeader } from '@/components/dashboard/DashboardHeader';
+import { MetricCard } from '@/components/dashboard/MetricCard';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { 
   Users, 
   PhoneCall, 
-  ArrowUp, 
-  ArrowDown, 
-  LogOut, 
-  Home, 
   TrendingUp,
   CheckCircle,
   Clock,
@@ -18,26 +15,10 @@ import {
   UserCheck,
   Activity
 } from 'lucide-react';
-import { format } from 'date-fns';
 
 const AdminDashboard = () => {
   const navigate = useNavigate();
 
-  const handleLogout = () => {
-    navigate('/');
-  };
-
-  const handleHomepage = () => {
-    navigate('/');
-  };
-
-  const currentTime = new Date();
-  const timeOfDay = () => {
-    const hour = currentTime.getHours();
-    if (hour < 12) return "Good morning";
-    if (hour < 18) return "Good afternoon";
-    return "Good evening";
-  };
 
   // Business-focused metrics
   const businessMetrics = [
@@ -47,120 +28,66 @@ const AdminDashboard = () => {
       change: "+12%",
       trend: "up",
       icon: Users,
-      color: "text-blue-600",
-      bgColor: "bg-blue-50"
+      description: "Total client accounts"
     },
     {
-      title: "Service Calls Today",
+      title: "Service Requests",
       value: "89",
       change: "+23%",
       trend: "up",
       icon: PhoneCall,
-      color: "text-green-600",
-      bgColor: "bg-green-50"
+      description: "Today's completed services"
     },
     {
-      title: "Customer Satisfaction",
+      title: "Client Satisfaction",
       value: "96%",
       change: "+3%",
       trend: "up",
       icon: UserCheck,
-      color: "text-purple-600",
-      bgColor: "bg-purple-50"
+      description: "Average rating this month"
     },
     {
       title: "Monthly Revenue",
       value: "$23,450",
-      change: "-2%",
-      trend: "down",
+      change: "+8%",
+      trend: "up",
       icon: DollarSign,
-      color: "text-orange-600",
-      bgColor: "bg-orange-50"
+      description: "Recurring service revenue"
     }
   ];
 
   const recentActivity = [
-    { type: "New Client", message: "TechCorp Solutions joined our platform", time: "5 min ago", priority: "normal" },
-    { type: "Service Completed", message: "Call resolved for Widget Industries", time: "12 min ago", priority: "normal" },
-    { type: "Payment Received", message: "$2,300 payment from Global Systems", time: "1 hour ago", priority: "normal" },
-    { type: "Client Feedback", message: "5-star rating from DataFlow Inc.", time: "2 hours ago", priority: "positive" },
-    { type: "Service Issue", message: "Response needed for MegaTech support", time: "3 hours ago", priority: "attention" }
+    { type: "Client Onboarded", message: "MegaCorp Inc. successfully onboarded with premium package", time: "15 min ago", priority: "positive" },
+    { type: "Service Delivered", message: "Monthly analytics report delivered to TechFlow Solutions", time: "1 hour ago", priority: "normal" },
+    { type: "Payment Processed", message: "$4,200 subscription renewal from DataSync Corp", time: "2 hours ago", priority: "normal" },
+    { type: "Client Meeting", message: "Quarterly review scheduled with Global Industries", time: "3 hours ago", priority: "normal" },
+    { type: "Support Request", message: "Technical consultation requested by StartUp Ventures", time: "4 hours ago", priority: "attention" }
   ];
 
   const quickStats = [
-    { label: "Response Time", value: "< 2 min", icon: Clock },
-    { label: "Resolution Rate", value: "94%", icon: CheckCircle },
-    { label: "System Uptime", value: "99.9%", icon: Activity },
-    { label: "Open Tickets", value: "12", icon: AlertTriangle }
+    { label: "Avg Response Time", value: "< 30 min", icon: Clock },
+    { label: "Client Retention", value: "98%", icon: CheckCircle },
+    { label: "Service Delivery", value: "99.2%", icon: Activity },
+    { label: "Pending Reviews", value: "8", icon: AlertTriangle }
   ];
 
   return (
     <DashboardLayout>
-      <div className="min-h-screen bg-background p-6">
-        <div className="max-w-7xl mx-auto space-y-8">
-          {/* Header Section */}
-          <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4">
-            <div>
-              <h1 className="text-3xl font-bold text-foreground">
-                {timeOfDay()}, Admin
-              </h1>
-              <p className="text-muted-foreground mt-1">
-                {format(currentTime, "EEEE, MMMM do yyyy")}
-              </p>
-            </div>
-            
-            <div className="flex gap-3">
-              <Button 
-                onClick={handleHomepage} 
-                variant="outline" 
-                className="flex items-center gap-2"
-              >
-                <Home className="w-4 h-4" />
-                Homepage
-              </Button>
-              <Button 
-                onClick={handleLogout} 
-                variant="destructive" 
-                className="flex items-center gap-2"
-              >
-                <LogOut className="w-4 h-4" />
-                Logout
-              </Button>
-            </div>
-          </div>
-
+      <DashboardHeader />
+      <div className="min-h-screen bg-background">
+        <div className="max-w-7xl mx-auto p-6 space-y-8">
           {/* Key Business Metrics */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {businessMetrics.map((metric, index) => (
-              <Card key={index} className="border-border">
-                <CardContent className="p-6">
-                  <div className="flex items-center justify-between">
-                    <div className="space-y-2">
-                      <p className="text-sm font-medium text-muted-foreground">
-                        {metric.title}
-                      </p>
-                      <div className="flex items-center gap-2">
-                        <h3 className="text-2xl font-bold text-foreground">
-                          {metric.value}
-                        </h3>
-                        <span className={`text-sm flex items-center gap-1 ${
-                          metric.trend === 'up' ? 'text-green-600' : 'text-red-600'
-                        }`}>
-                          {metric.trend === 'up' ? (
-                            <ArrowUp className="w-3 h-3" />
-                          ) : (
-                            <ArrowDown className="w-3 h-3" />
-                          )}
-                          {metric.change}
-                        </span>
-                      </div>
-                    </div>
-                    <div className={`p-3 rounded-lg ${metric.bgColor}`}>
-                      <metric.icon className={`w-6 h-6 ${metric.color}`} />
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
+              <MetricCard
+                key={index}
+                title={metric.title}
+                value={metric.value}
+                change={metric.change}
+                trend={metric.trend as 'up' | 'down'}
+                icon={metric.icon}
+                description={metric.description}
+              />
             ))}
           </div>
 
