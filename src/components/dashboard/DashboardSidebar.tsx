@@ -32,7 +32,7 @@ const menuItems = [
   { title: "Client Management", icon: Users, path: "/client-management" },
   { title: "Team Management", icon: UserCheck, path: "/team-management" },
   { title: "Service Analytics", icon: BarChart3, path: "/call-center" },
-  { title: "Reports", icon: FileText, path: "/platform-settings" },
+  { title: "Reports", icon: FileText, path: "/reports" },
 ];
 
 export const DashboardSidebar = () => {

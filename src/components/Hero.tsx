@@ -24,6 +24,12 @@ const Hero = () => {
                 Build Your Solution <ArrowRight size={18} className="ml-2" />
               </Link>
               <Link 
+                to="/admin-dashboard" 
+                className="bg-conneqt-navy hover:bg-slate-800 text-white px-6 py-3 rounded-md font-medium transition-colors"
+              >
+                Access Dashboard
+              </Link>
+              <Link 
                 to="/ai-guardian" 
                 className="bg-white hover:bg-gray-50 text-conneqt-navy border border-conneqt-navy px-6 py-3 rounded-md font-medium transition-colors"
               >
