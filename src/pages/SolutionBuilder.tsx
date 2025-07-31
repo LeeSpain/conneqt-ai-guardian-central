@@ -2,7 +2,8 @@ import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { ArrowRight, Check, Users, Zap, Globe, Shield } from 'lucide-react';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { ArrowRight, Check, Users, Zap, Globe, Shield, Play, FileText, Settings } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
@@ -10,6 +11,9 @@ import ServiceTierSelector from '@/components/solution/ServiceTierSelector';
 import VolumeCalculator from '@/components/solution/VolumeCalculator';
 import IndustryPreview from '@/components/solution/IndustryPreview';
 import TrustElements from '@/components/solution/TrustElements';
+import DemoChat from '@/components/solution/DemoChat';
+import ProposalGenerator from '@/components/solution/ProposalGenerator';
+import IntegrationMarketplace from '@/components/solution/IntegrationMarketplace';
 
 const industries = [
   { 
@@ -78,6 +82,8 @@ const SolutionBuilder = () => {
   const [selectedFeatures, setSelectedFeatures] = useState<string[]>([]);
   const [selectedServiceTier, setSelectedServiceTier] = useState<string>('');
   const [callVolume, setCallVolume] = useState<number>(0);
+  const [activeTab, setActiveTab] = useState('industry');
+  const [selectedDemo, setSelectedDemo] = useState({ industry: '', scenario: '' });
 
   const calculatePrice = () => {
     if (!selectedIndustry || !selectedVolume) return 0;
@@ -119,21 +125,16 @@ const SolutionBuilder = () => {
             </p>
           </div>
 
-          <div className="grid lg:grid-cols-3 gap-8">
-            <div className="lg:col-span-2 space-y-8">
-              {/* Service Tier Selection */}
-              <ServiceTierSelector 
-                selectedTier={selectedServiceTier}
-                onTierSelect={setSelectedServiceTier}
-              />
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+            <TabsList className="grid w-full grid-cols-5">
+              <TabsTrigger value="industry">Industry</TabsTrigger>
+              <TabsTrigger value="service">Service Tier</TabsTrigger>
+              <TabsTrigger value="demo">Live Demo</TabsTrigger>
+              <TabsTrigger value="integrations">Integrations</TabsTrigger>
+              <TabsTrigger value="proposal">Get Proposal</TabsTrigger>
+            </TabsList>
 
-              {/* Call Volume Calculator */}
-              <VolumeCalculator 
-                selectedTier={selectedServiceTier}
-                onVolumeChange={setCallVolume}
-              />
-
-              {/* Industry Selection */}
+            <TabsContent value="industry" className="space-y-6">
               <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
@@ -169,161 +170,104 @@ const SolutionBuilder = () => {
                     ))}
                   </div>
                 </CardContent>
-                
-                {/* Industry-specific preview */}
-                {selectedIndustry && <IndustryPreview industry={selectedIndustry} />}
               </Card>
 
-              {/* Volume Selection */}
+              {selectedIndustry && <IndustryPreview industry={selectedIndustry} />}
+              
+              <div className="flex justify-center">
+                <Button onClick={() => setActiveTab('service')}>
+                  Continue to Service Tier <ArrowRight size={16} className="ml-2" />
+                </Button>
+              </div>
+            </TabsContent>
+
+            <TabsContent value="service" className="space-y-6">
+              <ServiceTierSelector 
+                selectedTier={selectedServiceTier}
+                onTierSelect={setSelectedServiceTier}
+              />
+              
+              <VolumeCalculator 
+                selectedTier={selectedServiceTier}
+                onVolumeChange={setCallVolume}
+              />
+              
+              <div className="flex justify-center gap-4">
+                <Button variant="outline" onClick={() => setActiveTab('industry')}>
+                  Back
+                </Button>
+                <Button onClick={() => setActiveTab('demo')}>
+                  Try Live Demo <Play size={16} className="ml-2" />
+                </Button>
+              </div>
+            </TabsContent>
+
+            <TabsContent value="demo" className="space-y-6">
               <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
-                    <Zap className="text-conneqt-blue" size={24} />
-                    Expected Call Volume
+                    <Play className="text-primary" size={24} />
+                    Try Live AI Demos
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="grid md:grid-cols-2 gap-4">
-                    {volumes.map((volume) => (
-                      <div
-                        key={volume.id}
-                        className={`p-4 border-2 rounded-lg cursor-pointer transition-all ${
-                          selectedVolume === volume.id
-                            ? 'border-conneqt-blue bg-blue-50'
-                            : 'border-gray-200 hover:border-gray-300'
-                        }`}
-                        onClick={() => setSelectedVolume(volume.id)}
+                  <div className="grid md:grid-cols-3 gap-4 mb-6">
+                    {['healthcare', 'ecommerce', 'saas'].map((industry) => (
+                      <Button
+                        key={industry}
+                        variant={selectedDemo.industry === industry ? "default" : "outline"}
+                        className="h-auto p-4 flex flex-col items-center"
+                        onClick={() => setSelectedDemo({ industry, scenario: 'Appointment Scheduling' })}
                       >
-                        <h3 className="font-semibold mb-1">{volume.name}</h3>
-                        <p className="text-sm text-gray-600">{volume.range}</p>
-                      </div>
+                        <span className="font-medium capitalize">{industry}</span>
+                        <span className="text-xs opacity-70">Try interactive demo</span>
+                      </Button>
                     ))}
                   </div>
-                </CardContent>
-              </Card>
-
-              {/* Features Selection */}
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Shield className="text-conneqt-blue" size={24} />
-                    Additional Features
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="grid md:grid-cols-2 gap-4">
-                    {features.map((feature) => (
-                      <div
-                        key={feature.id}
-                        className={`p-4 border-2 rounded-lg cursor-pointer transition-all ${
-                          selectedFeatures.includes(feature.id)
-                            ? 'border-conneqt-blue bg-blue-50'
-                            : 'border-gray-200 hover:border-gray-300'
-                        }`}
-                        onClick={() => toggleFeature(feature.id)}
-                      >
-                        <div className="flex items-start justify-between">
-                          <div>
-                            <h3 className="font-semibold mb-1">{feature.name}</h3>
-                            <p className="text-sm text-gray-600">{feature.description}</p>
-                            <p className="text-sm font-medium text-conneqt-blue mt-2">
-                              +€200/month
-                            </p>
-                          </div>
-                          {selectedFeatures.includes(feature.id) && (
-                            <Check className="text-conneqt-blue" size={20} />
-                          )}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
-
-              {/* Trust Elements */}
-              <TrustElements />
-            </div>
-
-            {/* Pricing Summary */}
-            <div className="lg:col-span-1">
-              <Card className="sticky top-24">
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Globe className="text-conneqt-blue" size={24} />
-                    Your Solution Summary
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  {selectedServiceTier && callVolume > 0 ? (
-                    <div className="space-y-4">
-                      <div className="p-4 bg-muted/50 rounded-lg">
-                        <h3 className="font-semibold mb-2">Selected Configuration</h3>
-                        <div className="space-y-1 text-sm">
-                          <p><strong>Service Level:</strong> {selectedServiceTier.charAt(0).toUpperCase() + selectedServiceTier.slice(1).replace('-', ' ')}</p>
-                          <p><strong>Monthly Calls:</strong> {callVolume.toLocaleString()}</p>
-                          {selectedIndustry && (
-                            <p><strong>Industry:</strong> {industries.find(i => i.id === selectedIndustry)?.name}</p>
-                          )}
-                          {selectedFeatures.length > 0 && (
-                            <p><strong>Add-ons:</strong> {selectedFeatures.length} selected</p>
-                          )}
-                        </div>
-                      </div>
-                      
-                      <div className="p-4 bg-primary/10 rounded-lg">
-                        <h3 className="font-semibold text-primary mb-2">Complete Solution Pricing</h3>
-                        <p className="text-3xl font-bold text-primary">
-                          €{calculatePrice().toLocaleString()}
-                        </p>
-                        <p className="text-sm text-muted-foreground mt-1">per month, includes everything</p>
-                        <div className="mt-2 text-xs text-muted-foreground">
-                          <p>✓ Setup & training included</p>
-                          <p>✓ No hidden fees</p>
-                          <p>✓ 30-day money-back guarantee</p>
-                        </div>
-                      </div>
-
-                      <div className="space-y-2">
-                        <Button className="w-full" asChild>
-                          <Link to="/quote">
-                            Get Detailed Proposal <ArrowRight size={16} className="ml-2" />
-                          </Link>
-                        </Button>
-                        <Button variant="outline" className="w-full" asChild>
-                          <Link to="/ai-guardian">
-                            Try AI Demo
-                          </Link>
-                        </Button>
-                        <Button variant="secondary" className="w-full" asChild>
-                          <Link to="/subscription-services">
-                            Compare All Plans
-                          </Link>
-                        </Button>
-                      </div>
-                    </div>
-                  ) : (
-                    <div className="text-center py-8">
-                      <p className="text-muted-foreground mb-4">
-                        Select service level and call volume to see pricing
-                      </p>
-                      <div className="space-y-2">
-                        <Button variant="outline" className="w-full" asChild>
-                          <Link to="/ai-guardian">
-                            Try AI Demo First
-                          </Link>
-                        </Button>
-                        <Button variant="secondary" className="w-full" asChild>
-                          <Link to="/subscription-services">
-                            View All Options
-                          </Link>
-                        </Button>
-                      </div>
-                    </div>
+                  
+                  {selectedDemo.industry && (
+                    <DemoChat 
+                      industry={selectedDemo.industry} 
+                      scenario={selectedDemo.scenario}
+                    />
                   )}
                 </CardContent>
               </Card>
-            </div>
-          </div>
+              
+              <div className="flex justify-center gap-4">
+                <Button variant="outline" onClick={() => setActiveTab('service')}>
+                  Back
+                </Button>
+                <Button onClick={() => setActiveTab('integrations')}>
+                  View Integrations <Settings size={16} className="ml-2" />
+                </Button>
+              </div>
+            </TabsContent>
+
+            <TabsContent value="integrations" className="space-y-6">
+              <IntegrationMarketplace />
+              
+              <div className="flex justify-center gap-4">
+                <Button variant="outline" onClick={() => setActiveTab('demo')}>
+                  Back
+                </Button>
+                <Button onClick={() => setActiveTab('proposal')}>
+                  Get Proposal <FileText size={16} className="ml-2" />
+                </Button>
+              </div>
+            </TabsContent>
+
+            <TabsContent value="proposal" className="space-y-6">
+              <ProposalGenerator 
+                initialData={{
+                  industry: selectedIndustry,
+                  monthlyVolume: callVolume,
+                  selectedTier: selectedServiceTier
+                }}
+              />
+              <TrustElements />
+            </TabsContent>
+          </Tabs>
         </div>
       </div>
       <Footer />
