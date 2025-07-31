@@ -10,6 +10,8 @@ import { Badge } from "@/components/ui/badge";
 import { Link } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import VoiceCallDemo from '@/components/solution/VoiceCallDemo';
+import LiveAnalytics from '@/components/solution/LiveAnalytics';
 import {
   MessageCircle,
   Bot,
@@ -30,7 +32,8 @@ import {
   Users,
   Rocket,
   Brain,
-  Shield
+  Shield,
+  Phone
 } from "lucide-react";
 
 const demoScenarios = [
@@ -330,149 +333,54 @@ const AIGuardian = () => {
                 </TabsContent>
                 
                 <TabsContent value="voice" className="mt-0">
-                  <Card className="h-[600px]">
-                    <CardHeader>
-                      <CardTitle className="text-lg flex items-center gap-2">
-                        <PhoneCall className="h-5 w-5 text-primary" />
-                        Voice AI Demonstration
-                      </CardTitle>
-                      <CardDescription>
-                        Experience natural voice conversations with AI
-                      </CardDescription>
-                    </CardHeader>
-                    <CardContent className="flex flex-col items-center justify-center h-[480px]">
-                      <div className="mb-8 text-center">
-                        <div className="w-24 h-24 rounded-full bg-primary/10 flex items-center justify-center mb-4 mx-auto">
-                          <Mic className="h-12 w-12 text-primary" />
+                  <div className="space-y-6">
+                    <VoiceCallDemo 
+                      scenario="customer-support"
+                      industry={selectedScenario.id || 'healthcare'}
+                    />
+                    
+                    <Card>
+                      <CardHeader>
+                        <CardTitle className="text-lg flex items-center gap-2">
+                          <PhoneCall className="h-5 w-5 text-primary" />
+                          Voice AI Capabilities
+                        </CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <div className="grid md:grid-cols-3 gap-4">
+                          <div className="text-center p-4 bg-muted/50 rounded-lg">
+                            <Zap className="w-8 h-8 text-primary mx-auto mb-3" />
+                            <h4 className="font-medium mb-2">Ultra-Fast Processing</h4>
+                            <p className="text-sm text-muted-foreground">Sub-second response times with natural speech patterns</p>
+                          </div>
+                          <div className="text-center p-4 bg-muted/50 rounded-lg">
+                            <Globe className="w-8 h-8 text-primary mx-auto mb-3" />
+                            <h4 className="font-medium mb-2">Global Language Support</h4>
+                            <p className="text-sm text-muted-foreground">25+ languages with cultural context awareness</p>
+                          </div>
+                          <div className="text-center p-4 bg-muted/50 rounded-lg">
+                            <Brain className="w-8 h-8 text-primary mx-auto mb-3" />
+                            <h4 className="font-medium mb-2">Context Memory</h4>
+                            <p className="text-sm text-muted-foreground">Remembers conversation history and customer preferences</p>
+                          </div>
                         </div>
-                        <h3 className="text-lg font-medium">AI Voice Assistant</h3>
-                        <p className="text-muted-foreground mt-1 mb-4">Experience human-like voice interactions</p>
                         
-                        <div className="grid md:grid-cols-3 gap-4 mb-6">
-                          <div className="text-center p-3 bg-muted/50 rounded-lg">
-                            <Zap className="w-6 h-6 text-primary mx-auto mb-2" />
-                            <div className="text-sm font-medium">Sub-second Response</div>
-                            <div className="text-xs text-muted-foreground">Real-time processing</div>
-                          </div>
-                          <div className="text-center p-3 bg-muted/50 rounded-lg">
-                            <Globe className="w-6 h-6 text-primary mx-auto mb-2" />
-                            <div className="text-sm font-medium">25+ Languages</div>
-                            <div className="text-xs text-muted-foreground">Multilingual support</div>
-                          </div>
-                          <div className="text-center p-3 bg-muted/50 rounded-lg">
-                            <Brain className="w-6 h-6 text-primary mx-auto mb-2" />
-                            <div className="text-sm font-medium">Context Aware</div>
-                            <div className="text-xs text-muted-foreground">Remembers conversation</div>
-                          </div>
+                        <div className="mt-6 text-center">
+                          <Button size="lg" className="mr-3">
+                            <Phone className="w-5 h-5 mr-2" />
+                            Try Live Voice Demo
+                          </Button>
+                          <Button variant="outline" size="lg">
+                            Schedule Voice Call Test
+                          </Button>
                         </div>
-                      </div>
-                      
-                      <div className="space-y-3">
-                        <Button size="lg" className="gap-2 w-full">
-                          <Mic className="h-5 w-5" />
-                          Start Voice Demo
-                        </Button>
-                        <Button variant="outline" size="lg" className="gap-2 w-full">
-                          <PhoneCall className="h-5 w-5" />
-                          Try Phone Call Demo
-                        </Button>
-                      </div>
-                    </CardContent>
-                  </Card>
+                      </CardContent>
+                    </Card>
+                  </div>
                 </TabsContent>
                 
                 <TabsContent value="analytics" className="mt-0">
-                  <Card className="h-[600px]">
-                    <CardHeader>
-                      <CardTitle className="text-lg flex items-center gap-2">
-                        <BarChart3 className="h-5 w-5 text-primary" />
-                        Real-Time Performance Analytics
-                      </CardTitle>
-                      <CardDescription>
-                        Live metrics from our AI Guardian platform
-                      </CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="grid grid-cols-2 gap-4 mb-6">
-                        <div className="bg-background p-4 rounded-lg border">
-                          <h4 className="text-sm font-medium text-muted-foreground mb-1">Resolution Rate</h4>
-                          <div className="text-2xl font-bold text-primary">96.8%</div>
-                          <div className="h-2 bg-muted rounded mt-2">
-                            <div className="h-full bg-primary rounded" style={{ width: "96.8%" }}></div>
-                          </div>
-                          <div className="flex items-center text-green-600 text-xs mt-2">
-                            <CheckCircle2 className="w-3 h-3 mr-1" /> Above industry standard
-                          </div>
-                        </div>
-                        <div className="bg-background p-4 rounded-lg border">
-                          <h4 className="text-sm font-medium text-muted-foreground mb-1">Response Time</h4>
-                          <div className="text-2xl font-bold text-primary">0.8s</div>
-                          <div className="flex items-center text-green-600 text-xs mt-2">
-                            <CheckCircle2 className="w-3 h-3 mr-1" /> Excellent performance
-                          </div>
-                        </div>
-                        <div className="bg-background p-4 rounded-lg border">
-                          <h4 className="text-sm font-medium text-muted-foreground mb-1">Human Escalations</h4>
-                          <div className="text-2xl font-bold text-primary">3.2%</div>
-                          <div className="flex items-center text-green-600 text-xs mt-2">
-                            <CheckCircle2 className="w-3 h-3 mr-1" /> Below 5% target
-                          </div>
-                        </div>
-                        <div className="bg-background p-4 rounded-lg border">
-                          <h4 className="text-sm font-medium text-muted-foreground mb-1">Customer Satisfaction</h4>
-                          <div className="text-2xl font-bold text-primary">4.9/5</div>
-                          <div className="flex items-center text-green-600 text-xs mt-2">
-                            <CheckCircle2 className="w-3 h-3 mr-1" /> Exceeds expectations
-                          </div>
-                        </div>
-                      </div>
-
-                      <h4 className="font-medium mb-3">Channel Performance</h4>
-                      <div className="bg-background p-4 rounded-lg border mb-4">
-                        <div className="space-y-4">
-                          <div className="flex justify-between items-center">
-                            <span className="text-sm">Live Chat</span>
-                            <div className="w-2/3 bg-muted h-2 rounded-full overflow-hidden">
-                              <div className="bg-primary h-full rounded-full" style={{ width: "82%" }}></div>
-                            </div>
-                            <span className="text-sm font-medium">82%</span>
-                          </div>
-                          <div className="flex justify-between items-center">
-                            <span className="text-sm">Voice Calls</span>
-                            <div className="w-2/3 bg-muted h-2 rounded-full overflow-hidden">
-                              <div className="bg-blue-500 h-full rounded-full" style={{ width: "67%" }}></div>
-                            </div>
-                            <span className="text-sm font-medium">67%</span>
-                          </div>
-                          <div className="flex justify-between items-center">
-                            <span className="text-sm">Email Support</span>
-                            <div className="w-2/3 bg-muted h-2 rounded-full overflow-hidden">
-                              <div className="bg-green-500 h-full rounded-full" style={{ width: "94%" }}></div>
-                            </div>
-                            <span className="text-sm font-medium">94%</span>
-                          </div>
-                          <div className="flex justify-between items-center">
-                            <span className="text-sm">Social Media</span>
-                            <div className="w-2/3 bg-muted h-2 rounded-full overflow-hidden">
-                              <div className="bg-purple-500 h-full rounded-full" style={{ width: "71%" }}></div>
-                            </div>
-                            <span className="text-sm font-medium">71%</span>
-                          </div>
-                        </div>
-                      </div>
-
-                      <div className="grid md:grid-cols-2 gap-4">
-                        <div className="bg-primary/5 p-3 rounded-lg border">
-                          <div className="text-sm font-medium mb-1">Daily Interactions</div>
-                          <div className="text-xl font-bold text-primary">12,847</div>
-                        </div>
-                        <div className="bg-green-50 p-3 rounded-lg border">
-                          <div className="text-sm font-medium mb-1">Cost Savings</div>
-                          <div className="text-xl font-bold text-green-600">€24,500/mo</div>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
+                  <LiveAnalytics />
                 </TabsContent>
               </Tabs>
             </div>
