@@ -6,6 +6,8 @@ import { ArrowRight, Check, Users, Zap, Globe, Shield } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
+import ServiceTierSelector from '@/components/solution/ServiceTierSelector';
+import VolumeCalculator from '@/components/solution/VolumeCalculator';
 
 const industries = [
   { 
@@ -72,6 +74,8 @@ const SolutionBuilder = () => {
   const [selectedIndustry, setSelectedIndustry] = useState<string>('');
   const [selectedVolume, setSelectedVolume] = useState<string>('');
   const [selectedFeatures, setSelectedFeatures] = useState<string[]>([]);
+  const [selectedServiceTier, setSelectedServiceTier] = useState<string>('');
+  const [callVolume, setCallVolume] = useState<number>(0);
 
   const calculatePrice = () => {
     if (!selectedIndustry || !selectedVolume) return 0;
@@ -104,17 +108,29 @@ const SolutionBuilder = () => {
           <div className="text-center mb-12">
             <h1 className="text-4xl font-bold mb-4">
               <span className="bg-gradient-to-r from-conneqt-blue to-blue-600 bg-clip-text text-transparent">
-                Build Your AI Call Center Solution
+                Build Your Complete Customer Service Solution
               </span>
             </h1>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Customize your AI-powered customer service platform with industry-specific templates, 
-              volume-based pricing, and advanced features tailored to your business needs.
+              Choose from AI-only automation, hybrid AI+human support, or full-service outsourcing. 
+              Get industry-specific templates, transparent pricing, and seamless integrations.
             </p>
           </div>
 
           <div className="grid lg:grid-cols-3 gap-8">
             <div className="lg:col-span-2 space-y-8">
+              {/* Service Tier Selection */}
+              <ServiceTierSelector 
+                selectedTier={selectedServiceTier}
+                onTierSelect={setSelectedServiceTier}
+              />
+
+              {/* Call Volume Calculator */}
+              <VolumeCalculator 
+                selectedTier={selectedServiceTier}
+                onVolumeChange={setCallVolume}
+              />
+
               {/* Industry Selection */}
               <Card>
                 <CardHeader>
@@ -230,35 +246,39 @@ const SolutionBuilder = () => {
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  {selectedIndustry && selectedVolume ? (
+                  {selectedServiceTier && callVolume > 0 ? (
                     <div className="space-y-4">
-                      <div className="p-4 bg-gray-50 rounded-lg">
+                      <div className="p-4 bg-muted/50 rounded-lg">
                         <h3 className="font-semibold mb-2">Selected Configuration</h3>
-                        <p className="text-sm">
-                          <strong>Industry:</strong> {industries.find(i => i.id === selectedIndustry)?.name}
-                        </p>
-                        <p className="text-sm">
-                          <strong>Volume:</strong> {volumes.find(v => v.id === selectedVolume)?.name}
-                        </p>
-                        {selectedFeatures.length > 0 && (
-                          <p className="text-sm">
-                            <strong>Features:</strong> {selectedFeatures.length} selected
-                          </p>
-                        )}
+                        <div className="space-y-1 text-sm">
+                          <p><strong>Service Level:</strong> {selectedServiceTier.charAt(0).toUpperCase() + selectedServiceTier.slice(1).replace('-', ' ')}</p>
+                          <p><strong>Monthly Calls:</strong> {callVolume.toLocaleString()}</p>
+                          {selectedIndustry && (
+                            <p><strong>Industry:</strong> {industries.find(i => i.id === selectedIndustry)?.name}</p>
+                          )}
+                          {selectedFeatures.length > 0 && (
+                            <p><strong>Add-ons:</strong> {selectedFeatures.length} selected</p>
+                          )}
+                        </div>
                       </div>
                       
-                      <div className="p-4 bg-conneqt-blue bg-opacity-10 rounded-lg">
-                        <h3 className="font-semibold text-conneqt-blue mb-2">Estimated Monthly Cost</h3>
-                        <p className="text-3xl font-bold text-conneqt-blue">
+                      <div className="p-4 bg-primary/10 rounded-lg">
+                        <h3 className="font-semibold text-primary mb-2">Complete Solution Pricing</h3>
+                        <p className="text-3xl font-bold text-primary">
                           €{calculatePrice().toLocaleString()}
                         </p>
-                        <p className="text-sm text-gray-600 mt-1">per month, billed monthly</p>
+                        <p className="text-sm text-muted-foreground mt-1">per month, includes everything</p>
+                        <div className="mt-2 text-xs text-muted-foreground">
+                          <p>✓ Setup & training included</p>
+                          <p>✓ No hidden fees</p>
+                          <p>✓ 30-day money-back guarantee</p>
+                        </div>
                       </div>
 
                       <div className="space-y-2">
                         <Button className="w-full" asChild>
                           <Link to="/quote">
-                            Get Detailed Quote <ArrowRight size={16} className="ml-2" />
+                            Get Detailed Proposal <ArrowRight size={16} className="ml-2" />
                           </Link>
                         </Button>
                         <Button variant="outline" className="w-full" asChild>
@@ -266,17 +286,27 @@ const SolutionBuilder = () => {
                             Try AI Demo
                           </Link>
                         </Button>
+                        <Button variant="secondary" className="w-full" asChild>
+                          <Link to="/subscription-services">
+                            Compare All Plans
+                          </Link>
+                        </Button>
                       </div>
                     </div>
                   ) : (
                     <div className="text-center py-8">
-                      <p className="text-gray-500 mb-4">
-                        Select your industry and call volume to see pricing
+                      <p className="text-muted-foreground mb-4">
+                        Select service level and call volume to see pricing
                       </p>
                       <div className="space-y-2">
                         <Button variant="outline" className="w-full" asChild>
                           <Link to="/ai-guardian">
                             Try AI Demo First
+                          </Link>
+                        </Button>
+                        <Button variant="secondary" className="w-full" asChild>
+                          <Link to="/subscription-services">
+                            View All Options
                           </Link>
                         </Button>
                       </div>

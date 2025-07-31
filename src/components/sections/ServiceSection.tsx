@@ -4,36 +4,36 @@ import ServiceCard from '@/components/ServiceCard';
 
 const services = [
   {
-    title: "AI Agent Platform",
-    description: "Deploy intelligent AI agents that handle customer inquiries autonomously across all channels.",
+    title: "AI-Only Automation",
+    description: "Fully automated AI agents handling customer inquiries 24/7 with natural language processing and multi-channel support.",
     icon: <Brain size={24} />,
     color: "bg-blue-500",
     delay: 100
   },
   {
-    title: "White-Label Solutions",
-    description: "Complete rebrandable platform with your logo, colors, and custom domain for seamless integration.",
-    icon: <Settings size={24} />,
+    title: "AI + Human Hybrid",
+    description: "Smart AI agents with seamless escalation to trained human agents when complex issues require personal touch.",
+    icon: <Users size={24} />,
     color: "bg-purple-500",
     delay: 200
   },
   {
-    title: "Multi-Industry Templates",
-    description: "Pre-built solutions for healthcare, e-commerce, SaaS, finance, and more with industry-specific workflows.",
-    icon: <Users size={24} />,
+    title: "Full-Service Outsourcing",
+    description: "Complete customer service outsourcing with dedicated teams, account management, and custom workflows.",
+    icon: <Settings size={24} />,
     color: "bg-pink-500",
     delay: 300
   },
   {
     title: "Enterprise Integration",
-    description: "Seamless connections to CRM, helpdesk, e-commerce platforms, and existing business systems.",
+    description: "Seamless connections to CRM, helpdesk, e-commerce platforms, and existing business systems across all service levels.",
     icon: <Database size={24} />,
     color: "bg-green-500",
     delay: 400
   },
   {
-    title: "Multilingual Support",
-    description: "Native support for English, Spanish, and Dutch with natural conversation flows and cultural context.",
+    title: "White-Label Platform",
+    description: "Complete rebrandable solution with your logo, colors, and custom domain - available across all service tiers.",
     icon: <MessageCircle size={24} />,
     color: "bg-indigo-500",
     delay: 500
@@ -47,11 +47,11 @@ const ServiceSection = () => {
         <div className="text-center mb-16">
           <h2 className="text-4xl font-bold mb-6">
             <span className="bg-gradient-to-r from-conneqt-blue via-blue-500 to-blue-600 bg-clip-text text-transparent">
-              Complete AI Call Center Platform
+              Complete Customer Service Solutions
             </span>
           </h2>
           <p className="text-conneqt-slate text-lg max-w-2xl mx-auto">
-            Everything you need to launch and scale your own AI-powered customer service business.
+            From AI-only automation to full-service outsourcing - choose the perfect solution for your business needs.
           </p>
         </div>
         
