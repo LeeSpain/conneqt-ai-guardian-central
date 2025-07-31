@@ -1,40 +1,40 @@
 
-import { MessageCircle, Bell, Phone, Database, Brain } from 'lucide-react';
+import { MessageCircle, Settings, Users, Database, Brain } from 'lucide-react';
 import ServiceCard from '@/components/ServiceCard';
 
 const services = [
   {
-    title: "Multilingual Customer Support",
-    description: "Phone, email, and live chat support handled by human staff in English, Spanish, and Dutch.",
-    icon: <MessageCircle size={24} />,
+    title: "AI Agent Platform",
+    description: "Deploy intelligent AI agents that handle customer inquiries autonomously across all channels.",
+    icon: <Brain size={24} />,
     color: "bg-blue-500",
     delay: 100
   },
   {
-    title: "Device Monitoring & Notifications",
-    description: "Alerts for glucose, medication, and smart devices with photo verification and escalation workflows.",
-    icon: <Bell size={24} />,
+    title: "White-Label Solutions",
+    description: "Complete rebrandable platform with your logo, colors, and custom domain for seamless integration.",
+    icon: <Settings size={24} />,
     color: "bg-purple-500",
     delay: 200
   },
   {
-    title: "Emergency & Welfare Calling",
-    description: "Scheduled well-being check-in calls, comfort call workflows, and emergency response.",
-    icon: <Phone size={24} />,
+    title: "Multi-Industry Templates",
+    description: "Pre-built solutions for healthcare, e-commerce, SaaS, finance, and more with industry-specific workflows.",
+    icon: <Users size={24} />,
     color: "bg-pink-500",
     delay: 300
   },
   {
-    title: "CRM & Data Management",
-    description: "Updating records, tracking interactions, and secure, GDPR-compliant data handling.",
+    title: "Enterprise Integration",
+    description: "Seamless connections to CRM, helpdesk, e-commerce platforms, and existing business systems.",
     icon: <Database size={24} />,
     color: "bg-green-500",
     delay: 400
   },
   {
-    title: "AI Guardian Assistant",
-    description: "Real-time insights, smart summaries, and automated alerts in English, Spanish, and Dutch.",
-    icon: <Brain size={24} />,
+    title: "Multilingual Support",
+    description: "Native support for English, Spanish, and Dutch with natural conversation flows and cultural context.",
+    icon: <MessageCircle size={24} />,
     color: "bg-indigo-500",
     delay: 500
   }
@@ -47,11 +47,11 @@ const ServiceSection = () => {
         <div className="text-center mb-16">
           <h2 className="text-4xl font-bold mb-6">
             <span className="bg-gradient-to-r from-conneqt-blue via-blue-500 to-blue-600 bg-clip-text text-transparent">
-              Our Core Services
+              Complete AI Call Center Platform
             </span>
           </h2>
           <p className="text-conneqt-slate text-lg max-w-2xl mx-auto">
-            Comprehensive multilingual customer service solutions tailored to your business needs.
+            Everything you need to launch and scale your own AI-powered customer service business.
           </p>
         </div>
         

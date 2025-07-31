@@ -8,11 +8,11 @@ const AIGuardianSection = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid md:grid-cols-2 gap-12 items-center">
           <div>
-            <h2 className="mb-6 text-white">AI Agent Platform</h2>
+            <h2 className="mb-6 text-white">Multi-Industry AI Agents</h2>
             <p className="text-lg text-blue-100 mb-8">
-              Transform your customer service with our autonomous AI Agent platform. 
-              Seamlessly handle customer interactions across multiple channels while 
-              maintaining complete control and oversight.
+              Deploy specialized AI agents across any industry. From healthcare to e-commerce, 
+              our platform adapts to your business needs with industry-specific knowledge 
+              and customizable workflows.
             </p>
             
             <ul className="space-y-6 mb-8">

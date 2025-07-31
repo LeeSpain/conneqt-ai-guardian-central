@@ -10,24 +10,24 @@ const Hero = () => {
         <div className="grid lg:grid-cols-2 gap-10 items-center">
           <div className="animate-fade-in">
             <h1 className="mb-6">
-              <span className="text-conneqt-blue">AI-Powered</span> Customer Service Platform: <span className="text-conneqt-blue">The Future of Support</span>
+              <span className="text-conneqt-blue">White-Label AI Call Center</span> Solutions: <span className="text-conneqt-blue">Your Business, Our Technology</span>
             </h1>
             <p className="text-xl text-conneqt-slate mb-8 max-w-lg">
-              Fully Autonomous AI Customer Service with Human Oversight in English, Spanish, and Dutch with 
-              seamless integration to your existing business systems.
+              Launch your own AI-powered call center service in any industry. Complete platform, custom branding, 
+              multilingual support - everything you need to offer cutting-edge customer service solutions.
             </p>
             <div className="flex flex-wrap gap-4">
               <Link 
-                to="/quote" 
+                to="/solution-builder" 
                 className="bg-conneqt-blue hover:bg-blue-500 text-white px-6 py-3 rounded-md font-medium transition-colors flex items-center"
               >
-                Request a Quote <ArrowRight size={18} className="ml-2" />
+                Build Your Solution <ArrowRight size={18} className="ml-2" />
               </Link>
               <Link 
                 to="/ai-guardian" 
                 className="bg-white hover:bg-gray-50 text-conneqt-navy border border-conneqt-navy px-6 py-3 rounded-md font-medium transition-colors"
               >
-                AI Agent Demo
+                Try AI Demo
               </Link>
             </div>
           </div>
