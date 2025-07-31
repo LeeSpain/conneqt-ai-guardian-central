@@ -1,5 +1,8 @@
-import { useState } from 'react';
-import { Client, Ticket } from '@/types/client';
+import { DashboardLayout } from "@/components/layouts/DashboardLayout";
+import { useState } from "react";
+import { Client, Ticket } from "@/types/client";
+import { UserProvider } from "@/contexts/UserContext";
+import { useUserRole } from "@/hooks/useUserRole";
 import { ConnectBusinessDialog } from '@/components/client/ConnectBusinessDialog';
 import { BusinessDetails } from '@/components/client/BusinessDetails';
 import { ClientList } from '@/components/client/ClientList';
@@ -7,12 +10,11 @@ import { TicketList } from '@/components/client/TicketList';
 import { ClientContactInfo } from '@/components/client/ClientContactInfo';
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog";
 import { LockIcon, Users, Check, Settings } from 'lucide-react';
 import { Input } from "@/components/ui/input";
-import { DashboardLayout } from '@/components/layouts/DashboardLayout';
 
 // Mock data for clients
 const mockClients: Client[] = [
@@ -50,7 +52,8 @@ const mockTickets: Ticket[] = [
   { id: 111, clientId: 5, subject: "Bug report", status: "Closed", priority: "Medium", created: "2 weeks ago" },
 ];
 
-const ClientManagement = () => {
+function ClientManagementContent() {
+  const { canAccessFeature, hasPermission } = useUserRole();
   const { toast } = useToast();
   
   // State management
@@ -60,6 +63,21 @@ const ClientManagement = () => {
   const [newClientData, setNewClientData] = useState({ name: '', email: '' });
   const [subscriptionTier, setSubscriptionTier] = useState<'starter' | 'professional' | 'enterprise'>('starter');
   const [isConnectBusinessOpen, setIsConnectBusinessOpen] = useState(false);
+
+  if (!canAccessFeature('clients')) {
+    return (
+      <div className="flex items-center justify-center h-96">
+        <Card className="w-full max-w-md text-center">
+          <CardHeader>
+            <CardTitle>Access Restricted</CardTitle>
+            <CardDescription>
+              You don't have permission to access client management. Contact your administrator for access.
+            </CardDescription>
+          </CardHeader>
+        </Card>
+      </div>
+    );
+  }
   
   // Event handlers
   const changeSubscriptionTier = (tier: 'starter' | 'professional' | 'enterprise') => {
@@ -71,6 +89,15 @@ const ClientManagement = () => {
   };
 
   const handleAddClient = () => {
+    if (!hasPermission('canEditClients')) {
+      toast({
+        title: "Permission denied",
+        description: "You don't have permission to add clients.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     if (!newClientData.name || !newClientData.email) {
       toast({
         title: "Validation Error",
@@ -99,15 +126,19 @@ const ClientManagement = () => {
   };
 
   const handleDeleteClient = (clientId: number) => {
-    // In a real app, you'd want a confirmation dialog here
+    if (!hasPermission('canDeleteClients')) {
+      toast({
+        title: "Permission denied",
+        description: "You don't have permission to delete clients.",
+        variant: "destructive",
+      });
+      return;
+    }
     setClients(clients.filter(client => client.id !== clientId));
-    
-    // Also remove associated tickets
     setTickets(tickets.filter(ticket => ticket.clientId !== clientId));
-    
     toast({
-      title: "Client Deleted",
-      description: "The client has been removed from your account.",
+      title: "Client deleted",
+      description: "Client and associated tickets have been removed.",
     });
   };
 
@@ -199,7 +230,7 @@ const ClientManagement = () => {
                     </div>
                     <Dialog>
                       <DialogTrigger asChild>
-                        <Button>Add Client</Button>
+                        <Button disabled={!hasPermission('canEditClients')}>Add Client</Button>
                       </DialogTrigger>
                       <DialogContent>
                         <DialogHeader>
@@ -381,6 +412,12 @@ const ClientManagement = () => {
       />
     </DashboardLayout>
   );
-};
+}
 
-export default ClientManagement;
+export default function ClientManagement() {
+  return (
+    <UserProvider>
+      <ClientManagementContent />
+    </UserProvider>
+  );
+}

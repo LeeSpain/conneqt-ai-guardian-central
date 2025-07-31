@@ -3,6 +3,7 @@ import { useState } from "react";
 import { Client } from "@/types/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { useUserRole } from "@/hooks/useUserRole";
 import {
   Table,
   TableBody,
@@ -50,6 +51,7 @@ export const ClientList = ({
   onConnectBusiness,
 }: ClientListProps) => {
   const [searchQuery, setSearchQuery] = useState('');
+  const { hasPermission } = useUserRole();
 
   const filteredClients = clients.filter(client => 
     client.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
@@ -163,7 +165,11 @@ export const ClientList = ({
                           </>
                         )}
                         <DropdownMenuSeparator />
-                        <DropdownMenuItem onClick={() => onDeleteClient(client.id)} className="text-red-600 cursor-pointer">
+                        <DropdownMenuItem 
+                          onClick={() => onDeleteClient(client.id)} 
+                          className="text-red-600 cursor-pointer"
+                          disabled={!hasPermission('canDeleteClients')}
+                        >
                           <Trash className="mr-2 h-4 w-4" />
                           Delete Client
                         </DropdownMenuItem>

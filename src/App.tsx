@@ -13,6 +13,8 @@ import QuoteConfirmation from "./pages/QuoteConfirmation";
 import AdminDashboard from "./pages/AdminDashboard";
 import HealthcareDashboard from "./pages/HealthcareDashboard";
 import ClientManagement from "./pages/ClientManagement";
+import TeamManagement from "./pages/TeamManagement";
+import Reports from "./pages/Reports";
 import CallCenter from "./pages/CallCenter";
 import PlatformSettings from "./pages/PlatformSettings";
 import WebsiteIntegration from "./pages/WebsiteIntegration";
@@ -35,6 +37,8 @@ const AppRoutes = () => {
       <Route path="/admin-dashboard" element={<AdminDashboard />} />
       <Route path="/healthcare-dashboard" element={<HealthcareDashboard />} />
       <Route path="/client-management" element={<ClientManagement />} />
+      <Route path="/team-management" element={<TeamManagement />} />
+      <Route path="/reports" element={<Reports />} />
       <Route path="/call-center" element={<CallCenter />} />
       <Route path="/platform-settings" element={<PlatformSettings />} />
       <Route path="/website-integration" element={<WebsiteIntegration />} />
