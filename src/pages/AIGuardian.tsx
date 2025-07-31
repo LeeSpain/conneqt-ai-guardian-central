@@ -1,12 +1,15 @@
 
 import { useState, useRef, useEffect } from "react";
-import { DashboardLayout } from "@/components/layouts/DashboardLayout";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
+import { Badge } from "@/components/ui/badge";
+import { Link } from "react-router-dom";
+import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
 import {
   MessageCircle,
   Bot,
@@ -17,24 +20,69 @@ import {
   Globe,
   Settings,
   FileText,
-  LayoutDashboard,
-  Layers,
   AlertCircle,
   CheckCircle2,
-  XCircle
+  XCircle,
+  Play,
+  ArrowRight,
+  Target,
+  Zap,
+  Users,
+  Rocket,
+  Brain,
+  Shield
 } from "lucide-react";
+
+const demoScenarios = [
+  {
+    id: 'healthcare',
+    name: 'Healthcare Assistant',
+    description: 'HIPAA-compliant patient support',
+    icon: '🏥',
+    messages: [
+      { role: "ai", content: "Hello! I'm your AI healthcare assistant. I can help with appointment scheduling, prescription inquiries, and general health questions. How can I assist you today?" },
+      { role: "user", content: "I need to schedule an appointment with Dr. Smith for next week" },
+      { role: "ai", content: "I'd be happy to help you schedule with Dr. Smith. I see he has availability on Tuesday at 2:30 PM and Thursday at 10:15 AM next week. Which would work better for you?" },
+      { role: "user", content: "Tuesday works great" },
+      { role: "ai", content: "Perfect! I've scheduled your appointment with Dr. Smith for Tuesday at 2:30 PM. You'll receive a confirmation email shortly with pre-visit instructions and forms to complete online." }
+    ]
+  },
+  {
+    id: 'ecommerce',
+    name: 'E-commerce Support',
+    description: 'Order tracking and product support',
+    icon: '🛍️',
+    messages: [
+      { role: "ai", content: "Hi! I'm your e-commerce support assistant. I can help with order tracking, returns, product information, and account questions. What can I help you with?" },
+      { role: "user", content: "Where is my order #12345?" },
+      { role: "ai", content: "Let me check that for you! Order #12345 is currently out for delivery and should arrive by 3 PM today. You'll receive a text notification when it's 2-3 stops away. Is this the correct delivery address: 123 Main St?" },
+      { role: "user", content: "Yes, that's correct. Thank you!" },
+      { role: "ai", content: "You're welcome! Your package should arrive soon. If you have any issues with delivery or need to make changes, just let me know. Is there anything else I can help you with today?" }
+    ]
+  },
+  {
+    id: 'saas',
+    name: 'SaaS Technical Support',
+    description: 'API help and user onboarding',
+    icon: '💻',
+    messages: [
+      { role: "ai", content: "Hello! I'm your technical support AI. I can help with API integration, troubleshooting, feature explanations, and account setup. What technical challenge are you facing?" },
+      { role: "user", content: "I'm getting a 429 error when calling your API" },
+      { role: "ai", content: "A 429 error indicates you've hit the rate limit. I can see you're on the Starter plan with 1,000 requests per hour. You can upgrade to Pro for 10,000/hour, or I can temporarily increase your limit. Would you like me to upgrade you or provide a temporary increase?" },
+      { role: "user", content: "Can you upgrade me to Pro?" },
+      { role: "ai", content: "Absolutely! I've upgraded your account to Pro. Your new rate limit is 10,000 requests per hour, and you now have access to priority support and advanced analytics. The change is effective immediately." }
+    ]
+  }
+];
 
 const AIGuardian = () => {
   const [message, setMessage] = useState("");
   const [isSpeaking, setIsSpeaking] = useState(false);
-  const [activeTab, setActiveTab] = useState("chat");
-  const [messages, setMessages] = useState([
-    {
-      role: "ai",
-      content: "Hello! I'm the AI Guardian assistant. How can I help you today?",
-      timestamp: new Date()
-    }
-  ]);
+  const [activeTab, setActiveTab] = useState("demo");
+  const [selectedScenario, setSelectedScenario] = useState(demoScenarios[0]);
+  const [currentMessageIndex, setCurrentMessageIndex] = useState(0);
+  const [isTyping, setIsTyping] = useState(false);
+  const [messages, setMessages] = useState(selectedScenario.messages.slice(0, 1));
   
   const messagesEndRef = useRef(null);
   
@@ -46,138 +94,229 @@ const AIGuardian = () => {
     scrollToBottom();
   }, [messages]);
 
+  const playNextMessage = () => {
+    if (currentMessageIndex < selectedScenario.messages.length - 1) {
+      setIsTyping(true);
+      setTimeout(() => {
+        const nextIndex = currentMessageIndex + 1;
+        setMessages(selectedScenario.messages.slice(0, nextIndex + 1));
+        setCurrentMessageIndex(nextIndex);
+        setIsTyping(false);
+      }, 1500);
+    }
+  };
+
+  const resetDemo = () => {
+    setMessages(selectedScenario.messages.slice(0, 1));
+    setCurrentMessageIndex(0);
+    setIsTyping(false);
+  };
+
+  const selectScenario = (scenario: any) => {
+    setSelectedScenario(scenario);
+    setMessages(scenario.messages.slice(0, 1));
+    setCurrentMessageIndex(0);
+    setIsTyping(false);
+  };
+
   const handleSendMessage = () => {
     if (!message.trim()) return;
-    
-    // Add user message
-    setMessages([
-      ...messages,
-      {
-        role: "user",
-        content: message,
-        timestamp: new Date()
-      }
-    ]);
-    
-    // Clear input
+    playNextMessage();
     setMessage("");
-    
-    // Simulate AI response
-    setTimeout(() => {
-      const responses = [
-        "I've processed your request and can help you with that immediately.",
-        "Based on your business rules, I would recommend the following solution...",
-        "I've checked your account history and found the information you're looking for.",
-        "I've connected to your CRM system and updated your customer record with this information."
-      ];
-      
-      const randomResponse = responses[Math.floor(Math.random() * responses.length)];
-      
-      setMessages(prev => [
-        ...prev,
-        {
-          role: "ai",
-          content: randomResponse,
-          timestamp: new Date()
-        }
-      ]);
-    }, 1200);
   };
 
   const toggleVoice = () => {
     setIsSpeaking(!isSpeaking);
-    // TODO: Implement voice functionality
   };
 
   return (
-    <DashboardLayout>
-      <div className="min-h-screen bg-gray-50">
-        <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between mb-6">
-            <div>
-              <h1 className="text-2xl font-semibold">AI Agent Control Center</h1>
-              <p className="text-gray-500">Experience and control our autonomous AI agent system</p>
+    <>
+      <Navbar />
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50 pt-20">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+          {/* Hero Section */}
+          <div className="text-center mb-12">
+            <div className="inline-flex items-center justify-center w-16 h-16 bg-primary/10 rounded-full mb-6">
+              <Brain className="w-8 h-8 text-primary" />
             </div>
-            <div className="flex items-center gap-3">
-              <div className="flex items-center gap-2 bg-green-50 text-green-700 px-3 py-1 rounded-full">
+            <h1 className="text-4xl font-bold mb-4">
+              <span className="bg-gradient-to-r from-conneqt-blue to-blue-600 bg-clip-text text-transparent">
+                Experience AI Guardian in Action
+              </span>
+            </h1>
+            <p className="text-xl text-gray-600 max-w-3xl mx-auto mb-8">
+              See how our industry-specific AI agents handle real customer interactions with precision, 
+              empathy, and seamless integration capabilities.
+            </p>
+            
+            <div className="flex items-center justify-center gap-6 text-sm text-muted-foreground mb-8">
+              <div className="flex items-center gap-2">
                 <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                <span className="text-sm font-medium">System Active</span>
+                <span>Live Demo Environment</span>
               </div>
-              <Button
-                variant="outline"
-                onClick={toggleVoice}
-                className="flex items-center gap-2"
-              >
-                {isSpeaking ? <MicOff className="h-4 w-4" /> : <Mic className="h-4 w-4" />}
-                {isSpeaking ? "Stop Voice" : "Start Voice"}
-              </Button>
+              <div className="flex items-center gap-2">
+                <Shield className="w-4 h-4" />
+                <span>Enterprise Security</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <Globe className="w-4 h-4" />
+                <span>25+ Languages</span>
+              </div>
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="md:col-span-2">
-              <Tabs defaultValue="chat" value={activeTab} onValueChange={setActiveTab} className="w-full">
-                <TabsList className="grid grid-cols-3 mb-4">
+          <div className="grid lg:grid-cols-4 gap-8">
+            <div className="lg:col-span-3">
+              <Tabs defaultValue="demo" value={activeTab} onValueChange={setActiveTab} className="w-full">
+                <TabsList className="grid grid-cols-4 mb-6">
+                  <TabsTrigger value="demo" className="flex items-center gap-2">
+                    <Play className="h-4 w-4" />
+                    <span>Live Demo</span>
+                  </TabsTrigger>
                   <TabsTrigger value="chat" className="flex items-center gap-2">
                     <MessageCircle className="h-4 w-4" />
-                    <span>Chat</span>
+                    <span>Interactive Chat</span>
                   </TabsTrigger>
                   <TabsTrigger value="voice" className="flex items-center gap-2">
                     <PhoneCall className="h-4 w-4" />
-                    <span>Voice Call</span>
+                    <span>Voice AI</span>
                   </TabsTrigger>
                   <TabsTrigger value="analytics" className="flex items-center gap-2">
                     <BarChart3 className="h-4 w-4" />
-                    <span>Analytics</span>
+                    <span>Performance</span>
                   </TabsTrigger>
                 </TabsList>
-                
-                <TabsContent value="chat" className="mt-0">
-                  <Card className="h-[600px] flex flex-col">
-                    <CardHeader className="pb-2">
-                      <CardTitle className="text-lg flex items-center gap-2">
-                        <Bot className="h-5 w-5 text-blue-600" />
-                        AI Agent Conversation
-                      </CardTitle>
-                      <CardDescription>
-                        Demonstration of autonomous customer interaction
-                      </CardDescription>
-                    </CardHeader>
-                    <CardContent className="flex-1 flex flex-col overflow-hidden">
-                      <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-gray-50 rounded-md">
-                        {messages.map((msg, index) => (
-                          <div
-                            key={index}
-                            className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}
-                          >
-                            <div
-                              className={`max-w-[80%] rounded-lg p-3 ${
-                                msg.role === "user"
-                                  ? "bg-blue-500 text-white"
-                                  : "bg-white border border-gray-200"
-                              }`}
+
+                <TabsContent value="demo" className="mt-0">
+                  <div className="space-y-6">
+                    {/* Scenario Selection */}
+                    <Card>
+                      <CardHeader>
+                        <CardTitle className="flex items-center gap-2">
+                          <Target className="text-primary" size={20} />
+                          Choose Your Industry Demo
+                        </CardTitle>
+                        <CardDescription>
+                          See how AI Guardian handles industry-specific customer interactions
+                        </CardDescription>
+                      </CardHeader>
+                      <CardContent>
+                        <div className="grid md:grid-cols-3 gap-4">
+                          {demoScenarios.map((scenario) => (
+                            <Button
+                              key={scenario.id}
+                              variant={selectedScenario.id === scenario.id ? "default" : "outline"}
+                              className="h-auto p-4 flex flex-col items-center"
+                              onClick={() => selectScenario(scenario)}
                             >
-                              <div className="flex items-start gap-2">
-                                {msg.role === "ai" && (
-                                  <Bot className="w-4 h-4 mt-1 flex-shrink-0" />
-                                )}
-                                <div>
-                                  <p className={`text-sm ${msg.role === "ai" ? "text-gray-800" : ""}`}>
-                                    {msg.content}
-                                  </p>
-                                  <p className={`text-xs mt-1 ${msg.role === "ai" ? "text-gray-500" : "text-blue-200"}`}>
-                                    {msg.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                                  </p>
+                              <div className="text-2xl mb-2">{scenario.icon}</div>
+                              <div className="font-medium">{scenario.name}</div>
+                              <div className="text-xs opacity-70 text-center">{scenario.description}</div>
+                            </Button>
+                          ))}
+                        </div>
+                      </CardContent>
+                    </Card>
+
+                    {/* Demo Conversation */}
+                    <Card className="h-[500px] flex flex-col">
+                      <CardHeader className="pb-3">
+                        <div className="flex items-center justify-between">
+                          <CardTitle className="text-lg flex items-center gap-2">
+                            <Bot className="h-5 w-5 text-primary" />
+                            {selectedScenario.name} Demo
+                          </CardTitle>
+                          <div className="flex gap-2">
+                            <Button variant="outline" size="sm" onClick={resetDemo}>
+                              Reset
+                            </Button>
+                            <Button size="sm" onClick={playNextMessage} disabled={currentMessageIndex >= selectedScenario.messages.length - 1}>
+                              <Play className="w-4 h-4 mr-1" />
+                              Next
+                            </Button>
+                          </div>
+                        </div>
+                        <CardDescription>
+                          Watch a realistic conversation flow between customer and AI
+                        </CardDescription>
+                      </CardHeader>
+                      <CardContent className="flex-1 flex flex-col overflow-hidden">
+                        <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-muted/30 rounded-md">
+                          {messages.map((msg, index) => (
+                            <div
+                              key={index}
+                              className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}
+                            >
+                              <div
+                                className={`max-w-[80%] rounded-lg p-3 ${
+                                  msg.role === "user"
+                                    ? "bg-primary text-primary-foreground"
+                                    : "bg-background border"
+                                }`}
+                              >
+                                <div className="flex items-start gap-2">
+                                  {msg.role === "ai" && (
+                                    <Bot className="w-4 h-4 mt-1 flex-shrink-0 text-primary" />
+                                  )}
+                                  {msg.role === "user" && (
+                                    <Users className="w-4 h-4 mt-1 flex-shrink-0 text-primary-foreground" />
+                                  )}
+                                  <div>
+                                    <p className="text-sm">{msg.content}</p>
+                                  </div>
                                 </div>
                               </div>
                             </div>
+                          ))}
+                          
+                          {isTyping && (
+                            <div className="flex justify-start">
+                              <div className="bg-background border rounded-lg p-3 max-w-[80%]">
+                                <div className="flex items-center gap-2">
+                                  <Bot className="w-4 h-4 text-primary" />
+                                  <div className="flex gap-1">
+                                    <div className="w-2 h-2 bg-muted-foreground rounded-full animate-bounce"></div>
+                                    <div className="w-2 h-2 bg-muted-foreground rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
+                                    <div className="w-2 h-2 bg-muted-foreground rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          )}
+                          <div ref={messagesEndRef} />
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </div>
+                </TabsContent>
+                
+                <TabsContent value="chat" className="mt-0">
+                  <Card className="h-[600px] flex flex-col">
+                    <CardHeader className="pb-3">
+                      <CardTitle className="text-lg flex items-center gap-2">
+                        <MessageCircle className="h-5 w-5 text-primary" />
+                        Interactive AI Chat
+                      </CardTitle>
+                      <CardDescription>
+                        Ask questions and see real AI responses
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent className="flex-1 flex flex-col overflow-hidden">
+                      <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-muted/30 rounded-md">
+                        <div className="bg-background border rounded-lg p-3">
+                          <div className="flex items-start gap-2">
+                            <Bot className="w-4 h-4 mt-1 flex-shrink-0 text-primary" />
+                            <p className="text-sm">
+                              Hello! I'm an AI assistant demonstration. I can help answer questions about our platform, 
+                              explain features, or show you how I handle different types of customer inquiries. What would you like to know?
+                            </p>
                           </div>
-                        ))}
+                        </div>
                         <div ref={messagesEndRef} />
                       </div>
                       <div className="mt-4 flex gap-2">
                         <Input
-                          placeholder="Type your message..."
+                          placeholder="Ask me anything about AI Guardian..."
                           value={message}
                           onChange={(e) => setMessage(e.target.value)}
                           onKeyPress={(e) => e.key === "Enter" && handleSendMessage()}
@@ -194,25 +333,50 @@ const AIGuardian = () => {
                   <Card className="h-[600px]">
                     <CardHeader>
                       <CardTitle className="text-lg flex items-center gap-2">
-                        <PhoneCall className="h-5 w-5 text-blue-600" />
-                        Voice Interaction
+                        <PhoneCall className="h-5 w-5 text-primary" />
+                        Voice AI Demonstration
                       </CardTitle>
                       <CardDescription>
-                        Real-time voice processing demonstration
+                        Experience natural voice conversations with AI
                       </CardDescription>
                     </CardHeader>
                     <CardContent className="flex flex-col items-center justify-center h-[480px]">
                       <div className="mb-8 text-center">
-                        <div className="w-24 h-24 rounded-full bg-blue-100 flex items-center justify-center mb-4 mx-auto">
-                          <Mic className="h-12 w-12 text-blue-600" />
+                        <div className="w-24 h-24 rounded-full bg-primary/10 flex items-center justify-center mb-4 mx-auto">
+                          <Mic className="h-12 w-12 text-primary" />
                         </div>
                         <h3 className="text-lg font-medium">AI Voice Assistant</h3>
-                        <p className="text-gray-500 mt-1">Click the button below to start speaking</p>
+                        <p className="text-muted-foreground mt-1 mb-4">Experience human-like voice interactions</p>
+                        
+                        <div className="grid md:grid-cols-3 gap-4 mb-6">
+                          <div className="text-center p-3 bg-muted/50 rounded-lg">
+                            <Zap className="w-6 h-6 text-primary mx-auto mb-2" />
+                            <div className="text-sm font-medium">Sub-second Response</div>
+                            <div className="text-xs text-muted-foreground">Real-time processing</div>
+                          </div>
+                          <div className="text-center p-3 bg-muted/50 rounded-lg">
+                            <Globe className="w-6 h-6 text-primary mx-auto mb-2" />
+                            <div className="text-sm font-medium">25+ Languages</div>
+                            <div className="text-xs text-muted-foreground">Multilingual support</div>
+                          </div>
+                          <div className="text-center p-3 bg-muted/50 rounded-lg">
+                            <Brain className="w-6 h-6 text-primary mx-auto mb-2" />
+                            <div className="text-sm font-medium">Context Aware</div>
+                            <div className="text-xs text-muted-foreground">Remembers conversation</div>
+                          </div>
+                        </div>
                       </div>
-                      <Button size="lg" className="gap-2">
-                        <Mic className="h-5 w-5" />
-                        Start Voice Demo
-                      </Button>
+                      
+                      <div className="space-y-3">
+                        <Button size="lg" className="gap-2 w-full">
+                          <Mic className="h-5 w-5" />
+                          Start Voice Demo
+                        </Button>
+                        <Button variant="outline" size="lg" className="gap-2 w-full">
+                          <PhoneCall className="h-5 w-5" />
+                          Try Phone Call Demo
+                        </Button>
+                      </div>
                     </CardContent>
                   </Card>
                 </TabsContent>
@@ -221,76 +385,90 @@ const AIGuardian = () => {
                   <Card className="h-[600px]">
                     <CardHeader>
                       <CardTitle className="text-lg flex items-center gap-2">
-                        <BarChart3 className="h-5 w-5 text-blue-600" />
-                        AI Performance Analytics
+                        <BarChart3 className="h-5 w-5 text-primary" />
+                        Real-Time Performance Analytics
                       </CardTitle>
                       <CardDescription>
-                        Real-time metrics and insights
+                        Live metrics from our AI Guardian platform
                       </CardDescription>
                     </CardHeader>
                     <CardContent>
                       <div className="grid grid-cols-2 gap-4 mb-6">
-                        <div className="bg-white p-4 rounded-lg border">
-                          <h4 className="text-sm font-medium text-gray-500 mb-1">Resolution Rate</h4>
-                          <div className="text-2xl font-bold">96%</div>
-                          <div className="h-2 bg-gray-100 rounded mt-2">
-                            <div className="h-full bg-green-500 rounded" style={{ width: "96%" }}></div>
+                        <div className="bg-background p-4 rounded-lg border">
+                          <h4 className="text-sm font-medium text-muted-foreground mb-1">Resolution Rate</h4>
+                          <div className="text-2xl font-bold text-primary">96.8%</div>
+                          <div className="h-2 bg-muted rounded mt-2">
+                            <div className="h-full bg-primary rounded" style={{ width: "96.8%" }}></div>
+                          </div>
+                          <div className="flex items-center text-green-600 text-xs mt-2">
+                            <CheckCircle2 className="w-3 h-3 mr-1" /> Above industry standard
                           </div>
                         </div>
-                        <div className="bg-white p-4 rounded-lg border">
-                          <h4 className="text-sm font-medium text-gray-500 mb-1">Average Response Time</h4>
-                          <div className="text-2xl font-bold">1.2s</div>
+                        <div className="bg-background p-4 rounded-lg border">
+                          <h4 className="text-sm font-medium text-muted-foreground mb-1">Response Time</h4>
+                          <div className="text-2xl font-bold text-primary">0.8s</div>
                           <div className="flex items-center text-green-600 text-xs mt-2">
-                            <CheckCircle2 className="w-3 h-3 mr-1" /> Excellent
+                            <CheckCircle2 className="w-3 h-3 mr-1" /> Excellent performance
                           </div>
                         </div>
-                        <div className="bg-white p-4 rounded-lg border">
-                          <h4 className="text-sm font-medium text-gray-500 mb-1">Human Escalations</h4>
-                          <div className="text-2xl font-bold">4%</div>
+                        <div className="bg-background p-4 rounded-lg border">
+                          <h4 className="text-sm font-medium text-muted-foreground mb-1">Human Escalations</h4>
+                          <div className="text-2xl font-bold text-primary">3.2%</div>
                           <div className="flex items-center text-green-600 text-xs mt-2">
-                            <CheckCircle2 className="w-3 h-3 mr-1" /> Below threshold (5%)
+                            <CheckCircle2 className="w-3 h-3 mr-1" /> Below 5% target
                           </div>
                         </div>
-                        <div className="bg-white p-4 rounded-lg border">
-                          <h4 className="text-sm font-medium text-gray-500 mb-1">Customer Satisfaction</h4>
-                          <div className="text-2xl font-bold">4.8/5</div>
+                        <div className="bg-background p-4 rounded-lg border">
+                          <h4 className="text-sm font-medium text-muted-foreground mb-1">Customer Satisfaction</h4>
+                          <div className="text-2xl font-bold text-primary">4.9/5</div>
                           <div className="flex items-center text-green-600 text-xs mt-2">
-                            <CheckCircle2 className="w-3 h-3 mr-1" /> Above target (4.5)
+                            <CheckCircle2 className="w-3 h-3 mr-1" /> Exceeds expectations
                           </div>
                         </div>
                       </div>
 
-                      <h4 className="font-medium mb-2">AI Agent Activity</h4>
-                      <div className="bg-white p-4 rounded-lg border mb-4">
+                      <h4 className="font-medium mb-3">Channel Performance</h4>
+                      <div className="bg-background p-4 rounded-lg border mb-4">
                         <div className="space-y-4">
                           <div className="flex justify-between items-center">
-                            <span className="text-sm">Web Chat</span>
-                            <div className="w-2/3 bg-gray-200 h-2 rounded-full overflow-hidden">
-                              <div className="bg-blue-500 h-full rounded-full" style={{ width: "78%" }}></div>
+                            <span className="text-sm">Live Chat</span>
+                            <div className="w-2/3 bg-muted h-2 rounded-full overflow-hidden">
+                              <div className="bg-primary h-full rounded-full" style={{ width: "82%" }}></div>
                             </div>
-                            <span className="text-sm font-medium">78%</span>
+                            <span className="text-sm font-medium">82%</span>
                           </div>
                           <div className="flex justify-between items-center">
                             <span className="text-sm">Voice Calls</span>
-                            <div className="w-2/3 bg-gray-200 h-2 rounded-full overflow-hidden">
-                              <div className="bg-indigo-500 h-full rounded-full" style={{ width: "45%" }}></div>
+                            <div className="w-2/3 bg-muted h-2 rounded-full overflow-hidden">
+                              <div className="bg-blue-500 h-full rounded-full" style={{ width: "67%" }}></div>
                             </div>
-                            <span className="text-sm font-medium">45%</span>
+                            <span className="text-sm font-medium">67%</span>
                           </div>
                           <div className="flex justify-between items-center">
-                            <span className="text-sm">Email</span>
-                            <div className="w-2/3 bg-gray-200 h-2 rounded-full overflow-hidden">
-                              <div className="bg-purple-500 h-full rounded-full" style={{ width: "62%" }}></div>
+                            <span className="text-sm">Email Support</span>
+                            <div className="w-2/3 bg-muted h-2 rounded-full overflow-hidden">
+                              <div className="bg-green-500 h-full rounded-full" style={{ width: "94%" }}></div>
                             </div>
-                            <span className="text-sm font-medium">62%</span>
+                            <span className="text-sm font-medium">94%</span>
                           </div>
                           <div className="flex justify-between items-center">
                             <span className="text-sm">Social Media</span>
-                            <div className="w-2/3 bg-gray-200 h-2 rounded-full overflow-hidden">
-                              <div className="bg-pink-500 h-full rounded-full" style={{ width: "34%" }}></div>
+                            <div className="w-2/3 bg-muted h-2 rounded-full overflow-hidden">
+                              <div className="bg-purple-500 h-full rounded-full" style={{ width: "71%" }}></div>
                             </div>
-                            <span className="text-sm font-medium">34%</span>
+                            <span className="text-sm font-medium">71%</span>
                           </div>
+                        </div>
+                      </div>
+
+                      <div className="grid md:grid-cols-2 gap-4">
+                        <div className="bg-primary/5 p-3 rounded-lg border">
+                          <div className="text-sm font-medium mb-1">Daily Interactions</div>
+                          <div className="text-xl font-bold text-primary">12,847</div>
+                        </div>
+                        <div className="bg-green-50 p-3 rounded-lg border">
+                          <div className="text-sm font-medium mb-1">Cost Savings</div>
+                          <div className="text-xl font-bold text-green-600">€24,500/mo</div>
                         </div>
                       </div>
                     </CardContent>
@@ -299,117 +477,140 @@ const AIGuardian = () => {
               </Tabs>
             </div>
 
+            {/* Sidebar */}
             <div className="space-y-6">
+              {/* Quick Actions */}
               <Card>
                 <CardHeader className="pb-3">
-                  <CardTitle className="text-lg">AI Agent Configuration</CardTitle>
+                  <CardTitle className="text-lg flex items-center gap-2">
+                    <Rocket className="text-primary" size={20} />
+                    Get Started
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  <Button className="w-full" asChild>
+                    <Link to="/solution-builder">
+                      <Target className="w-4 h-4 mr-2" />
+                      Build Your Solution
+                    </Link>
+                  </Button>
+                  <Button variant="outline" className="w-full" asChild>
+                    <Link to="/quote">
+                      <FileText className="w-4 h-4 mr-2" />
+                      Get Quote
+                    </Link>
+                  </Button>
+                  <Button variant="secondary" className="w-full" asChild>
+                    <Link to="/subscription-services">
+                      View All Plans
+                    </Link>
+                  </Button>
+                </CardContent>
+              </Card>
+
+              {/* AI Capabilities */}
+              <Card>
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-lg">AI Capabilities</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div className="flex items-center justify-between">
                     <div className="space-y-0.5">
-                      <Label>Autonomous Mode</Label>
-                      <p className="text-xs text-gray-500">AI operates without oversight</p>
+                      <Label>Multi-language Support</Label>
+                      <p className="text-xs text-muted-foreground">25+ languages</p>
                     </div>
-                    <Switch defaultChecked />
+                    <Badge className="bg-green-100 text-green-800">Active</Badge>
                   </div>
                   <div className="flex items-center justify-between">
                     <div className="space-y-0.5">
-                      <Label>Voice Capabilities</Label>
-                      <p className="text-xs text-gray-500">Enable text-to-speech</p>
+                      <Label>Voice Processing</Label>
+                      <p className="text-xs text-muted-foreground">Real-time speech</p>
                     </div>
-                    <Switch defaultChecked />
+                    <Badge className="bg-green-100 text-green-800">Active</Badge>
                   </div>
                   <div className="flex items-center justify-between">
                     <div className="space-y-0.5">
-                      <Label>Learning Mode</Label>
-                      <p className="text-xs text-gray-500">Improve from interactions</p>
+                      <Label>Context Memory</Label>
+                      <p className="text-xs text-muted-foreground">Conversation history</p>
                     </div>
-                    <Switch defaultChecked />
+                    <Badge className="bg-green-100 text-green-800">Active</Badge>
                   </div>
                   <div className="flex items-center justify-between">
                     <div className="space-y-0.5">
-                      <Label>Human Fallback</Label>
-                      <p className="text-xs text-gray-500">Escalate complex issues</p>
+                      <Label>Integration Hub</Label>
+                      <p className="text-xs text-muted-foreground">API connections</p>
                     </div>
-                    <Switch defaultChecked />
+                    <Badge className="bg-green-100 text-green-800">Active</Badge>
                   </div>
                 </CardContent>
-                <CardFooter>
-                  <Button variant="outline" size="sm" className="w-full">
-                    Advanced Settings
-                  </Button>
-                </CardFooter>
               </Card>
 
+              {/* System Status */}
               <Card>
                 <CardHeader className="pb-3">
-                  <CardTitle className="text-lg">Connected Systems</CardTitle>
+                  <CardTitle className="text-lg">System Status</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-2">
-                  <div className="flex items-center justify-between p-2 bg-gray-50 rounded">
+                  <div className="flex items-center justify-between p-2 bg-muted/50 rounded">
                     <div className="flex items-center gap-2">
                       <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                      <span className="text-sm">CRM System</span>
+                      <span className="text-sm">AI Engine</span>
                     </div>
-                    <span className="text-xs bg-green-100 text-green-800 px-2 py-0.5 rounded">Connected</span>
+                    <Badge className="bg-green-100 text-green-800 text-xs">Operational</Badge>
                   </div>
-                  <div className="flex items-center justify-between p-2 bg-gray-50 rounded">
+                  <div className="flex items-center justify-between p-2 bg-muted/50 rounded">
                     <div className="flex items-center gap-2">
                       <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                      <span className="text-sm">Knowledge Base</span>
+                      <span className="text-sm">Voice Processing</span>
                     </div>
-                    <span className="text-xs bg-green-100 text-green-800 px-2 py-0.5 rounded">Connected</span>
+                    <Badge className="bg-green-100 text-green-800 text-xs">Active</Badge>
                   </div>
-                  <div className="flex items-center justify-between p-2 bg-gray-50 rounded">
+                  <div className="flex items-center justify-between p-2 bg-muted/50 rounded">
                     <div className="flex items-center gap-2">
-                      <div className="w-2 h-2 bg-yellow-500 rounded-full"></div>
-                      <span className="text-sm">ERP Platform</span>
+                      <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                      <span className="text-sm">Integrations</span>
                     </div>
-                    <span className="text-xs bg-yellow-100 text-yellow-800 px-2 py-0.5 rounded">Limited</span>
+                    <Badge className="bg-green-100 text-green-800 text-xs">Connected</Badge>
                   </div>
-                  <div className="flex items-center justify-between p-2 bg-gray-50 rounded">
+                  <div className="flex items-center justify-between p-2 bg-muted/50 rounded">
                     <div className="flex items-center gap-2">
-                      <div className="w-2 h-2 bg-gray-300 rounded-full"></div>
-                      <span className="text-sm">Payment System</span>
+                      <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                      <span className="text-sm">Live Support</span>
                     </div>
-                    <span className="text-xs bg-gray-100 text-gray-800 px-2 py-0.5 rounded">Not Connected</span>
+                    <Badge className="bg-green-100 text-green-800 text-xs">Available</Badge>
                   </div>
                 </CardContent>
-                <CardFooter>
-                  <Button size="sm" className="w-full">
-                    Connect Systems
-                  </Button>
-                </CardFooter>
               </Card>
 
-              <Card>
+              {/* Success Metrics */}
+              <Card className="border-primary/20 bg-primary/5">
                 <CardHeader className="pb-3">
-                  <CardTitle className="text-lg">Quick Actions</CardTitle>
+                  <CardTitle className="text-lg flex items-center gap-2">
+                    <BarChart3 className="text-primary" size={20} />
+                    Platform Impact
+                  </CardTitle>
                 </CardHeader>
-                <CardContent className="space-y-2">
-                  <Button variant="outline" className="w-full justify-start">
-                    <FileText className="h-4 w-4 mr-2" />
-                    Export Conversation
-                  </Button>
-                  <Button variant="outline" className="w-full justify-start">
-                    <LayoutDashboard className="h-4 w-4 mr-2" />
-                    View Dashboard
-                  </Button>
-                  <Button variant="outline" className="w-full justify-start">
-                    <Settings className="h-4 w-4 mr-2" />
-                    Configure AI
-                  </Button>
-                  <Button variant="outline" className="w-full justify-start text-red-600 hover:text-red-700 hover:bg-red-50">
-                    <AlertCircle className="h-4 w-4 mr-2" />
-                    Emergency Override
-                  </Button>
+                <CardContent className="space-y-3">
+                  <div className="text-center">
+                    <div className="text-2xl font-bold text-primary">96.8%</div>
+                    <div className="text-sm text-muted-foreground">Customer Satisfaction</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-2xl font-bold text-green-600">€2.1M</div>
+                    <div className="text-sm text-muted-foreground">Annual Savings Generated</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-2xl font-bold text-blue-600">847K</div>
+                    <div className="text-sm text-muted-foreground">Interactions This Month</div>
+                  </div>
                 </CardContent>
               </Card>
             </div>
           </div>
-        </main>
+        </div>
       </div>
-    </DashboardLayout>
+      <Footer />
+    </>
   );
 };
 
