@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { ArrowRight, Check, Users, Zap, Globe, Shield, Play, FileText, Settings } from 'lucide-react';
+import { ArrowRight, Check, Users, Zap, Globe, Shield, Play, FileText, Settings, Brain, Calculator } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
@@ -14,6 +14,9 @@ import TrustElements from '@/components/solution/TrustElements';
 import DemoChat from '@/components/solution/DemoChat';
 import ProposalGenerator from '@/components/solution/ProposalGenerator';
 import IntegrationMarketplace from '@/components/solution/IntegrationMarketplace';
+import BusinessAssessment from '@/components/solution/BusinessAssessment';
+import ROICalculator from '@/components/solution/ROICalculator';
+import CompetitorAnalysis from '@/components/solution/CompetitorAnalysis';
 
 const industries = [
   { 
@@ -82,7 +85,7 @@ const SolutionBuilder = () => {
   const [selectedFeatures, setSelectedFeatures] = useState<string[]>([]);
   const [selectedServiceTier, setSelectedServiceTier] = useState<string>('');
   const [callVolume, setCallVolume] = useState<number>(0);
-  const [activeTab, setActiveTab] = useState('industry');
+  const [activeTab, setActiveTab] = useState('assessment');
   const [selectedDemo, setSelectedDemo] = useState({ industry: '', scenario: '' });
 
   const calculatePrice = () => {
@@ -126,13 +129,24 @@ const SolutionBuilder = () => {
           </div>
 
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-            <TabsList className="grid w-full grid-cols-5">
+            <TabsList className="grid w-full grid-cols-6">
+              <TabsTrigger value="assessment">Assessment</TabsTrigger>
               <TabsTrigger value="industry">Industry</TabsTrigger>
               <TabsTrigger value="service">Service Tier</TabsTrigger>
+              <TabsTrigger value="roi">ROI Analysis</TabsTrigger>
               <TabsTrigger value="demo">Live Demo</TabsTrigger>
-              <TabsTrigger value="integrations">Integrations</TabsTrigger>
               <TabsTrigger value="proposal">Get Proposal</TabsTrigger>
             </TabsList>
+
+            <TabsContent value="assessment" className="space-y-6">
+              <BusinessAssessment />
+              
+              <div className="flex justify-center">
+                <Button onClick={() => setActiveTab('industry')}>
+                  Continue to Industry Selection <ArrowRight size={16} className="ml-2" />
+                </Button>
+              </div>
+            </TabsContent>
 
             <TabsContent value="industry" className="space-y-6">
               <Card>
@@ -174,7 +188,10 @@ const SolutionBuilder = () => {
 
               {selectedIndustry && <IndustryPreview industry={selectedIndustry} />}
               
-              <div className="flex justify-center">
+              <div className="flex justify-center gap-4">
+                <Button variant="outline" onClick={() => setActiveTab('assessment')}>
+                  Back
+                </Button>
                 <Button onClick={() => setActiveTab('service')}>
                   Continue to Service Tier <ArrowRight size={16} className="ml-2" />
                 </Button>
@@ -194,6 +211,28 @@ const SolutionBuilder = () => {
               
               <div className="flex justify-center gap-4">
                 <Button variant="outline" onClick={() => setActiveTab('industry')}>
+                  Back
+                </Button>
+                <Button onClick={() => setActiveTab('roi')}>
+                  View ROI Analysis <Calculator size={16} className="ml-2" />
+                </Button>
+              </div>
+            </TabsContent>
+
+            <TabsContent value="roi" className="space-y-6">
+              <ROICalculator 
+                industry={selectedIndustry}
+                monthlyVolume={callVolume}
+                selectedTier={selectedServiceTier}
+              />
+              
+              <CompetitorAnalysis 
+                selectedTier={selectedServiceTier}
+                monthlyVolume={callVolume}
+              />
+              
+              <div className="flex justify-center gap-4">
+                <Button variant="outline" onClick={() => setActiveTab('service')}>
                   Back
                 </Button>
                 <Button onClick={() => setActiveTab('demo')}>
@@ -235,20 +274,7 @@ const SolutionBuilder = () => {
               </Card>
               
               <div className="flex justify-center gap-4">
-                <Button variant="outline" onClick={() => setActiveTab('service')}>
-                  Back
-                </Button>
-                <Button onClick={() => setActiveTab('integrations')}>
-                  View Integrations <Settings size={16} className="ml-2" />
-                </Button>
-              </div>
-            </TabsContent>
-
-            <TabsContent value="integrations" className="space-y-6">
-              <IntegrationMarketplace />
-              
-              <div className="flex justify-center gap-4">
-                <Button variant="outline" onClick={() => setActiveTab('demo')}>
+                <Button variant="outline" onClick={() => setActiveTab('roi')}>
                   Back
                 </Button>
                 <Button onClick={() => setActiveTab('proposal')}>
@@ -265,6 +291,19 @@ const SolutionBuilder = () => {
                   selectedTier: selectedServiceTier
                 }}
               />
+              
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Settings className="text-primary" size={24} />
+                    Available Integrations
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <IntegrationMarketplace />
+                </CardContent>
+              </Card>
+              
               <TrustElements />
             </TabsContent>
           </Tabs>
