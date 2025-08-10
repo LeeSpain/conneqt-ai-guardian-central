@@ -1,5 +1,5 @@
 import React from "react";
-import DemoChat from "@/components/solution/DemoChat";
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useClientProfile } from "@/contexts/ClientProfileContext";
 
@@ -28,8 +28,8 @@ const EmbeddedAssistant: React.FC = () => {
     );
   }
 
-  // Fallback to demo chat when no overview exists yet
-  return <DemoChat industry="" scenario="Welcome" />;
+  // No chat fallback; hide until overview is ready
+  return null;
 };
 
 export default EmbeddedAssistant;
