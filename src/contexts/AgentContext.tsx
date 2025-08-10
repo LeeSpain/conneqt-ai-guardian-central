@@ -15,6 +15,22 @@ export type Agent = {
   channels: { chat: boolean; voice: boolean };
   tools: Record<string, boolean>;
   knowledgeSources: KnowledgeSource[];
+  // Extended configuration for voice + telephony + integrations
+  languages?: string[]; // e.g., ["en","es","nl"]
+  voice?: { provider: string; voiceId?: string; languageMap?: Record<string, string> };
+  telephony?: {
+    provider: string; // twilio | vonage | plivo | sip
+    inboundNumbers: string[];
+    outboundCallerId?: string;
+    ivrEnabled: boolean;
+    recordingEnabled: boolean;
+  };
+  integrations?: {
+    crm?: string; // hubspot | salesforce | custom
+    helpdesk?: string; // zendesk | freshdesk | custom
+    billing?: string; // stripe | chargebee | custom
+    calendar?: string; // google | microsoft | custom
+  };
 };
 
 export type MasterAgent = Agent;
@@ -48,6 +64,21 @@ const initialMaster: MasterAgent = {
     { id: "k1", title: "Global FAQ", type: "faq" },
     { id: "k2", title: "Getting Started Guide", type: "url" },
   ],
+  languages: ["en", "es", "nl"],
+  voice: { provider: "elevenlabs", voiceId: "TX3LPaxmHKxFdv7VOQHJ" },
+  telephony: {
+    provider: "twilio",
+    inboundNumbers: [],
+    outboundCallerId: "",
+    ivrEnabled: true,
+    recordingEnabled: true,
+  },
+  integrations: {
+    crm: "",
+    helpdesk: "",
+    billing: "",
+    calendar: "",
+  },
 };
 
 const initialClients: Agent[] = [
@@ -63,6 +94,14 @@ const initialClients: Agent[] = [
       { id: "hc1", title: "Insurance FAQs", type: "faq" },
       { id: "hc2", title: "Clinic Locations", type: "url" },
     ],
+    languages: ["en"],
+    telephony: {
+      provider: "twilio",
+      inboundNumbers: [],
+      outboundCallerId: "",
+      ivrEnabled: false,
+      recordingEnabled: true,
+    },
   },
   {
     id: "c-1002",
@@ -76,6 +115,14 @@ const initialClients: Agent[] = [
       { id: "ec1", title: "Return Policy", type: "url" },
       { id: "ec2", title: "Product FAQ", type: "faq" },
     ],
+    languages: ["en"],
+    telephony: {
+      provider: "twilio",
+      inboundNumbers: [],
+      outboundCallerId: "",
+      ivrEnabled: false,
+      recordingEnabled: true,
+    },
   },
 ];
 

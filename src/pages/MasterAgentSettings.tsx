@@ -8,6 +8,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Switch } from "@/components/ui/switch";
 import { UserProvider } from "@/contexts/UserContext";
 import { AgentProvider, useAgent } from "@/contexts/AgentContext";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 export default function MasterAgentSettings() {
   useEffect(() => {
@@ -40,14 +41,52 @@ function AgentTabs() {
   const [chatEnabled, setChatEnabled] = useState(masterAgent.channels.chat);
   const [voiceEnabled, setVoiceEnabled] = useState(masterAgent.channels.voice);
 
-  const save = () => {
-    updateMasterAgent({
-      name,
-      persona,
-      systemPrompt,
-      channels: { chat: chatEnabled, voice: voiceEnabled },
-    });
-  };
+  // Languages
+  const [languages, setLanguages] = useState<string[]>(masterAgent.languages ?? ["en"]);
+  const toggleLang = (code: string) =>
+    setLanguages((prev) => (prev.includes(code) ? prev.filter((c) => c !== code) : [...prev, code]));
+
+  // Telephony
+  const [telProvider, setTelProvider] = useState(masterAgent.telephony?.provider ?? "twilio");
+  const [outboundCallerId, setOutboundCallerId] = useState(masterAgent.telephony?.outboundCallerId ?? "");
+  const [recordingEnabled, setRecordingEnabled] = useState(masterAgent.telephony?.recordingEnabled ?? true);
+  const [ivrEnabled, setIvrEnabled] = useState(masterAgent.telephony?.ivrEnabled ?? true);
+
+  // Integrations
+  const [crm, setCrm] = useState(masterAgent.integrations?.crm ?? "");
+  const [helpdesk, setHelpdesk] = useState(masterAgent.integrations?.helpdesk ?? "");
+  const [billing, setBilling] = useState(masterAgent.integrations?.billing ?? "");
+  const [calendar, setCalendar] = useState(masterAgent.integrations?.calendar ?? "");
+const save = () => {
+  updateMasterAgent({
+    name,
+    persona,
+    systemPrompt,
+    channels: { chat: chatEnabled, voice: voiceEnabled },
+  });
+};
+
+const saveLanguages = () => {
+  updateMasterAgent({ languages });
+};
+
+const saveTelephony = () => {
+  updateMasterAgent({
+    telephony: {
+      provider: telProvider,
+      inboundNumbers: masterAgent.telephony?.inboundNumbers ?? [],
+      outboundCallerId,
+      ivrEnabled,
+      recordingEnabled,
+    },
+  });
+};
+
+const saveIntegrations = () => {
+  updateMasterAgent({
+    integrations: { crm, helpdesk, billing, calendar },
+  });
+};
 
   return (
     <Tabs defaultValue="profile" className="w-full">
@@ -56,6 +95,9 @@ function AgentTabs() {
         <TabsTrigger value="knowledge">Knowledge</TabsTrigger>
         <TabsTrigger value="tools">Tools</TabsTrigger>
         <TabsTrigger value="channels">Channels</TabsTrigger>
+        <TabsTrigger value="languages">Languages</TabsTrigger>
+        <TabsTrigger value="telephony">Telephony</TabsTrigger>
+        <TabsTrigger value="integrations">Integrations</TabsTrigger>
         <TabsTrigger value="policies">Policies</TabsTrigger>
         <TabsTrigger value="analytics">Analytics</TabsTrigger>
       </TabsList>

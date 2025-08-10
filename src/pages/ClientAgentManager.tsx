@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Switch } from "@/components/ui/switch";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { UserProvider } from "@/contexts/UserContext";
 import { AgentProvider, useAgent } from "@/contexts/AgentContext";
 
@@ -63,6 +64,8 @@ function AgentManager({ clientId }: { clientId: string }) {
           <TabsTrigger value="knowledge">Knowledge</TabsTrigger>
           <TabsTrigger value="tools">Tools</TabsTrigger>
           <TabsTrigger value="channels">Channels</TabsTrigger>
+          <TabsTrigger value="languages">Languages</TabsTrigger>
+          <TabsTrigger value="telephony">Telephony</TabsTrigger>
           <TabsTrigger value="analytics">Analytics</TabsTrigger>
         </TabsList>
 
@@ -144,6 +147,112 @@ function AgentManager({ clientId }: { clientId: string }) {
               <div className="flex items-center gap-2">
                 <Switch checked={agent.channels.voice} onCheckedChange={(v) => updateClientAgent(agent.id, { channels: { ...agent.channels, voice: v } })} />
                 <span>Voice</span>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="languages">
+          <Card>
+            <CardHeader>
+              <CardTitle>Languages</CardTitle>
+              <CardDescription>Enable languages for this client agent.</CardDescription>
+            </CardHeader>
+            <CardContent className="flex items-center gap-6">
+              {(["en","es","nl"] as const).map((code) => (
+                <div key={code} className="flex items-center gap-2">
+                  <Switch
+                    checked={(agent.languages ?? ["en"]).includes(code)}
+                    onCheckedChange={(v) => {
+                      const current = agent.languages ?? ["en"];
+                      const next = v
+                        ? Array.from(new Set([...current, code]))
+                        : current.filter((c) => c !== code);
+                      updateClientAgent(agent.id, { languages: next });
+                    }}
+                  />
+                  <span>{code === "en" ? "English (EN)" : code === "es" ? "Spanish (ES)" : "Dutch (NL)"}</span>
+                </div>
+              ))}
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="telephony">
+          <Card>
+            <CardHeader>
+              <CardTitle>Telephony</CardTitle>
+              <CardDescription>Overrides for this agent only.</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="grid gap-2">
+                <label className="text-sm text-muted-foreground">Provider</label>
+                <Select
+                  value={agent.telephony?.provider ?? "twilio"}
+                  onValueChange={(val) =>
+                    updateClientAgent(agent.id, {
+                      telephony: {
+                        ...(agent.telephony ?? { inboundNumbers: [], outboundCallerId: "", ivrEnabled: false, recordingEnabled: true }),
+                        provider: val,
+                      },
+                    })
+                  }
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select provider" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="twilio">Twilio</SelectItem>
+                    <SelectItem value="vonage">Vonage</SelectItem>
+                    <SelectItem value="plivo">Plivo</SelectItem>
+                    <SelectItem value="sip">SIP</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="grid gap-2">
+                <label className="text-sm text-muted-foreground">Outbound Caller ID</label>
+                <Input
+                  value={agent.telephony?.outboundCallerId ?? ""}
+                  onChange={(e) =>
+                    updateClientAgent(agent.id, {
+                      telephony: {
+                        ...(agent.telephony ?? { provider: "twilio", inboundNumbers: [], ivrEnabled: false, recordingEnabled: true }),
+                        outboundCallerId: e.target.value,
+                      },
+                    })
+                  }
+                  placeholder="+1XXXXXXXXXX"
+                />
+              </div>
+              <div className="flex items-center gap-6">
+                <div className="flex items-center gap-2">
+                  <Switch
+                    checked={agent.telephony?.recordingEnabled ?? true}
+                    onCheckedChange={(v) =>
+                      updateClientAgent(agent.id, {
+                        telephony: {
+                          ...(agent.telephony ?? { provider: "twilio", inboundNumbers: [], outboundCallerId: "", ivrEnabled: false }),
+                          recordingEnabled: v,
+                        },
+                      })
+                    }
+                  />
+                  <span>Call Recording</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Switch
+                    checked={agent.telephony?.ivrEnabled ?? false}
+                    onCheckedChange={(v) =>
+                      updateClientAgent(agent.id, {
+                        telephony: {
+                          ...(agent.telephony ?? { provider: "twilio", inboundNumbers: [], outboundCallerId: "", recordingEnabled: true }),
+                          ivrEnabled: v,
+                        },
+                      })
+                    }
+                  />
+                  <span>IVR Enabled</span>
+                </div>
               </div>
             </CardContent>
           </Card>
