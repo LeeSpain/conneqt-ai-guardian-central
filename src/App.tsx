@@ -26,6 +26,9 @@ import MasterAgentSettings from "./pages/MasterAgentSettings";
 import ClientAgents from "./pages/ClientAgents";
 import ClientAgentManager from "./pages/ClientAgentManager";
 import AgentConsole from "./pages/AgentConsole";
+import ClientOnboarding from "./pages/ClientOnboarding";
+import ClientHub from "./pages/ClientHub";
+import { ClientProfileProvider } from "@/contexts/ClientProfileContext";
 
 const queryClient = new QueryClient();
 
@@ -42,6 +45,8 @@ const AppRoutes = () => {
       <Route path="/admin-dashboard" element={<AdminDashboard />} />
       <Route path="/healthcare-dashboard" element={<HealthcareDashboard />} />
       <Route path="/client-management" element={<ClientManagement />} />
+      <Route path="/client-onboarding" element={<ClientOnboarding />} />
+      <Route path="/client-hub" element={<ClientHub />} />
       <Route path="/team-management" element={<TeamManagement />} />
       <Route path="/reports" element={<Reports />} />
       <Route path="/call-center" element={<CallCenter />} />
@@ -65,9 +70,11 @@ const App = () => {
       <TooltipProvider>
         <Toaster />
         <Sonner />
-        <BrowserRouter>
-          <AppRoutes />
-        </BrowserRouter>
+        <ClientProfileProvider>
+          <BrowserRouter>
+            <AppRoutes />
+          </BrowserRouter>
+        </ClientProfileProvider>
       </TooltipProvider>
     </QueryClientProvider>
   );
