@@ -389,12 +389,12 @@ const saveIntegrations = () => {
           <CardContent className="grid sm:grid-cols-2 gap-4">
             <div className="grid gap-2">
               <label className="text-sm text-muted-foreground">CRM</label>
-              <Select value={crm} onValueChange={setCrm}>
+              <Select value={crm} onValueChange={(v)=>setCrm(v==='none'?'':v)}>
                 <SelectTrigger>
                   <SelectValue placeholder="Select CRM" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">None</SelectItem>
+                  <SelectItem value="none">None</SelectItem>
                   <SelectItem value="hubspot">HubSpot</SelectItem>
                   <SelectItem value="salesforce">Salesforce</SelectItem>
                   <SelectItem value="custom">Custom</SelectItem>
@@ -403,12 +403,12 @@ const saveIntegrations = () => {
             </div>
             <div className="grid gap-2">
               <label className="text-sm text-muted-foreground">Helpdesk</label>
-              <Select value={helpdesk} onValueChange={setHelpdesk}>
+              <Select value={helpdesk} onValueChange={(v)=>setHelpdesk(v==='none'?'':v)}>
                 <SelectTrigger>
                   <SelectValue placeholder="Select Helpdesk" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">None</SelectItem>
+                  <SelectItem value="none">None</SelectItem>
                   <SelectItem value="zendesk">Zendesk</SelectItem>
                   <SelectItem value="freshdesk">Freshdesk</SelectItem>
                   <SelectItem value="custom">Custom</SelectItem>
@@ -417,12 +417,12 @@ const saveIntegrations = () => {
             </div>
             <div className="grid gap-2">
               <label className="text-sm text-muted-foreground">Billing</label>
-              <Select value={billing} onValueChange={setBilling}>
+              <Select value={billing} onValueChange={(v)=>setBilling(v==='none'?'':v)}>
                 <SelectTrigger>
                   <SelectValue placeholder="Select Billing" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">None</SelectItem>
+                  <SelectItem value="none">None</SelectItem>
                   <SelectItem value="stripe">Stripe</SelectItem>
                   <SelectItem value="chargebee">Chargebee</SelectItem>
                   <SelectItem value="custom">Custom</SelectItem>
@@ -431,12 +431,12 @@ const saveIntegrations = () => {
             </div>
             <div className="grid gap-2">
               <label className="text-sm text-muted-foreground">Calendar</label>
-              <Select value={calendar} onValueChange={setCalendar}>
+              <Select value={calendar} onValueChange={(v)=>setCalendar(v==='none'?'':v)}>
                 <SelectTrigger>
                   <SelectValue placeholder="Select Calendar" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">None</SelectItem>
+                  <SelectItem value="none">None</SelectItem>
                   <SelectItem value="google">Google</SelectItem>
                   <SelectItem value="microsoft">Microsoft 365</SelectItem>
                   <SelectItem value="custom">Custom</SelectItem>
