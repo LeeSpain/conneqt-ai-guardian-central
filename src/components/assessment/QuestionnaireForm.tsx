@@ -58,6 +58,7 @@ const QuestionnaireForm: React.FC = () => {
 
   // Trigger AI analysis on Step 2 (index 1)
   useEffect(() => {
+    if (step !== 1) return;
     if (aiLoading || overviewDraft) return;
     if (!answers.companyName) return;
 
@@ -93,7 +94,7 @@ const QuestionnaireForm: React.FC = () => {
       setAiProgress(100);
       clearTimeout(t1); clearTimeout(t2); clearTimeout(t3);
     });
-  }, [aiLoading, overviewDraft, answers.companyName, answers.industry, answers.website]);
+  }, [step, aiLoading, overviewDraft, answers.companyName, answers.industry, answers.website]);
   useEffect(() => {
     if (step === 1 && aiProgress === 100 && !aiLoading) {
       setStep((s) => Math.min(totalSteps - 1, s + 1));
@@ -233,7 +234,7 @@ const QuestionnaireForm: React.FC = () => {
                 size="sm"
                 variant="secondary"
                 onClick={() => {
-                  const summary = overviewDraft || `Based on available information, ${answers.companyName || 'this company'} operates in the ${answers.industry || 'relevant'} sector. The public website suggests focus areas around its core offerings. This overview will improve once AI data access is configured.`;
+                  const summary = overviewDraft || `Based on available information, ${answers.companyName || 'this company'} operates in the ${answers.industry || 'unspecified'} sector. The public website suggests focus areas around its core offerings. This overview will improve once AI data access is configured.`;
                   setCompanyOverview({
                     website: answers.website,
                     summary,
@@ -246,7 +247,7 @@ const QuestionnaireForm: React.FC = () => {
               </Button>
             </div>
             <p className="text-sm">
-              {overviewDraft || `Based on available information, ${answers.companyName || 'this company'} operates in the ${answers.industry || 'relevant'} sector. The public website suggests focus areas around its core offerings. This overview will improve once AI data access is configured.`}
+              {overviewDraft || `Based on available information, ${answers.companyName || 'this company'} operates in the ${answers.industry || 'unspecified'} sector. The public website suggests focus areas around its core offerings. This overview will improve once AI data access is configured.`}
             </p>
           </div>
 
@@ -375,7 +376,7 @@ const QuestionnaireForm: React.FC = () => {
                 toast({ title: "Missing info", description: "Please complete the required fields to continue." });
                 return;
               }
-              setStep((s) => (s === 0 ? 2 : Math.min(totalSteps - 1, s + 1)));
+              setStep((s) => Math.min(totalSteps - 1, s + 1));
             }}>
               Continue
             </Button>
