@@ -103,7 +103,13 @@ export const RoleDashboard = () => {
 
   // Role-specific quick actions
   const getQuickActionsForRole = () => {
-    const actions = [];
+    const actions = [] as Array<{
+      title: string;
+      description: string;
+      icon: any;
+      action: () => void;
+      variant: "default" | "outline";
+    }>;
 
     if (canAccessFeature('clients')) {
       actions.push({
@@ -111,7 +117,7 @@ export const RoleDashboard = () => {
         description: "View and manage client accounts",
         icon: Users,
         action: () => navigate("/client-management"),
-        variant: "default" as const
+        variant: "default"
       });
     }
 
@@ -121,7 +127,7 @@ export const RoleDashboard = () => {
         description: "Manage team members and roles",
         icon: UserCheck,
         action: () => navigate("/team-management"),
-        variant: "default" as const
+        variant: "default"
       });
     }
 
@@ -131,7 +137,7 @@ export const RoleDashboard = () => {
         description: "Access business analytics",
         icon: BarChart3,
         action: () => navigate("/call-center"),
-        variant: "default" as const
+        variant: "default"
       });
     }
 
@@ -141,9 +147,18 @@ export const RoleDashboard = () => {
         description: "Configure system settings",
         icon: Settings,
         action: () => navigate("/platform-settings"),
-        variant: "outline" as const
+        variant: "outline"
       });
     }
+
+    // Always expose the Business Needs flow entry point from Admin
+    actions.push({
+      title: "Business Needs Questionnaire",
+      description: "Start the Business Needs flow",
+      icon: FileText,
+      action: () => navigate("/solution-builder"),
+      variant: "default"
+    });
 
     return actions;
   };
