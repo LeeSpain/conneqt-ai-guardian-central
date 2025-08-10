@@ -58,7 +58,6 @@ const QuestionnaireForm: React.FC = () => {
 
   // Trigger AI analysis on Step 2 (index 1)
   useEffect(() => {
-    if (step !== 1) return;
     if (aiLoading || overviewDraft) return;
     if (!answers.companyName) return;
 
@@ -94,7 +93,7 @@ const QuestionnaireForm: React.FC = () => {
       setAiProgress(100);
       clearTimeout(t1); clearTimeout(t2); clearTimeout(t3);
     });
-  }, [step, aiLoading, overviewDraft, answers.companyName, answers.industry, answers.website]);
+  }, [aiLoading, overviewDraft, answers.companyName, answers.industry, answers.website]);
   useEffect(() => {
     if (step === 1 && aiProgress === 100 && !aiLoading) {
       setStep((s) => Math.min(totalSteps - 1, s + 1));
@@ -226,36 +225,30 @@ const QuestionnaireForm: React.FC = () => {
         <section aria-labelledby="support-title" className="space-y-6">
           <h2 id="support-title" className="text-2xl font-semibold tracking-tight">Support requirements</h2>
 
-          {/* Introduction & Overview (from AI analysis) */}
-          {overviewDraft && (
-            <div className="rounded-md border p-3 space-y-2">
-              <div className="flex items-center justify-between">
-                <div className="font-medium">Introduction & Overview</div>
-                <Button
-                  size="sm"
-                  variant="secondary"
-                  onClick={() => {
-                    setCompanyOverview({
-                      website: answers.website,
-                      summary: overviewDraft,
-                      keyPoints: overviewKeyPoints,
-                    });
-                    toast({ title: "Overview saved", description: "We’ll include this in your proposal." });
-                  }}
-                >
-                  Save Overview
-                </Button>
-              </div>
-              <Textarea rows={4} value={overviewDraft} onChange={(e)=>setOverviewDraft(e.target.value)} />
-              {overviewKeyPoints.length > 0 && (
-                <ul className="list-disc pl-5 text-sm space-y-1">
-                  {overviewKeyPoints.map((k, i) => (
-                    <li key={i}>{k}</li>
-                  ))}
-                </ul>
-              )}
+          {/* Introduction & Overview */}
+          <div className="rounded-md border p-3 space-y-2">
+            <div className="flex items-center justify-between">
+              <div className="font-medium">Introduction & Overview</div>
+              <Button
+                size="sm"
+                variant="secondary"
+                onClick={() => {
+                  const summary = overviewDraft || `Based on available information, ${answers.companyName || 'this company'} operates in the ${answers.industry || 'relevant'} sector. The public website suggests focus areas around its core offerings. This overview will improve once AI data access is configured.`;
+                  setCompanyOverview({
+                    website: answers.website,
+                    summary,
+                    keyPoints: [],
+                  });
+                  toast({ title: "Overview saved", description: "We’ll include this in your proposal." });
+                }}
+              >
+                Save Overview
+              </Button>
             </div>
-          )}
+            <p className="text-sm">
+              {overviewDraft || `Based on available information, ${answers.companyName || 'this company'} operates in the ${answers.industry || 'relevant'} sector. The public website suggests focus areas around its core offerings. This overview will improve once AI data access is configured.`}
+            </p>
+          </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <fieldset className="space-y-3">
@@ -382,7 +375,7 @@ const QuestionnaireForm: React.FC = () => {
                 toast({ title: "Missing info", description: "Please complete the required fields to continue." });
                 return;
               }
-              setStep((s) => Math.min(totalSteps - 1, s + 1));
+              setStep((s) => (s === 0 ? 2 : Math.min(totalSteps - 1, s + 1)));
             }}>
               Continue
             </Button>
