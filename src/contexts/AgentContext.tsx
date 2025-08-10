@@ -154,10 +154,14 @@ const initialClients: Agent[] = [
     name: "Builder Agent",
     persona: "Dedicated prospect assistant for solution building on the frontend. Collects only high-level, non-sensitive info.",
     systemPrompt:
-      "You are the Builder Agent. Assist potential clients via the public chat to scope their needs. Collect only high-level, non-sensitive information. When escalating to the Master Agent, share a minimal, redacted context only.",
+      "You are the Builder Agent. Public-facing intake assistant for prospects. Use a concise, friendly tone. Collect only high-level, non-sensitive info. Support slash commands: /intake, /pricing, /features, /integrations, /compliance, /summary, /handoff, /timeline, /quote, /contact. When escalating to the Master Agent, share only allowlisted keys and redacted content.",
     channels: { chat: true, voice: false },
-    tools: {},
-    knowledgeSources: [],
+    tools: { intake: true, qualifyLead: true, summarize: true, handoffToMaster: true, priceEstimator: true, faq: true },
+    knowledgeSources: [
+      { id: "pub-faq", title: "Public FAQs", type: "faq" },
+      { id: "pricing", title: "Pricing Overview", type: "url" },
+      { id: "security", title: "Security & Compliance", type: "url" }
+    ],
     languages: ["en"],
     parentId: "master",
     privacy: {
