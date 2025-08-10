@@ -260,7 +260,6 @@ const send = async () => {
   setMessages((prev) => [...prev, u, placeholder]);
   setInput("");
 
-  const { toast } = useToast();
   const apiKey = OpenAIService.getApiKey();
   if (!apiKey) {
     // Replace placeholder with guidance
@@ -268,9 +267,6 @@ const send = async () => {
     return;
   }
 
-  try {
-    const { buildSystemPrompt } = useAgent(); // not callable here; move outside? We'll compute via hook above
-  } catch {}
 };
 
   return (
@@ -315,12 +311,12 @@ const send = async () => {
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={async (e) => {
               if (e.key === "Enter") {
-                await onSend();
+                await send();
               }
             }}
             aria-label="Message the Builder Agent"
           />
-          <Button onClick={async () => await onSend()}>Send</Button>
+          <Button onClick={async () => await send()}>Send</Button>
         </div>
       </CardContent>
     </Card>
