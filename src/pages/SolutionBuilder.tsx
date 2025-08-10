@@ -3,7 +3,27 @@ import Footer from '@/components/Footer';
 import EmbeddedAssistant from '@/components/assessment/EmbeddedAssistant';
 import QuestionnaireForm from '@/components/assessment/QuestionnaireForm';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { useEffect } from 'react';
 const SolutionBuilder = () => {
+  useEffect(() => {
+    document.title = 'Solution Builder: Company Basics';
+    let meta = document.querySelector('meta[name="description"]') as HTMLMetaElement | null;
+    if (!meta) {
+      meta = document.createElement('meta');
+      meta.setAttribute('name', 'description');
+      document.head.appendChild(meta);
+    }
+    meta.setAttribute('content', 'Build your solution: company basics, AI agent overview, and support requirements.');
+
+    let canonical = document.querySelector('link[rel="canonical"]') as HTMLLinkElement | null;
+    if (!canonical) {
+      canonical = document.createElement('link');
+      canonical.setAttribute('rel', 'canonical');
+      document.head.appendChild(canonical);
+    }
+    canonical.setAttribute('href', window.location.href);
+  }, []);
+
   return (
     <>
       <Navbar />
@@ -17,7 +37,7 @@ const SolutionBuilder = () => {
           </header>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
-            {/* Left: AI Assistant Chat (fixed height) */}
+            {/* Left: AI Assistant Chat or Overview (fixed height) */}
             <div className="w-full">
               <EmbeddedAssistant />
             </div>

@@ -33,7 +33,7 @@ const QuestionnaireForm: React.FC = () => {
   const { setSelectedServices, setAssessment, setCompanyOverview } = useClientProfile();
 
   const [step, setStep] = useState(0);
-  const totalSteps = 7;
+  const totalSteps = 6;
 
   const [answers, setAnswers] = useState({
     companyName: "",
@@ -56,15 +56,53 @@ const QuestionnaireForm: React.FC = () => {
   const [overviewDraft, setOverviewDraft] = useState("");
   const [overviewKeyPoints, setOverviewKeyPoints] = useState<string[]>([]);
 
+  // Trigger AI analysis on Step 2 (index 1)
+  useEffect(() => {
+    if (step !== 1) return;
+    if (aiLoading || overviewDraft) return;
+    if (!answers.companyName) return;
+
+    setAiLoading(true);
+    setAiProgress(15);
+
+    const t1 = setTimeout(() => setAiProgress(40), 500);
+    const t2 = setTimeout(() => setAiProgress(70), 1000);
+    const t3 = setTimeout(() => setAiProgress(90), 1600);
+
+    CompanyAnalyzer.analyzeCompany({
+      companyName: answers.companyName,
+      industry: answers.industry,
+      websiteUrl: answers.website,
+    }).then((res) => {
+      if (res) {
+        setOverviewDraft(res.summary);
+        setOverviewKeyPoints(res.keyPoints ?? []);
+        setCompanyOverview({
+          website: answers.website,
+          summary: res.summary,
+          keyPoints: res.keyPoints,
+          sources: res.sources,
+        });
+        toast({ title: "Company analyzed", description: "Overview ready. Continue to Support requirements." });
+      } else {
+        toast({ title: "Analysis unavailable", description: "You can continue without the AI overview." });
+      }
+    }).catch(() => {
+      toast({ title: "Analysis failed", description: "You can continue without it.", variant: "destructive" });
+    }).finally(() => {
+      setAiLoading(false);
+      setAiProgress(100);
+      clearTimeout(t1); clearTimeout(t2); clearTimeout(t3);
+    });
+  }, [step, aiLoading, overviewDraft, answers.companyName, answers.industry, answers.website]);
   const progress = useMemo(() => Math.round(((step + 1) / totalSteps) * 100), [step]);
 
   const nextDisabled = useMemo(() => {
     if (step === 0) return !(answers.companyName && answers.industry && answers.website);
-    if (step === 1) return aiLoading || !overviewDraft; // wait for AI
-    if (step === 2) return !overviewDraft; // must confirm overview
-    if (step === 3) return !(answers.callVolume && answers.complexity && answers.coverage);
-    if (step === 4) return !(answers.integrations && answers.compliance);
-    if (step === 5) return selectedServices.length === 0; // require at least one service
+    if (step === 1) return aiLoading || !overviewDraft; // wait for AI analysis
+    if (step === 2) return !(answers.callVolume && answers.complexity && answers.coverage);
+    if (step === 3) return !(answers.integrations && answers.compliance);
+    if (step === 4) return selectedServices.length === 0; // require at least one service
     return false;
   }, [step, answers, aiLoading, overviewDraft, selectedServices]);
 
@@ -166,8 +204,35 @@ const QuestionnaireForm: React.FC = () => {
         </section>
       )}
 
-      {/* Step 2: Support Requirements */}
+      {/* Step 2: AI Agent is Working */}
       {step === 1 && (
+        <section aria-labelledby="agent-title" className="space-y-6">
+          <h2 id="agent-title" className="text-2xl font-semibold tracking-tight">AI Agent is working</h2>
+          <p className="text-sm text-muted-foreground">
+            Our AI is analyzing your website and industry to craft a tailored overview. This usually takes a few seconds.
+          </p>
+          <div className="space-y-3">
+            <Progress value={aiProgress} />
+            <div className="text-xs text-muted-foreground">{aiLoading ? 'Analyzing...' : (overviewDraft ? 'Analysis complete' : 'Waiting to start')}</div>
+            {overviewDraft && (
+              <div className="rounded-md border p-3">
+                <div className="text-sm font-medium">Preview</div>
+                <p className="text-sm mt-1">{overviewDraft}</p>
+                {overviewKeyPoints.length > 0 && (
+                  <ul className="list-disc pl-5 mt-2 text-sm space-y-1">
+                    {overviewKeyPoints.map((k, i) => (
+                      <li key={i}>{k}</li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+            )}
+          </div>
+        </section>
+      )}
+
+      {/* Step 3: Support Requirements */}
+      {step === 2 && (
         <section aria-labelledby="support-title" className="space-y-6">
           <h2 id="support-title" className="text-2xl font-semibold tracking-tight">Support requirements</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -201,8 +266,8 @@ const QuestionnaireForm: React.FC = () => {
         </section>
       )}
 
-      {/* Step 3: Tech & Compliance */}
-      {step === 2 && (
+      {/* Step 4: Tech & Compliance */}
+      {step === 3 && (
         <section aria-labelledby="tech-title" className="space-y-6">
           <h2 id="tech-title" className="text-2xl font-semibold tracking-tight">Tech & compliance</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -227,8 +292,8 @@ const QuestionnaireForm: React.FC = () => {
         </section>
       )}
 
-      {/* Step 4: Service Interests */}
-      {step === 3 && (
+      {/* Step 5: Service Interests */}
+      {step === 4 && (
         <section aria-labelledby="services-title" className="space-y-4">
           <h2 id="services-title" className="text-2xl font-semibold tracking-tight">Service interests</h2>
           <p className="text-sm text-muted-foreground">Choose the modules you want enabled. You can adjust later.</p>
@@ -254,8 +319,8 @@ const QuestionnaireForm: React.FC = () => {
         </section>
       )}
 
-      {/* Step 5: Review */}
-      {step === 4 && (
+      {/* Step 6: Review */}
+      {step === 5 && (
         <section aria-labelledby="review-title" className="space-y-4">
           <h2 id="review-title" className="text-2xl font-semibold tracking-tight">Review & confirm</h2>
           <div className="space-y-2 text-sm">
