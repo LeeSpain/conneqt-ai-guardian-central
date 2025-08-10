@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useMemo, useState, useEffect } from "react";
 import { buildRedactedContext } from "@/utils/AgentPrivacy";
+import { OpenAIService } from "@/utils/OpenAIService";
 
 export type KnowledgeSource = {
   id: string;
@@ -111,6 +112,8 @@ type AgentContextType = {
   getRedactedForAgent: (agentId: string, profile: any) => any;
   // Prompt composition
   buildSystemPrompt: (agentId: string) => string;
+  // LLM availability (derived from Admin OpenAI key)
+  llmAvailable: boolean;
 };
 
 const AgentContext = createContext<AgentContextType | undefined>(undefined);
@@ -258,6 +261,18 @@ export const AgentProvider = ({ children }: { children: React.ReactNode }) => {
       archived: false
     }
   ]);
+
+  // LLM availability derived from Admin OpenAI key (stored client-side)
+  const [llmReady, setLlmReady] = useState<boolean>(Boolean(OpenAIService.getApiKey()));
+  useEffect(() => {
+    const sync = () => setLlmReady(Boolean(OpenAIService.getApiKey()));
+    sync();
+    const onStorage = (e: StorageEvent) => {
+      if (!e.key || e.key === 'openai_api_key') sync();
+    };
+    window.addEventListener('storage', onStorage);
+    return () => window.removeEventListener('storage', onStorage);
+  }, []);
 
 // Load from localStorage on mount
   useEffect(() => {
@@ -470,8 +485,10 @@ export const AgentProvider = ({ children }: { children: React.ReactNode }) => {
           .filter(Boolean)
           .join("\n\n");
       },
+      // LLM availability
+      llmAvailable: llmReady,
     }),
-    [masterAgent, clientAgents, trainingItems]
+    [masterAgent, clientAgents, trainingItems, llmReady]
   );
 
   return <AgentContext.Provider value={value}>{children}</AgentContext.Provider>;

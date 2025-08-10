@@ -32,7 +32,7 @@ const QuestionnaireForm: React.FC = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const { setSelectedServices, setAssessment, setCompanyOverview } = useClientProfile();
-  const { buildSystemPrompt } = useAgent();
+  const { buildSystemPrompt, llmAvailable } = useAgent();
 
   const [step, setStep] = useState(0);
   const totalSteps = 6;
@@ -57,7 +57,8 @@ const QuestionnaireForm: React.FC = () => {
   const [aiProgress, setAiProgress] = useState(0);
   const [overviewDraft, setOverviewDraft] = useState("");
   const [overviewKeyPoints, setOverviewKeyPoints] = useState<string[]>([]);
-  const [aiAvailable, setAiAvailable] = useState<boolean>(Boolean(OpenAIService.getApiKey()));
+  const [aiDisabled, setAiDisabled] = useState(false);
+  const aiAvailable = llmAvailable && !aiDisabled;
 
   // Trigger AI analysis on Step 2 (index 1)
   useEffect(() => {
@@ -114,8 +115,8 @@ const QuestionnaireForm: React.FC = () => {
           toast({ title: 'Analysis unavailable', description: 'You can continue without the AI overview.' });
         }
       } catch (e) {
-        setAiAvailable(false);
-        toast({ title: 'Analysis failed', description: 'OpenAI key not configured or request failed. You can continue without AI.', variant: 'destructive' });
+        setAiDisabled(true);
+        toast({ title: 'Analysis failed', description: 'Analysis temporarily unavailable. You can continue without AI.', variant: 'destructive' });
       } finally {
         setAiLoading(false);
         setAiProgress(100);
@@ -126,6 +127,14 @@ const QuestionnaireForm: React.FC = () => {
     run();
   }, [step, aiAvailable, aiLoading, overviewDraft, answers.companyName, answers.industry, answers.website, buildSystemPrompt, toast, setCompanyOverview]);
   const progress = useMemo(() => Math.round(((step + 1) / totalSteps) * 100), [step]);
+
+  // Auto-advance when AI is unavailable (no frontend settings exposed)
+  useEffect(() => {
+    if (step === 1 && !aiAvailable && !aiLoading) {
+      const t = setTimeout(() => setStep((s) => Math.min(totalSteps - 1, s + 1)), 800);
+      return () => clearTimeout(t);
+    }
+  }, [step, aiAvailable, aiLoading, totalSteps]);
 
   const nextDisabled = useMemo(() => {
     if (step === 0) return !(answers.companyName && answers.industry && answers.website);
@@ -245,13 +254,8 @@ const QuestionnaireForm: React.FC = () => {
             </div>
           ) : (
             <div className="rounded-md border p-3 space-y-2">
-              <div className="font-medium">OpenAI not configured</div>
-              <p className="text-sm text-muted-foreground">Connect your OpenAI key in AI Agents to enable automatic analysis. You can continue without it.</p>
-              <div>
-                <Button asChild variant="secondary" size="sm">
-                  <a href="/ai-agents">Open AI Agents</a>
-                </Button>
-              </div>
+              <div className="font-medium">Preparing next step</div>
+              <p className="text-sm text-muted-foreground">Automatic analysis is not available right now. You can continue without it.</p>
             </div>
           )}
         </section>

@@ -82,12 +82,12 @@ export default function AIAgents() {
               </Card>
             </section>
 
-            {/* Settings & Integrations */}
+            {/* Settings & Integrations (Admin only - hidden from public flows) */}
             <section className="grid gap-6 lg:grid-cols-2">
               <Card className="shadow-sm">
                 <CardHeader>
                   <CardTitle>OpenAI Integration</CardTitle>
-                  <CardDescription>Set your OpenAI API key to enable live LLM responses.</CardDescription>
+                  <CardDescription>Admin-only: Set your OpenAI API key to enable live LLM responses.</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-3">
                   <div className="grid gap-2">
@@ -102,6 +102,7 @@ export default function AIAgents() {
                   <div className="flex gap-2">
                     <Button onClick={async ()=>{
                       OpenAIService.saveApiKey(openAiKey.trim());
+                      window.dispatchEvent(new StorageEvent('storage', { key: 'openai_api_key' }));
                       toast({ title: "API key saved" });
                     }}>Save Key</Button>
                     <Button variant="secondary" onClick={async ()=>{
