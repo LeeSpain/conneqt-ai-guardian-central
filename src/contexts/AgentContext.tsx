@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useMemo, useState, useEffect } from "react";
+import { buildRedactedContext } from "@/utils/AgentPrivacy";
 
 export type KnowledgeSource = {
   id: string;
@@ -30,6 +31,15 @@ export type Agent = {
     helpdesk?: string; // zendesk | freshdesk | custom
     billing?: string; // stripe | chargebee | custom
     calendar?: string; // google | microsoft | custom
+  };
+  // Hierarchy and privacy controls
+  parentId?: string; // When present, this agent inherits policies from parent (e.g., "master")
+  privacy?: {
+    allowWebsite?: boolean;
+    maskEmails?: boolean;
+    maskPhones?: boolean;
+    shareOnlyAllowlist?: boolean;
+    allowlistKeys?: string[]; // keys from assessment/overview allowed to share upstream
   };
 };
 
@@ -97,6 +107,8 @@ type AgentContextType = {
     id: string,
     overrides?: Partial<Omit<TrainingItem, "id" | "versions" | "publishedVersionId">>
   ) => TrainingItem | undefined;
+  // Privacy utilities
+  getRedactedForAgent: (agentId: string, profile: any) => any;
 };
 
 const AgentContext = createContext<AgentContextType | undefined>(undefined);
@@ -137,6 +149,36 @@ const initialMaster: MasterAgent = {
 };
 
 const initialClients: Agent[] = [
+  {
+    id: "solution-builder",
+    name: "Solution Builder Agent",
+    persona: "Scoped onboarding assistant that gathers business basics only.",
+    systemPrompt:
+      "You are the Solution Builder. Collect only high-level, non-sensitive information needed for solution scoping. When escalating to the Master Agent, share a minimal, redacted context only.",
+    channels: { chat: false, voice: false },
+    tools: {},
+    knowledgeSources: [],
+    languages: ["en"],
+    parentId: "master",
+    privacy: {
+      allowWebsite: false,
+      maskEmails: true,
+      maskPhones: true,
+      shareOnlyAllowlist: true,
+      allowlistKeys: [
+        "industry",
+        "teamSize",
+        "callVolume",
+        "complexity",
+        "coverage",
+        "integrations",
+        "compliance",
+        "selectedServices",
+        "companyOverview.summary",
+        "companyOverview.keyPoints"
+      ],
+    },
+  },
   {
     id: "c-1001",
     name: "Acme Health Agent",
@@ -376,6 +418,12 @@ export const AgentProvider = ({ children }: { children: React.ReactNode }) => {
       publishTraining,
       archiveTraining,
       duplicateTraining,
+      // Privacy utilities
+      getRedactedForAgent: (agentId: string, profile: any) => {
+        const agent = agentId === "master" ? masterAgent : getClientAgent(agentId);
+        const opts = agent?.privacy || {};
+        return buildRedactedContext(profile, opts);
+      },
     }),
     [masterAgent, clientAgents, trainingItems]
   );
