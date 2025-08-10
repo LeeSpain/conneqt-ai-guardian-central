@@ -57,10 +57,12 @@ const QuestionnaireForm: React.FC = () => {
   const [aiProgress, setAiProgress] = useState(0);
   const [overviewDraft, setOverviewDraft] = useState("");
   const [overviewKeyPoints, setOverviewKeyPoints] = useState<string[]>([]);
+  const [aiAvailable, setAiAvailable] = useState<boolean>(Boolean(OpenAIService.getApiKey()));
 
   // Trigger AI analysis on Step 2 (index 1)
   useEffect(() => {
     if (step !== 1) return;
+    if (!aiAvailable) return;
     if (aiLoading || overviewDraft) return;
     if (!answers.companyName) return;
 
@@ -112,7 +114,8 @@ const QuestionnaireForm: React.FC = () => {
           toast({ title: 'Analysis unavailable', description: 'You can continue without the AI overview.' });
         }
       } catch (e) {
-        toast({ title: 'Analysis failed', description: 'OpenAI key not configured or request failed.', variant: 'destructive' });
+        setAiAvailable(false);
+        toast({ title: 'Analysis failed', description: 'OpenAI key not configured or request failed. You can continue without AI.', variant: 'destructive' });
       } finally {
         setAiLoading(false);
         setAiProgress(100);
@@ -121,17 +124,17 @@ const QuestionnaireForm: React.FC = () => {
     };
 
     run();
-  }, [step, aiLoading, overviewDraft, answers.companyName, answers.industry, answers.website, buildSystemPrompt, toast, setCompanyOverview]);
+  }, [step, aiAvailable, aiLoading, overviewDraft, answers.companyName, answers.industry, answers.website, buildSystemPrompt, toast, setCompanyOverview]);
   const progress = useMemo(() => Math.round(((step + 1) / totalSteps) * 100), [step]);
 
   const nextDisabled = useMemo(() => {
     if (step === 0) return !(answers.companyName && answers.industry && answers.website);
-    if (step === 1) return aiLoading || !overviewDraft; // wait for AI analysis
+    if (step === 1) return aiAvailable ? (aiLoading || !overviewDraft) : false; // allow skipping when AI unavailable
     if (step === 2) return !(answers.callVolume && answers.complexity && answers.coverage);
     if (step === 3) return !(answers.integrations && answers.compliance);
     if (step === 4) return selectedServices.length === 0; // require at least one service
     return false;
-  }, [step, answers, aiLoading, overviewDraft, selectedServices]);
+  }, [step, answers, aiAvailable, aiLoading, overviewDraft, selectedServices]);
 
   const computeScoreAndTier = () => {
     let score = 0;
@@ -235,10 +238,22 @@ const QuestionnaireForm: React.FC = () => {
       {step === 1 && (
         <section aria-labelledby="agent-title" className="space-y-6">
           <h2 id="agent-title" className="text-2xl font-semibold tracking-tight">AI Agent is working</h2>
-          <div className="space-y-3">
-            <Progress value={aiProgress} />
-            <div className="text-xs text-muted-foreground">{aiLoading ? 'Analyzing...' : 'Finalizing...'}</div>
-          </div>
+          {aiAvailable ? (
+            <div className="space-y-3">
+              <Progress value={aiProgress} />
+              <div className="text-xs text-muted-foreground">{aiLoading ? 'Analyzing...' : 'Finalizing...'}</div>
+            </div>
+          ) : (
+            <div className="rounded-md border p-3 space-y-2">
+              <div className="font-medium">OpenAI not configured</div>
+              <p className="text-sm text-muted-foreground">Connect your OpenAI key in AI Agents to enable automatic analysis. You can continue without it.</p>
+              <div>
+                <Button asChild variant="secondary" size="sm">
+                  <a href="/ai-agents">Open AI Agents</a>
+                </Button>
+              </div>
+            </div>
+          )}
         </section>
       )}
 
