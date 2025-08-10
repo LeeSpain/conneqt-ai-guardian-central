@@ -9,6 +9,33 @@ export class PerplexityService {
     return localStorage.getItem(this.API_KEY_STORAGE_KEY);
   }
 
+  static async testApiKey(apiKey: string): Promise<boolean> {
+    try {
+      const res = await fetch('https://api.perplexity.ai/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${apiKey}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          model: 'llama-3.1-sonar-small-128k-online',
+          messages: [
+            { role: 'system', content: 'Be precise and concise.' },
+            { role: 'user', content: 'Reply with OK.' },
+          ],
+          temperature: 0,
+          max_tokens: 5,
+        }),
+      });
+      if (!res.ok) return false;
+      const data = await res.json();
+      const text: string = data?.choices?.[0]?.message?.content || '';
+      return /ok/i.test(text.trim());
+    } catch {
+      return false;
+    }
+  }
+
   static async summarizeCompany(params: {
     companyName: string;
     industry?: string;

@@ -4,6 +4,7 @@ import Footer from '@/components/Footer';
 import QuestionnaireForm from '@/components/assessment/QuestionnaireForm';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useEffect } from 'react';
+import AIConnections from '@/components/integrations/AIConnections';
 const SolutionBuilder = () => {
   useEffect(() => {
     document.title = 'Solution Builder: Company Basics';
@@ -36,6 +37,7 @@ const SolutionBuilder = () => {
             </p>
           </header>
 
+          <AIConnections />
           <div className="max-w-3xl mx-auto">
             <Card className="flex flex-col">
               <CardHeader className="pb-3">

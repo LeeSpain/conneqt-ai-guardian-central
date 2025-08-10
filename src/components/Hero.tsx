@@ -46,7 +46,7 @@ const Hero = () => {
                 loading="eager"
                 decoding="async"
                 className="object-cover w-full h-full"
-                fetchPriority="high"
+                
               />
             </AspectRatio>
           </div>
