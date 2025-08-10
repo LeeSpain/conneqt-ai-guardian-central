@@ -26,6 +26,9 @@ const mockCurrentUser: TeamMember = {
     canManageTeam: true,
     canViewSettings: true,
     canEditSettings: true,
+    canViewAgents: true,
+    canManageAgents: true,
+    canOperateAgents: true,
   },
 };
 

@@ -21,6 +21,11 @@ import WebsiteIntegration from "./pages/WebsiteIntegration";
 import AIGuardian from "./pages/AIGuardian";
 import ManagedServices from "./pages/ManagedServices";
 import SolutionBuilder from "./pages/SolutionBuilder";
+import AIAgents from "./pages/AIAgents";
+import MasterAgentSettings from "./pages/MasterAgentSettings";
+import ClientAgents from "./pages/ClientAgents";
+import ClientAgentManager from "./pages/ClientAgentManager";
+import AgentConsole from "./pages/AgentConsole";
 
 const queryClient = new QueryClient();
 
@@ -43,6 +48,12 @@ const AppRoutes = () => {
       <Route path="/platform-settings" element={<PlatformSettings />} />
       <Route path="/website-integration" element={<WebsiteIntegration />} />
       <Route path="/ai-guardian" element={<AIGuardian />} />
+      {/* AI Agents */}
+      <Route path="/ai-agents" element={<AIAgents />} />
+      <Route path="/ai-agents/master" element={<MasterAgentSettings />} />
+      <Route path="/ai-agents/clients" element={<ClientAgents />} />
+      <Route path="/ai-agents/clients/:clientId" element={<ClientAgentManager />} />
+      <Route path="/ai-agents/console" element={<AgentConsole />} />
       <Route path="*" element={<NotFound />} />
     </Routes>
   );

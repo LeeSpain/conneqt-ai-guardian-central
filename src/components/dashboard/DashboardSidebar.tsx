@@ -79,6 +79,7 @@ export const DashboardSidebar = () => {
               {[
                 { title: "Platform Settings", icon: Settings, path: "/platform-settings" },
                 { title: "Website Integration", icon: Globe, path: "/website-integration" },
+                { title: "AI Agents", icon: BrainCircuit, path: "/ai-agents" },
                 { title: "AI Guardian", icon: Bot, path: "/ai-guardian" }
               ].map((item) => (
                 <SidebarMenuItem key={item.title}>

@@ -30,6 +30,9 @@ const mockTeamMembers: TeamMember[] = [
       canManageTeam: true,
       canViewSettings: true,
       canEditSettings: true,
+      canViewAgents: true,
+      canManageAgents: true,
+      canOperateAgents: true,
     },
   },
   {
@@ -48,6 +51,9 @@ const mockTeamMembers: TeamMember[] = [
       canManageTeam: true,
       canViewSettings: true,
       canEditSettings: false,
+      canViewAgents: true,
+      canManageAgents: true,
+      canOperateAgents: true,
     },
   },
   {
@@ -66,6 +72,9 @@ const mockTeamMembers: TeamMember[] = [
       canManageTeam: false,
       canViewSettings: false,
       canEditSettings: false,
+      canViewAgents: true,
+      canManageAgents: false,
+      canOperateAgents: false,
     },
   },
   {
@@ -84,6 +93,9 @@ const mockTeamMembers: TeamMember[] = [
       canManageTeam: false,
       canViewSettings: false,
       canEditSettings: false,
+      canViewAgents: false,
+      canManageAgents: false,
+      canOperateAgents: false,
     },
   },
 ];

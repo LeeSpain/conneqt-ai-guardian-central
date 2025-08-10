@@ -17,5 +17,8 @@ export type TeamMember = {
     canManageTeam: boolean;
     canViewSettings: boolean;
     canEditSettings: boolean;
+    canViewAgents: boolean;
+    canManageAgents: boolean;
+    canOperateAgents: boolean;
   };
 };

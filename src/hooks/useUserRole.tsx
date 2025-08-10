@@ -9,7 +9,7 @@ export const useUserRole = () => {
   const isStaff = currentUser?.role === 'Staff';
   const isViewer = currentUser?.role === 'Viewer';
 
-  const canAccessFeature = (feature: 'clients' | 'reports' | 'team' | 'settings') => {
+  const canAccessFeature = (feature: 'clients' | 'reports' | 'team' | 'settings' | 'agents') => {
     switch (feature) {
       case 'clients':
         return hasPermission('canViewClients');
@@ -19,6 +19,8 @@ export const useUserRole = () => {
         return hasPermission('canManageTeam');
       case 'settings':
         return hasPermission('canViewSettings');
+      case 'agents':
+        return hasPermission('canViewAgents');
       default:
         return false;
     }

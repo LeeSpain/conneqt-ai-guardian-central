@@ -30,6 +30,9 @@ export const AddTeamMemberDialog = ({ open, onOpenChange, onAdd }: AddTeamMember
       canManageTeam: true,
       canViewSettings: true,
       canEditSettings: true,
+      canViewAgents: true,
+      canManageAgents: true,
+      canOperateAgents: true,
     },
     Manager: {
       canViewClients: true,
@@ -39,6 +42,9 @@ export const AddTeamMemberDialog = ({ open, onOpenChange, onAdd }: AddTeamMember
       canManageTeam: true,
       canViewSettings: true,
       canEditSettings: false,
+      canViewAgents: true,
+      canManageAgents: true,
+      canOperateAgents: true,
     },
     Staff: {
       canViewClients: true,
@@ -48,6 +54,9 @@ export const AddTeamMemberDialog = ({ open, onOpenChange, onAdd }: AddTeamMember
       canManageTeam: false,
       canViewSettings: false,
       canEditSettings: false,
+      canViewAgents: true,
+      canManageAgents: false,
+      canOperateAgents: false,
     },
     Viewer: {
       canViewClients: true,
@@ -57,6 +66,9 @@ export const AddTeamMemberDialog = ({ open, onOpenChange, onAdd }: AddTeamMember
       canManageTeam: false,
       canViewSettings: false,
       canEditSettings: false,
+      canViewAgents: false,
+      canManageAgents: false,
+      canOperateAgents: false,
     },
   };
 
