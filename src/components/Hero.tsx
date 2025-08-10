@@ -30,7 +30,7 @@ const Hero = () => {
                 Access Dashboard
               </Link>
               <Link 
-                to="/ai-guardian" 
+                to="/ai-agents" 
                 className="bg-white hover:bg-gray-50 text-conneqt-navy border border-conneqt-navy px-6 py-3 rounded-md font-medium transition-colors"
               >
                 Try AI Demo

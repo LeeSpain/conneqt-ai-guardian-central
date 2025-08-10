@@ -30,7 +30,7 @@ const journeySteps = [
     description: 'Try industry-specific demos and see how AI handles your customer scenarios',
     icon: Play,
     time: '10 min',
-    link: '/ai-guardian'
+    link: '/ai-agents'
   },
   {
     step: 3,
@@ -131,7 +131,7 @@ const GetStartedJourney = () => {
                   </Link>
                 </Button>
                 <Button variant="outline" size="lg" className="w-full" asChild>
-                  <Link to="/ai-guardian">
+                  <Link to="/ai-agents">
                     <Play size={16} className="mr-2" />
                     Watch Demo First
                   </Link>

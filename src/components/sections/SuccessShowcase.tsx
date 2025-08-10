@@ -163,7 +163,7 @@ const SuccessShowcase = () => {
                     </Link>
                   </Button>
                   <Button variant="outline" className="w-full" asChild>
-                    <Link to="/ai-guardian">
+                    <Link to="/ai-agents">
                       Try {selectedIndustry.name} Demo
                     </Link>
                   </Button>

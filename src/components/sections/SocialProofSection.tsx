@@ -151,7 +151,7 @@ const SocialProofSection = () => {
                   </Link>
                 </Button>
                 <Button variant="outline" asChild>
-                  <Link to="/ai-guardian">
+                  <Link to="/ai-agents">
                     <Clock size={16} className="mr-2" />
                     View More Case Studies
                   </Link>

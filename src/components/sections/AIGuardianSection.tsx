@@ -56,7 +56,7 @@ const AIGuardianSection = () => {
             </ul>
             
             <Link 
-              to="/ai-guardian" 
+              to="/ai-agents" 
               className="inline-flex items-center bg-white text-conneqt-navy hover:bg-blue-50 px-6 py-3 rounded-md font-medium transition-colors"
             >
               Experience AI Agent Demo

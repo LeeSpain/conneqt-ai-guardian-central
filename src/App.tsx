@@ -18,7 +18,6 @@ import Reports from "./pages/Reports";
 import CallCenter from "./pages/CallCenter";
 import PlatformSettings from "./pages/PlatformSettings";
 import WebsiteIntegration from "./pages/WebsiteIntegration";
-import AIGuardian from "./pages/AIGuardian";
 import ManagedServices from "./pages/ManagedServices";
 import SolutionBuilder from "./pages/SolutionBuilder";
 import AIAgents from "./pages/AIAgents";
@@ -54,7 +53,6 @@ const AppRoutes = () => {
       <Route path="/call-center" element={<CallCenter />} />
       <Route path="/platform-settings" element={<PlatformSettings />} />
       <Route path="/website-integration" element={<WebsiteIntegration />} />
-      <Route path="/ai-guardian" element={<AIGuardian />} />
       {/* AI Agents */}
       <Route path="/ai-agents" element={<AIAgents />} />
       <Route path="/ai-agents/master" element={<MasterAgentSettings />} />
