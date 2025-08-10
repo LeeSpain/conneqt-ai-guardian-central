@@ -260,7 +260,20 @@ export const AgentProvider = ({ children }: { children: React.ReactNode }) => {
       const c = localStorage.getItem("cc.clientAgents");
       const t = localStorage.getItem("cc.training");
       if (m) setMasterAgent({ ...initialMaster, ...JSON.parse(m) });
-      if (c) setClientAgents(JSON.parse(c));
+
+      if (c) {
+        try {
+          const loaded = JSON.parse(c);
+          // Migration: ensure "Solution Builder" seed exists even if older storage is present
+          const hasSolutionBuilder = Array.isArray(loaded) && loaded.some((a: any) => a?.id === "solution-builder");
+          const seedSB = initialClients.find((a) => a.id === "solution-builder");
+          const merged = hasSolutionBuilder || !seedSB ? loaded : [seedSB, ...loaded];
+          setClientAgents(merged);
+        } catch {
+          setClientAgents(initialClients);
+        }
+      }
+
       if (t) setTrainingItems(JSON.parse(t));
     } catch (e) {
       console.warn("Failed to load agents/training from storage", e);
