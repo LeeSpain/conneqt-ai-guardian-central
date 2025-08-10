@@ -235,6 +235,38 @@ const QuestionnaireForm: React.FC = () => {
       {step === 2 && (
         <section aria-labelledby="support-title" className="space-y-6">
           <h2 id="support-title" className="text-2xl font-semibold tracking-tight">Support requirements</h2>
+
+          {/* Introduction & Overview (from AI analysis) */}
+          {overviewDraft && (
+            <div className="rounded-md border p-3 space-y-2">
+              <div className="flex items-center justify-between">
+                <div className="font-medium">Introduction & Overview</div>
+                <Button
+                  size="sm"
+                  variant="secondary"
+                  onClick={() => {
+                    setCompanyOverview({
+                      website: answers.website,
+                      summary: overviewDraft,
+                      keyPoints: overviewKeyPoints,
+                    });
+                    toast({ title: "Overview saved", description: "We’ll include this in your proposal." });
+                  }}
+                >
+                  Save Overview
+                </Button>
+              </div>
+              <Textarea rows={4} value={overviewDraft} onChange={(e)=>setOverviewDraft(e.target.value)} />
+              {overviewKeyPoints.length > 0 && (
+                <ul className="list-disc pl-5 text-sm space-y-1">
+                  {overviewKeyPoints.map((k, i) => (
+                    <li key={i}>{k}</li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          )}
+
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <fieldset className="space-y-3">
               <legend className="text-sm font-medium">Typical volume</legend>
