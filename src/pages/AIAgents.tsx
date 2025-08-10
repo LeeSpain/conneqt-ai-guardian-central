@@ -31,7 +31,7 @@ export default function AIAgents() {
                 <CardContent className="flex justify-between items-end">
                   <div className="text-sm text-muted-foreground">Frontend chat, inherits Master policies</div>
                   <Button asChild>
-                    <Link to="/builder">Open</Link>
+                    <Link to="/ai-agents/builder">Open</Link>
                   </Button>
                 </CardContent>
               </Card>

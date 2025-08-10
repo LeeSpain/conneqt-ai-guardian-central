@@ -48,7 +48,7 @@ export default function BuilderChat() {
   );
 }
 
-function BuilderChatInner() {
+export function BuilderChatInner() {
   const { getClientAgent, masterAgent } = useAgent();
   const builder = getClientAgent("builder");
 
