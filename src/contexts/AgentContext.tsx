@@ -379,25 +379,6 @@ export const AgentProvider = ({ children }: { children: React.ReactNode }) => {
     }),
     [masterAgent, clientAgents, trainingItems]
   );
-    () => ({
-      masterAgent,
-      clientAgents,
-      getClientAgent,
-      updateMasterAgent,
-      updateClientAgent,
-      addClientAgent,
-      // Training
-      trainingItems,
-      getTrainingForMaster,
-      getTrainingForClient,
-      addTraining,
-      updateTraining,
-      publishTraining,
-      archiveTraining,
-      duplicateTraining,
-    }),
-    [masterAgent, clientAgents, trainingItems]
-  );
 
   return <AgentContext.Provider value={value}>{children}</AgentContext.Provider>;
 };
