@@ -1,8 +1,9 @@
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -12,6 +13,7 @@ import { Progress } from "@/components/ui/progress";
 import { useToast } from "@/hooks/use-toast";
 import { useClientProfile } from "@/contexts/ClientProfileContext";
 import { SERVICE_CATALOG, type ServiceKey } from "@/types/services";
+import { CompanyAnalyzer } from "@/utils/CompanyAnalyzer";
 
 const industries = [
   "Retail",
@@ -28,10 +30,10 @@ const teamSizes = ["1-10", "11-50", "51-200", "200+"];
 const QuestionnaireForm: React.FC = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
-  const { setSelectedServices, setAssessment } = useClientProfile();
+  const { setSelectedServices, setAssessment, setCompanyOverview } = useClientProfile();
 
   const [step, setStep] = useState(0);
-  const totalSteps = 5;
+  const totalSteps = 7;
 
   const [answers, setAnswers] = useState({
     companyName: "",
@@ -43,18 +45,28 @@ const QuestionnaireForm: React.FC = () => {
     coverage: "", // business-hours | extended | 24/7
     integrations: "", // none | few | many
     compliance: "", // none | basic | strict
+    goals: "",
+    requirements: "",
   });
 
   const [selectedServices, setSelected] = useState<ServiceKey[]>([]);
 
+  const [aiLoading, setAiLoading] = useState(false);
+  const [aiProgress, setAiProgress] = useState(0);
+  const [overviewDraft, setOverviewDraft] = useState("");
+  const [overviewKeyPoints, setOverviewKeyPoints] = useState<string[]>([]);
+
   const progress = useMemo(() => Math.round(((step + 1) / totalSteps) * 100), [step]);
 
   const nextDisabled = useMemo(() => {
-    if (step === 0) return !(answers.companyName && answers.industry);
-    if (step === 1) return !(answers.callVolume && answers.complexity && answers.coverage);
-    if (step === 2) return !(answers.integrations && answers.compliance);
+    if (step === 0) return !(answers.companyName && answers.industry && answers.website);
+    if (step === 1) return aiLoading || !overviewDraft; // wait for AI
+    if (step === 2) return !overviewDraft; // must confirm overview
+    if (step === 3) return !(answers.callVolume && answers.complexity && answers.coverage);
+    if (step === 4) return !(answers.integrations && answers.compliance);
+    if (step === 5) return selectedServices.length === 0; // require at least one service
     return false;
-  }, [step, answers]);
+  }, [step, answers, aiLoading, overviewDraft, selectedServices]);
 
   const computeScoreAndTier = () => {
     let score = 0;

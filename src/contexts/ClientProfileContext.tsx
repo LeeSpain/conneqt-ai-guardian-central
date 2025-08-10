@@ -1,6 +1,13 @@
 import React, { createContext, useContext, useEffect, useMemo, useState } from "react";
 import type { ServiceKey } from "@/types/services";
 
+export type CompanyOverview = {
+  website?: string;
+  summary: string;
+  keyPoints?: string[];
+  sources?: { type: "website" | "reviews"; url: string }[];
+};
+
 export type ClientProfile = {
   selectedServices: ServiceKey[];
   paid: boolean;
@@ -15,6 +22,7 @@ export type ClientProfile = {
     strengths: string[];
     suggestedServices: ServiceKey[];
   };
+  companyOverview?: CompanyOverview;
 };
 
 const DEFAULT_PROFILE: ClientProfile = {
@@ -35,6 +43,7 @@ type ClientProfileContextType = {
     answers: Record<string, string>,
     result: NonNullable<ClientProfile["assessmentResult"]>
   ) => void;
+  setCompanyOverview: (overview: CompanyOverview) => void;
 };
 
 const ClientProfileContext = createContext<ClientProfileContextType | undefined>(undefined);
@@ -68,9 +77,13 @@ export const ClientProfileProvider = ({ children }: { children: React.ReactNode 
     setProfile((p) => ({ ...p, selectedServices: services }));
   };
 
-  const setAssessment: ClientProfileContextType["setAssessment"] = (answers, result) => {
-    setProfile((p) => ({ ...p, assessmentAnswers: answers, assessmentResult: result }));
-  };
+const setAssessment: ClientProfileContextType["setAssessment"] = (answers, result) => {
+  setProfile((p) => ({ ...p, assessmentAnswers: answers, assessmentResult: result }));
+};
+
+const setCompanyOverview: ClientProfileContextType["setCompanyOverview"] = (overview) => {
+  setProfile((p) => ({ ...p, companyOverview: overview }));
+};
 
   const markPaid = () => setProfile((p) => ({ ...p, paid: true }));
 
@@ -78,10 +91,10 @@ export const ClientProfileProvider = ({ children }: { children: React.ReactNode 
 
   const isModuleEnabled = (service: ServiceKey) => profile.selectedServices.includes(service);
 
-  const value = useMemo(
-    () => ({ profile, setSelectedServices, markPaid, resetProfile, isModuleEnabled, setAssessment }),
-    [profile]
-  );
+const value = useMemo(
+  () => ({ profile, setSelectedServices, markPaid, resetProfile, isModuleEnabled, setAssessment, setCompanyOverview }),
+  [profile]
+);
 
   return <ClientProfileContext.Provider value={value}>{children}</ClientProfileContext.Provider>;
 };
