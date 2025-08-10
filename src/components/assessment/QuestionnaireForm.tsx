@@ -13,7 +13,8 @@ import { Progress } from "@/components/ui/progress";
 import { useToast } from "@/hooks/use-toast";
 import { useClientProfile } from "@/contexts/ClientProfileContext";
 import { SERVICE_CATALOG, type ServiceKey } from "@/types/services";
-import { CompanyAnalyzer } from "@/utils/CompanyAnalyzer";
+import { OpenAIService } from "@/utils/OpenAIService";
+import { useAgent } from "@/contexts/AgentContext";
 
 const industries = [
   "Retail",
@@ -31,6 +32,7 @@ const QuestionnaireForm: React.FC = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const { setSelectedServices, setAssessment, setCompanyOverview } = useClientProfile();
+  const { buildSystemPrompt } = useAgent();
 
   const [step, setStep] = useState(0);
   const totalSteps = 6;
@@ -69,32 +71,57 @@ const QuestionnaireForm: React.FC = () => {
     const t2 = setTimeout(() => setAiProgress(70), 1000);
     const t3 = setTimeout(() => setAiProgress(90), 1600);
 
-    CompanyAnalyzer.analyzeCompany({
-      companyName: answers.companyName,
-      industry: answers.industry,
-      websiteUrl: answers.website,
-    }).then((res) => {
-      if (res) {
-        setOverviewDraft(res.summary);
-        setOverviewKeyPoints(res.keyPoints ?? []);
-        setCompanyOverview({
-          website: answers.website,
-          summary: res.summary,
-          keyPoints: res.keyPoints,
-          sources: res.sources,
-        });
-        toast({ title: "Company analyzed", description: "Overview ready. Continue to Support requirements." });
-      } else {
-        toast({ title: "Analysis unavailable", description: "You can continue without the AI overview." });
+    const run = async () => {
+      try {
+        const system = `${buildSystemPrompt('builder')}\n\nTask: You are helping scope a client. Analyze the provided company basics and produce STRICT JSON with keys: summary (4-6 sentences, business-friendly, specific) and keyPoints (array of 4-6 concise bullets). Do not fabricate beyond given inputs.`;
+        const inputPayload = {
+          companyName: answers.companyName,
+          industry: answers.industry || null,
+          website: answers.website || null,
+        };
+        const user = `Inputs:\n${JSON.stringify(inputPayload, null, 2)}`;
+
+        const reply = await OpenAIService.chat([
+          { role: 'system', content: system },
+          { role: 'user', content: user },
+        ], { model: 'gpt-4o-mini', temperature: 0.2 });
+
+        let summary = '';
+        let keyPoints: string[] = [];
+        try {
+          const jsonMatch = reply.match(/\{[\s\S]*\}/);
+          const parsed = JSON.parse(jsonMatch ? jsonMatch[0] : reply);
+          summary = (parsed.summary || '').toString();
+          keyPoints = Array.isArray(parsed.keyPoints) ? parsed.keyPoints.map((s: any) => String(s)) : [];
+        } catch {
+          summary = reply.trim();
+          keyPoints = [];
+        }
+
+        if (summary) {
+          setOverviewDraft(summary);
+          setOverviewKeyPoints(keyPoints);
+          setCompanyOverview({
+            website: answers.website,
+            summary,
+            keyPoints,
+            sources: [],
+          });
+          toast({ title: 'Company analyzed', description: 'Overview ready. Continue to Support requirements.' });
+        } else {
+          toast({ title: 'Analysis unavailable', description: 'You can continue without the AI overview.' });
+        }
+      } catch (e) {
+        toast({ title: 'Analysis failed', description: 'OpenAI key not configured or request failed.', variant: 'destructive' });
+      } finally {
+        setAiLoading(false);
+        setAiProgress(100);
+        clearTimeout(t1); clearTimeout(t2); clearTimeout(t3);
       }
-    }).catch(() => {
-      toast({ title: "Analysis failed", description: "You can continue without it.", variant: "destructive" });
-    }).finally(() => {
-      setAiLoading(false);
-      setAiProgress(100);
-      clearTimeout(t1); clearTimeout(t2); clearTimeout(t3);
-    });
-  }, [step, aiLoading, overviewDraft, answers.companyName, answers.industry, answers.website]);
+    };
+
+    run();
+  }, [step, aiLoading, overviewDraft, answers.companyName, answers.industry, answers.website, buildSystemPrompt, toast, setCompanyOverview]);
   const progress = useMemo(() => Math.round(((step + 1) / totalSteps) * 100), [step]);
 
   const nextDisabled = useMemo(() => {

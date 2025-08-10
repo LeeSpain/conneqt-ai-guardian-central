@@ -4,7 +4,7 @@ import Footer from '@/components/Footer';
 import QuestionnaireForm from '@/components/assessment/QuestionnaireForm';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useEffect } from 'react';
-import AIConnections from '@/components/integrations/AIConnections';
+import { AgentProvider } from '@/contexts/AgentContext';
 const SolutionBuilder = () => {
   useEffect(() => {
     document.title = 'Solution Builder: Company Basics';
@@ -28,28 +28,29 @@ const SolutionBuilder = () => {
   return (
     <>
       <Navbar />
-      <div className="min-h-screen bg-background pt-20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
-          <header className="mb-8 text-center">
-            <h1 className="text-4xl font-bold tracking-tight">Business Needs Questionnaire</h1>
-            <p className="mt-2 text-muted-foreground max-w-2xl mx-auto">
-              A short, professional questionnaire to tailor your services and dashboard. Our AI assistant is here to help.
-            </p>
-          </header>
+      <AgentProvider>
+        <div className="min-h-screen bg-background pt-20">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+            <header className="mb-8 text-center">
+              <h1 className="text-4xl font-bold tracking-tight">Business Needs Questionnaire</h1>
+              <p className="mt-2 text-muted-foreground max-w-2xl mx-auto">
+                A short, professional questionnaire to tailor your services and dashboard. Our AI assistant is here to help.
+              </p>
+            </header>
 
-          <AIConnections />
-          <div className="max-w-3xl mx-auto">
-            <Card className="flex flex-col">
-              <CardHeader className="pb-3">
-                <CardTitle>Business Questionnaire</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <QuestionnaireForm />
-              </CardContent>
-            </Card>
+            <div className="max-w-3xl mx-auto">
+              <Card className="flex flex-col">
+                <CardHeader className="pb-3">
+                  <CardTitle>Business Questionnaire</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <QuestionnaireForm />
+                </CardContent>
+              </Card>
+            </div>
           </div>
         </div>
-      </div>
+      </AgentProvider>
       <Footer />
     </>
   );
