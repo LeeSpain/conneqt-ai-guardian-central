@@ -3,7 +3,10 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
-import { CheckCircle, AlertCircle, TrendingUp, Brain, Target } from 'lucide-react';
+import { CheckCircle, AlertCircle, TrendingUp, Brain, Target, Sparkles } from 'lucide-react';
+import { useClientProfile } from '@/contexts/ClientProfileContext';
+import type { ServiceKey } from '@/types/services';
+import { useToast } from '@/hooks/use-toast';
 
 interface AssessmentQuestion {
   id: string;
@@ -17,7 +20,12 @@ interface AssessmentResult {
   suggestedTier: string;
   riskFactors: string[];
   strengths: string[];
+  suggestedServices: ServiceKey[];
 }
+
+type BusinessAssessmentProps = {
+  onComplete?: (payload: { answers: Record<string, string>; result: AssessmentResult }) => void;
+};
 
 const assessmentQuestions: AssessmentQuestion[] = [
   {
@@ -72,11 +80,13 @@ const assessmentQuestions: AssessmentQuestion[] = [
   }
 ];
 
-const BusinessAssessment = () => {
+const BusinessAssessment = ({ onComplete }: BusinessAssessmentProps) => {
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const [isComplete, setIsComplete] = useState(false);
   const [result, setResult] = useState<AssessmentResult | null>(null);
+  const { setAssessment, setSelectedServices } = useClientProfile();
+  const { toast } = useToast();
 
   const handleAnswer = (questionId: string, value: string) => {
     const newAnswers = { ...answers, [questionId]: value };
@@ -89,63 +99,82 @@ const BusinessAssessment = () => {
     }
   };
 
+  const deriveSuggestedServices = (finalAnswers: Record<string, string>): ServiceKey[] => {
+    const picks = new Set<ServiceKey>();
+    // Always helpful
+    picks.add('analytics');
+
+    // Voice calling ideal for higher volume or 24/7/global coverage
+    if (
+      ['medium', 'high', 'enterprise'].includes(finalAnswers.volume) ||
+      ['twenty-four', 'global'].includes(finalAnswers.hours)
+    ) {
+      picks.add('ai_agent_calling');
+    }
+
+    // Live chat fits simple/moderate complexity and lighter integrations
+    if (
+      ['simple', 'moderate'].includes(finalAnswers.complexity) ||
+      ['minimal', 'moderate'].includes(finalAnswers.integrations)
+    ) {
+      picks.add('live_chat');
+    }
+
+    return Array.from(picks);
+  };
+
   const calculateResult = (finalAnswers: Record<string, string>) => {
     let totalScore = 0;
     const recommendations: string[] = [];
     const riskFactors: string[] = [];
     const strengths: string[] = [];
 
-    // Calculate total score
-    assessmentQuestions.forEach(question => {
+    assessmentQuestions.forEach((question) => {
       const answer = finalAnswers[question.id];
-      const option = question.options.find(opt => opt.value === answer);
-      if (option) {
-        totalScore += option.score;
-      }
+      const option = question.options.find((opt) => opt.value === answer);
+      if (option) totalScore += option.score;
     });
 
-    // Generate recommendations based on answers
     if (finalAnswers.volume === 'enterprise' || finalAnswers.complexity === 'expert') {
       recommendations.push('Consider our Enterprise tier for dedicated support');
     }
-    
     if (finalAnswers.hours === 'twenty-four' || finalAnswers.hours === 'global') {
       recommendations.push('24/7 AI coverage recommended to reduce costs');
-      strengths.push('Good candidate for AI automation');
+      strengths.push('Strong candidate for AI automation');
     }
-
     if (finalAnswers.integrations === 'extensive' || finalAnswers.integrations === 'enterprise') {
       recommendations.push('Professional services team for complex integrations');
       riskFactors.push('Complex integration timeline (4-6 weeks)');
     }
-
     if (finalAnswers.compliance === 'industry' || finalAnswers.compliance === 'strict') {
       recommendations.push('Enterprise security and compliance package required');
       riskFactors.push('Additional compliance validation needed');
     }
 
-    // Suggest service tier
     let suggestedTier = 'ai-plus';
-    if (totalScore >= 16) {
-      suggestedTier = 'enterprise';
-    } else if (totalScore >= 12) {
-      suggestedTier = 'business';
-    } else if (totalScore >= 8) {
-      suggestedTier = 'ai-plus';
-    } else {
-      suggestedTier = 'ai-first';
-    }
+    if (totalScore >= 16) suggestedTier = 'enterprise';
+    else if (totalScore >= 12) suggestedTier = 'business';
+    else if (totalScore >= 8) suggestedTier = 'ai-plus';
+    else suggestedTier = 'ai-first';
+
+    const suggestedServices = deriveSuggestedServices(finalAnswers);
 
     const assessmentResult: AssessmentResult = {
       overallScore: totalScore,
       recommendations,
       suggestedTier,
       riskFactors,
-      strengths
+      strengths,
+      suggestedServices,
     };
 
     setResult(assessmentResult);
     setIsComplete(true);
+
+    // Persist to client profile for the next steps
+    setAssessment(finalAnswers, assessmentResult);
+    setSelectedServices(assessmentResult.suggestedServices);
+    toast({ title: 'Assessment saved', description: 'We pre-selected recommended services for you.' });
   };
 
   const resetAssessment = () => {
@@ -159,9 +188,9 @@ const BusinessAssessment = () => {
     const tiers = {
       'ai-first': 'AI-First',
       'ai-plus': 'AI-Plus',
-      'business': 'Business',
-      'enterprise': 'Enterprise'
-    };
+      business: 'Business',
+      enterprise: 'Enterprise',
+    } as const;
     return tiers[tier as keyof typeof tiers] || tier;
   };
 
@@ -171,7 +200,7 @@ const BusinessAssessment = () => {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Brain className="text-primary" size={24} />
-            Your Business Assessment Results
+            Business Assessment Summary
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-6">
@@ -180,25 +209,19 @@ const BusinessAssessment = () => {
               <TrendingUp className="text-primary" size={32} />
             </div>
             <h3 className="text-2xl font-bold mb-2">Assessment Complete</h3>
-            <p className="text-muted-foreground">
-              Based on your responses, we've analyzed your customer service needs
-            </p>
+            <p className="text-muted-foreground">We analyzed your inputs and prepared a tailored plan.</p>
           </div>
 
-          <div className="grid md:grid-cols-2 gap-6">
+          <div className="grid md:grid-cols-3 gap-6">
             <Card className="border-primary/20 bg-primary/5">
               <CardContent className="p-4">
                 <h4 className="font-semibold mb-2 flex items-center gap-2">
                   <Target className="text-primary" size={16} />
-                  Recommended Service Tier
+                  Recommended Tier
                 </h4>
                 <div className="text-center">
-                  <Badge className="text-lg px-4 py-2">
-                    {getTierName(result.suggestedTier)}
-                  </Badge>
-                  <p className="text-sm text-muted-foreground mt-2">
-                    Best fit for your requirements
-                  </p>
+                  <Badge className="text-lg px-4 py-2">{getTierName(result.suggestedTier)}</Badge>
+                  <p className="text-sm text-muted-foreground mt-2">Best fit for your requirements</p>
                 </div>
               </CardContent>
             </Card>
@@ -212,6 +235,20 @@ const BusinessAssessment = () => {
                     <span>{result.overallScore}/20</span>
                   </div>
                   <Progress value={(result.overallScore / 20) * 100} />
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardContent className="p-4">
+                <h4 className="font-semibold mb-2 flex items-center gap-2">
+                  <Sparkles className="text-primary" size={16} />
+                  Suggested Services
+                </h4>
+                <div className="flex flex-wrap gap-2">
+                  {result.suggestedServices.map((s) => (
+                    <Badge key={s} variant="secondary" className="capitalize">{String(s).replace(/_/g, ' ')}</Badge>
+                  ))}
                 </div>
               </CardContent>
             </Card>
@@ -269,8 +306,14 @@ const BusinessAssessment = () => {
           )}
 
           <div className="flex gap-2">
-            <Button className="flex-1">
-              Configure {getTierName(result.suggestedTier)} Solution
+            <Button
+              className="flex-1"
+              onClick={() => {
+                setSelectedServices(result.suggestedServices);
+                onComplete?.({ answers, result });
+              }}
+            >
+              Continue to Service Selection
             </Button>
             <Button variant="outline" onClick={resetAssessment}>
               Retake Assessment
@@ -290,7 +333,9 @@ const BusinessAssessment = () => {
         </CardTitle>
         <div className="space-y-2">
           <div className="flex justify-between text-sm text-muted-foreground">
-            <span>Question {currentQuestion + 1} of {assessmentQuestions.length}</span>
+            <span>
+              Question {currentQuestion + 1} of {assessmentQuestions.length}
+            </span>
             <span>{Math.round(((currentQuestion + 1) / assessmentQuestions.length) * 100)}% Complete</span>
           </div>
           <Progress value={((currentQuestion + 1) / assessmentQuestions.length) * 100} />
@@ -298,9 +343,7 @@ const BusinessAssessment = () => {
       </CardHeader>
       <CardContent className="space-y-6">
         <div>
-          <h3 className="text-lg font-semibold mb-4">
-            {assessmentQuestions[currentQuestion].question}
-          </h3>
+          <h3 className="text-lg font-semibold mb-4">{assessmentQuestions[currentQuestion].question}</h3>
           <div className="space-y-3">
             {assessmentQuestions[currentQuestion].options.map((option) => (
               <Button
@@ -316,10 +359,7 @@ const BusinessAssessment = () => {
         </div>
 
         {currentQuestion > 0 && (
-          <Button 
-            variant="ghost" 
-            onClick={() => setCurrentQuestion(currentQuestion - 1)}
-          >
+          <Button variant="ghost" onClick={() => setCurrentQuestion(currentQuestion - 1)}>
             Previous Question
           </Button>
         )}

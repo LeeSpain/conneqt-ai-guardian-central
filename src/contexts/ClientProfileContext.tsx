@@ -5,6 +5,16 @@ export type ClientProfile = {
   selectedServices: ServiceKey[];
   paid: boolean;
   createdAt: string;
+  // Extended fields to persist assessment context
+  assessmentAnswers?: Record<string, string>;
+  assessmentResult?: {
+    overallScore: number;
+    suggestedTier: string;
+    recommendations: string[];
+    riskFactors: string[];
+    strengths: string[];
+    suggestedServices: ServiceKey[];
+  };
 };
 
 const DEFAULT_PROFILE: ClientProfile = {
@@ -21,6 +31,10 @@ type ClientProfileContextType = {
   markPaid: () => void;
   resetProfile: () => void;
   isModuleEnabled: (service: ServiceKey) => boolean;
+  setAssessment: (
+    answers: Record<string, string>,
+    result: NonNullable<ClientProfile["assessmentResult"]>
+  ) => void;
 };
 
 const ClientProfileContext = createContext<ClientProfileContextType | undefined>(undefined);
@@ -54,6 +68,10 @@ export const ClientProfileProvider = ({ children }: { children: React.ReactNode 
     setProfile((p) => ({ ...p, selectedServices: services }));
   };
 
+  const setAssessment: ClientProfileContextType["setAssessment"] = (answers, result) => {
+    setProfile((p) => ({ ...p, assessmentAnswers: answers, assessmentResult: result }));
+  };
+
   const markPaid = () => setProfile((p) => ({ ...p, paid: true }));
 
   const resetProfile = () => setProfile(DEFAULT_PROFILE);
@@ -61,7 +79,7 @@ export const ClientProfileProvider = ({ children }: { children: React.ReactNode 
   const isModuleEnabled = (service: ServiceKey) => profile.selectedServices.includes(service);
 
   const value = useMemo(
-    () => ({ profile, setSelectedServices, markPaid, resetProfile, isModuleEnabled }),
+    () => ({ profile, setSelectedServices, markPaid, resetProfile, isModuleEnabled, setAssessment }),
     [profile]
   );
 

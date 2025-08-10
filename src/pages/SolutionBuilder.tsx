@@ -3,8 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { ArrowRight, Check, Users, Zap, Globe, Shield, Play, FileText, Settings, Brain, Calculator } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { ArrowRight, Check, Users, Play, FileText, Settings, Brain, Calculator } from 'lucide-react';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import ServiceTierSelector from '@/components/solution/ServiceTierSelector';
@@ -17,66 +16,88 @@ import IntegrationMarketplace from '@/components/solution/IntegrationMarketplace
 import BusinessAssessment from '@/components/solution/BusinessAssessment';
 import ROICalculator from '@/components/solution/ROICalculator';
 import CompetitorAnalysis from '@/components/solution/CompetitorAnalysis';
+import ServiceSelection from '@/components/assessment/ServiceSelection';
+import DashboardPreview from '@/components/assessment/DashboardPreview';
 
 const industries = [
-  { 
-    id: 'healthcare', 
-    name: 'Healthcare', 
-    description: 'Patient support, appointment scheduling, medical inquiries',
-    features: ['HIPAA Compliance', 'Medical Terminology', 'Appointment Booking'],
-    pricing: '€2,500/month'
+  {
+    id: 'retail',
+    name: 'Retail',
+    description: 'Optimize customer experience and drive sales with AI-powered solutions.',
+    icon: 'shopping-cart'
   },
-  { 
-    id: 'ecommerce', 
-    name: 'E-commerce', 
-    description: 'Order tracking, product inquiries, returns management',
-    features: ['Order Integration', 'Product Catalog', 'Return Processing'],
-    pricing: '€1,800/month'
+  {
+    id: 'healthcare',
+    name: 'Healthcare',
+    description: 'Improve patient care and streamline operations with secure, compliant solutions.',
+    icon: 'hospital'
   },
-  { 
-    id: 'saas', 
-    name: 'SaaS/Tech', 
-    description: 'Technical support, onboarding, feature explanations',
-    features: ['API Documentation', 'Technical Support', 'User Onboarding'],
-    pricing: '€2,200/month'
+  {
+    id: 'finance',
+    name: 'Finance',
+    description: 'Enhance customer engagement and reduce fraud with intelligent automation.',
+    icon: 'credit-card'
   },
-  { 
-    id: 'finance', 
-    name: 'Financial Services', 
-    description: 'Account inquiries, transaction support, compliance',
-    features: ['Financial Compliance', 'Secure Transactions', 'KYC Support'],
-    pricing: '€3,500/month'
+  {
+    id: 'education',
+    name: 'Education',
+    description: 'Personalize learning experiences and improve student outcomes with AI.',
+    icon: 'book'
   },
-  { 
-    id: 'retail', 
-    name: 'Retail', 
-    description: 'Store locations, product availability, customer service',
-    features: ['Inventory Integration', 'Store Locator', 'Product Info'],
-    pricing: '€1,500/month'
-  },
-  { 
-    id: 'real-estate', 
-    name: 'Real Estate', 
-    description: 'Property inquiries, scheduling viewings, market information',
-    features: ['Property Database', 'Viewing Scheduler', 'Market Data'],
-    pricing: '€2,800/month'
+  {
+    id: 'technology',
+    name: 'Technology',
+    description: 'Drive innovation and efficiency with cutting-edge AI solutions for tech companies.',
+    icon: 'code'
   }
 ];
 
 const volumes = [
-  { id: 'startup', name: 'Startup', range: '< 1,000 calls/month', multiplier: 1 },
-  { id: 'small', name: 'Small Business', range: '1,000 - 5,000 calls/month', multiplier: 1.2 },
-  { id: 'medium', name: 'Medium Business', range: '5,000 - 20,000 calls/month', multiplier: 1.8 },
-  { id: 'enterprise', name: 'Enterprise', range: '20,000+ calls/month', multiplier: 3.5 }
+  {
+    id: 'low',
+    name: 'Low Volume',
+    description: 'Up to 1,000 calls/month',
+    icon: 'arrow-down'
+  },
+  {
+    id: 'medium',
+    name: 'Medium Volume',
+    description: '1,000 - 10,000 calls/month',
+    icon: 'arrows-left-right'
+  },
+  {
+    id: 'high',
+    name: 'High Volume',
+    description: '10,000+ calls/month',
+    icon: 'arrow-up'
+  }
 ];
 
 const features = [
-  { id: 'multilingual', name: 'Multilingual Support', description: 'English, Spanish, Dutch' },
-  { id: 'crm', name: 'CRM Integration', description: 'Salesforce, HubSpot, Custom' },
-  { id: 'voice', name: 'Voice AI', description: 'Natural voice conversations' },
-  { id: 'analytics', name: 'Advanced Analytics', description: 'Performance insights & reporting' },
-  { id: 'whitelabel', name: 'White-Label Branding', description: 'Your brand, your domain' },
-  { id: 'api', name: 'API Access', description: 'Full API integration capabilities' }
+  {
+    id: 'live-chat',
+    name: 'Live Chat Support',
+    description: '24/7 real-time assistance',
+    icon: 'message-square'
+  },
+  {
+    id: 'ai-automation',
+    name: 'AI Automation',
+    description: 'Automated responses and workflows',
+    icon: 'cpu'
+  },
+  {
+    id: 'crm-integration',
+    name: 'CRM Integration',
+    description: 'Seamless integration with top CRMs',
+    icon: 'database'
+  },
+  {
+    id: 'analytics',
+    name: 'Advanced Analytics',
+    description: 'Data-driven insights and reporting',
+    icon: 'bar-chart-2'
+  }
 ];
 
 const SolutionBuilder = () => {
@@ -89,26 +110,27 @@ const SolutionBuilder = () => {
   const [selectedDemo, setSelectedDemo] = useState({ industry: '', scenario: '' });
 
   const calculatePrice = () => {
-    if (!selectedIndustry || !selectedVolume) return 0;
-    
-    const industry = industries.find(i => i.id === selectedIndustry);
-    const volume = volumes.find(v => v.id === selectedVolume);
-    
-    if (!industry || !volume) return 0;
-    
-    const basePrice = parseInt(industry.pricing.replace('€', '').replace(',', '').replace('/month', ''));
-    const volumeAdjusted = basePrice * volume.multiplier;
-    const featuresCost = selectedFeatures.length * 200;
-    
-    return Math.round(volumeAdjusted + featuresCost);
+    let basePrice = 100;
+
+    if (selectedServiceTier === 'premium') {
+      basePrice += 50;
+    }
+
+    if (selectedVolume === 'high') {
+      basePrice += 30;
+    }
+
+    basePrice += selectedFeatures.length * 15;
+
+    return 0;
   };
 
   const toggleFeature = (featureId: string) => {
-    setSelectedFeatures(prev => 
-      prev.includes(featureId) 
-        ? prev.filter(id => id !== featureId)
-        : [...prev, featureId]
-    );
+    if (selectedFeatures.includes(featureId)) {
+      setSelectedFeatures(selectedFeatures.filter((id) => id !== featureId));
+    } else {
+      setSelectedFeatures([...selectedFeatures, featureId]);
+    }
   };
 
   return (
@@ -129,8 +151,10 @@ const SolutionBuilder = () => {
           </div>
 
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-            <TabsList className="grid w-full grid-cols-6">
+            <TabsList className="grid w-full grid-cols-8">
               <TabsTrigger value="assessment">Assessment</TabsTrigger>
+              <TabsTrigger value="services">Services</TabsTrigger>
+              <TabsTrigger value="dashboard">Dashboard</TabsTrigger>
               <TabsTrigger value="industry">Industry</TabsTrigger>
               <TabsTrigger value="service">Service Tier</TabsTrigger>
               <TabsTrigger value="roi">ROI Analysis</TabsTrigger>
@@ -138,151 +162,148 @@ const SolutionBuilder = () => {
               <TabsTrigger value="proposal">Get Proposal</TabsTrigger>
             </TabsList>
 
+            {/* Assessment */}
             <TabsContent value="assessment" className="space-y-6">
-              <BusinessAssessment />
-              
+              <BusinessAssessment onComplete={() => setActiveTab('services')} />
               <div className="flex justify-center">
-                <Button onClick={() => setActiveTab('industry')}>
-                  Continue to Industry Selection <ArrowRight size={16} className="ml-2" />
+                <Button onClick={() => setActiveTab('services')}>
+                  Continue to Service Selection <ArrowRight size={16} className="ml-2" />
                 </Button>
               </div>
             </TabsContent>
 
+            {/* Services */}
+            <TabsContent value="services" className="space-y-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Brain className="text-primary" size={24} />
+                    Select Services
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <ServiceSelection onContinue={() => setActiveTab('dashboard')} />
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            {/* Dashboard Preview */}
+            <TabsContent value="dashboard" className="space-y-6">
+              <DashboardPreview />
+              <div className="flex justify-center gap-4">
+                <Button variant="outline" onClick={() => setActiveTab('services')}>
+                  Back
+                </Button>
+                <Button onClick={() => setActiveTab('industry')}>
+                  Continue to Industry <ArrowRight size={16} className="ml-2" />
+                </Button>
+              </div>
+            </TabsContent>
+
+            {/* Industry */}
             <TabsContent value="industry" className="space-y-6">
               <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
-                    <Users className="text-conneqt-blue" size={24} />
-                    Choose Your Industry
+                    <Users className="text-primary" size={24} />
+                    Select Your Industry
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="grid md:grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     {industries.map((industry) => (
-                      <div
+                      <Button
                         key={industry.id}
-                        className={`p-4 border-2 rounded-lg cursor-pointer transition-all ${
-                          selectedIndustry === industry.id
-                            ? 'border-conneqt-blue bg-blue-50'
-                            : 'border-gray-200 hover:border-gray-300'
-                        }`}
+                        variant="outline"
+                        className={`w-full ${selectedIndustry === industry.id ? 'bg-blue-500 text-white' : ''}`}
                         onClick={() => setSelectedIndustry(industry.id)}
                       >
-                        <h3 className="font-semibold mb-2">{industry.name}</h3>
-                        <p className="text-sm text-gray-600 mb-3">{industry.description}</p>
-                        <div className="flex flex-wrap gap-1 mb-2">
-                          {industry.features.map((feature) => (
-                            <Badge key={feature} variant="secondary" className="text-xs">
-                              {feature}
-                            </Badge>
-                          ))}
-                        </div>
-                        <p className="text-sm font-medium text-conneqt-blue">
-                          Starting at {industry.pricing}
-                        </p>
-                      </div>
+                        {industry.name}
+                      </Button>
                     ))}
+                  </div>
+                  <div className="flex justify-end mt-4">
+                    <Button onClick={() => setActiveTab('service')}>
+                      Continue to Service Tier <ArrowRight size={16} className="ml-2" />
+                    </Button>
                   </div>
                 </CardContent>
               </Card>
-
-              {selectedIndustry && <IndustryPreview industry={selectedIndustry} />}
-              
-              <div className="flex justify-center gap-4">
-                <Button variant="outline" onClick={() => setActiveTab('assessment')}>
-                  Back
-                </Button>
-                <Button onClick={() => setActiveTab('service')}>
-                  Continue to Service Tier <ArrowRight size={16} className="ml-2" />
-                </Button>
-              </div>
             </TabsContent>
 
+            {/* Service Tier */}
             <TabsContent value="service" className="space-y-6">
-              <ServiceTierSelector 
-                selectedTier={selectedServiceTier}
-                onTierSelect={setSelectedServiceTier}
-              />
-              
-              <VolumeCalculator 
-                selectedTier={selectedServiceTier}
-                onVolumeChange={setCallVolume}
-              />
-              
-              <div className="flex justify-center gap-4">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Settings className="text-primary" size={24} />
+                    Choose Your Service Tier
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <ServiceTierSelector
+                    selectedTier={selectedServiceTier}
+                    onTierSelect={setSelectedServiceTier}
+                  />
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Calculator className="text-primary" size={24} />
+                    Estimate Your Call Volume
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <VolumeCalculator selectedTier={selectedServiceTier} onVolumeChange={setCallVolume} />
+                </CardContent>
+              </Card>
+
+              <div className="flex justify-between">
                 <Button variant="outline" onClick={() => setActiveTab('industry')}>
                   Back
                 </Button>
                 <Button onClick={() => setActiveTab('roi')}>
-                  View ROI Analysis <Calculator size={16} className="ml-2" />
+                  Continue to ROI Analysis <ArrowRight size={16} className="ml-2" />
                 </Button>
               </div>
             </TabsContent>
 
+            {/* ROI */}
             <TabsContent value="roi" className="space-y-6">
-              <ROICalculator 
-                industry={selectedIndustry}
-                monthlyVolume={callVolume}
-                selectedTier={selectedServiceTier}
-              />
-              
-              <CompetitorAnalysis 
-                selectedTier={selectedServiceTier}
-                monthlyVolume={callVolume}
-              />
-              
-              <div className="flex justify-center gap-4">
+              <ROICalculator />
+
+              <CompetitorAnalysis />
+
+              <div className="flex justify-between">
                 <Button variant="outline" onClick={() => setActiveTab('service')}>
                   Back
                 </Button>
                 <Button onClick={() => setActiveTab('demo')}>
-                  Try Live Demo <Play size={16} className="ml-2" />
+                  Explore Live Demo <ArrowRight size={16} className="ml-2" />
                 </Button>
               </div>
             </TabsContent>
 
+            {/* Demo */}
             <TabsContent value="demo" className="space-y-6">
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Play className="text-primary" size={24} />
-                    Try Live AI Demos
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="grid md:grid-cols-3 gap-4 mb-6">
-                    {['healthcare', 'ecommerce', 'saas'].map((industry) => (
-                      <Button
-                        key={industry}
-                        variant={selectedDemo.industry === industry ? "default" : "outline"}
-                        className="h-auto p-4 flex flex-col items-center"
-                        onClick={() => setSelectedDemo({ industry, scenario: 'Appointment Scheduling' })}
-                      >
-                        <span className="font-medium capitalize">{industry}</span>
-                        <span className="text-xs opacity-70">Try interactive demo</span>
-                      </Button>
-                    ))}
-                  </div>
-                  
-                  {selectedDemo.industry && (
-                    <DemoChat 
-                      industry={selectedDemo.industry} 
-                      scenario={selectedDemo.scenario}
-                    />
-                  )}
-                </CardContent>
-              </Card>
-              
-              <div className="flex justify-center gap-4">
+              <DemoChat
+                industry={selectedDemo.industry}
+                scenario={selectedDemo.scenario}
+              />
+
+              <div className="flex justify-between">
                 <Button variant="outline" onClick={() => setActiveTab('roi')}>
                   Back
                 </Button>
                 <Button onClick={() => setActiveTab('proposal')}>
-                  Get Proposal <FileText size={16} className="ml-2" />
+                  Generate Proposal <ArrowRight size={16} className="ml-2" />
                 </Button>
               </div>
             </TabsContent>
 
+            {/* Proposal */}
             <TabsContent value="proposal" className="space-y-6">
               <ProposalGenerator 
                 initialData={{
@@ -291,19 +312,9 @@ const SolutionBuilder = () => {
                   selectedTier: selectedServiceTier
                 }}
               />
-              
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Settings className="text-primary" size={24} />
-                    Available Integrations
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <IntegrationMarketplace />
-                </CardContent>
-              </Card>
-              
+
+              <IntegrationMarketplace />
+
               <TrustElements />
             </TabsContent>
           </Tabs>
