@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { DashboardLayout } from "@/components/layouts/DashboardLayout";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -32,8 +32,9 @@ export default function ClientAgentManager() {
 }
 
 function AgentManager({ clientId }: { clientId: string }) {
-  const { getClientAgent, updateClientAgent } = useAgent();
+  const { getClientAgent, updateClientAgent, getTrainingForClient, addTraining, updateTraining, publishTraining, archiveTraining } = useAgent();
   const agent = getClientAgent(clientId);
+  const [newTraining, setNewTraining] = useState<{ title: string; type: string; description: string; content: string }>({ title: "", type: "document", description: "", content: "" });
 
   if (!agent) {
     return (
@@ -45,6 +46,10 @@ function AgentManager({ clientId }: { clientId: string }) {
       </section>
     );
   }
+
+  const items = getTrainingForClient(agent.id);
+  const inherited = items.filter((t) => t.scope === "master");
+  const local = items.filter((t) => t.scope === "client" && t.clientId === agent.id);
 
   return (
     <section className="space-y-2">
@@ -62,6 +67,7 @@ function AgentManager({ clientId }: { clientId: string }) {
         <TabsList>
           <TabsTrigger value="settings">Settings</TabsTrigger>
           <TabsTrigger value="knowledge">Knowledge</TabsTrigger>
+          <TabsTrigger value="training">Training</TabsTrigger>
           <TabsTrigger value="tools">Tools</TabsTrigger>
           <TabsTrigger value="channels">Channels</TabsTrigger>
           <TabsTrigger value="languages">Languages</TabsTrigger>
@@ -107,6 +113,101 @@ function AgentManager({ clientId }: { clientId: string }) {
                   <li>No sources yet. Ingest documents or URLs in a later phase.</li>
                 )}
               </ul>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="training">
+          <Card>
+            <CardHeader>
+              <CardTitle>Training</CardTitle>
+              <CardDescription>Inherited from Master and client-specific overrides.</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              <div className="grid sm:grid-cols-2 gap-4">
+                <div className="grid gap-2">
+                  <label className="text-sm text-muted-foreground">Title</label>
+                  <Input value={newTraining.title} onChange={(e)=>setNewTraining({...newTraining,title:e.target.value})}/>
+                </div>
+                <div className="grid gap-2">
+                  <label className="text-sm text-muted-foreground">Type</label>
+                  <Select value={newTraining.type} onValueChange={(v)=>setNewTraining({...newTraining,type:v})}>
+                    <SelectTrigger><SelectValue placeholder="Type" /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="document">Document</SelectItem>
+                      <SelectItem value="faq">FAQ</SelectItem>
+                      <SelectItem value="sop">SOP</SelectItem>
+                      <SelectItem value="script">Script</SelectItem>
+                      <SelectItem value="callflow">Call Flow</SelectItem>
+                      <SelectItem value="policy">Policy</SelectItem>
+                      <SelectItem value="intent">Intent</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="sm:col-span-2 grid gap-2">
+                  <label className="text-sm text-muted-foreground">Description</label>
+                  <Input value={newTraining.description} onChange={(e)=>setNewTraining({...newTraining,description:e.target.value})}/>
+                </div>
+                <div className="sm:col-span-2 grid gap-2">
+                  <label className="text-sm text-muted-foreground">Content</label>
+                  <Textarea rows={6} value={newTraining.content} onChange={(e)=>setNewTraining({...newTraining,content:e.target.value})}/>
+                </div>
+                <div className="sm:col-span-2">
+                  <Button onClick={()=>{
+                    if(!newTraining.title || !newTraining.content) return;
+                    addTraining({ scope:"client", clientId: agent.id, title:newTraining.title, type:newTraining.type as any, description:newTraining.description, content:newTraining.content });
+                    setNewTraining({ title:"", type:"document", description:"", content:""});
+                  }}>Add Client Training</Button>
+                </div>
+              </div>
+
+              <div className="space-y-6">
+                <div>
+                  <h3 className="text-sm font-semibold text-foreground">Inherited from Master</h3>
+                  <div className="mt-2 space-y-2">
+                    {inherited.map((t)=>(
+                      <div key={t.id} className="border rounded-md p-3 flex items-center justify-between">
+                        <div>
+                          <div className="font-medium">{t.title} <span className="text-xs text-muted-foreground">• {t.type.toUpperCase()}</span></div>
+                          <div className="text-xs text-muted-foreground line-clamp-2">{(t.versions.find(v=>v.id===t.publishedVersionId) ?? t.versions[t.versions.length-1])?.content}</div>
+                        </div>
+                        <div className="flex gap-2">
+                          <Button variant="outline" onClick={()=>addTraining({ scope:"client", clientId: agent.id, title:t.title, type:t.type as any, description:t.description, content:(t.versions.find(v=>v.id===t.publishedVersionId) ?? t.versions[t.versions.length-1])?.content || "" })}>Copy to client</Button>
+                        </div>
+                      </div>
+                    ))}
+                    {inherited.length===0 && <p className="text-sm text-muted-foreground">No inherited items.</p>}
+                  </div>
+                </div>
+
+                <div>
+                  <h3 className="text-sm font-semibold text-foreground">Client Training</h3>
+                  <div className="mt-2 space-y-2">
+                    {local.map((t)=>(
+                      <div key={t.id} className="border rounded-md p-3">
+                        <div className="flex items-center justify-between">
+                          <div className="space-y-1">
+                            <div className="font-medium">{t.title} <span className="text-xs text-muted-foreground">• {t.type.toUpperCase()}</span></div>
+                            <div className="text-xs text-muted-foreground">{t.description}</div>
+                          </div>
+                          <div className="flex gap-2">
+                            <Button variant="secondary" onClick={()=>publishTraining(t.id)}>Publish</Button>
+                            <Button variant="destructive" onClick={()=>archiveTraining(t.id, true)}>Archive</Button>
+                          </div>
+                        </div>
+                        <div className="mt-2 text-sm text-muted-foreground line-clamp-3">
+                          {(t.versions.find(v=>v.id===t.publishedVersionId) ?? t.versions[t.versions.length-1])?.content}
+                        </div>
+                        <div className="mt-3 grid gap-2">
+                          <label className="text-xs text-muted-foreground">New Version Content</label>
+                          <Textarea rows={4} placeholder="Enter new version content..." onBlur={(e)=>{ const val=(e.target as HTMLTextAreaElement).value; if(val.trim()){ updateTraining(t.id,{ newContent: val }); (e.target as HTMLTextAreaElement).value=""; } }} />
+                        </div>
+                      </div>
+                    ))}
+                    {local.length===0 && <p className="text-sm text-muted-foreground">No client training yet.</p>}
+                  </div>
+                </div>
+              </div>
             </CardContent>
           </Card>
         </TabsContent>

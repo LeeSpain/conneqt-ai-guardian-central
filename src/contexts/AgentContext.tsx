@@ -35,6 +35,36 @@ export type Agent = {
 
 export type MasterAgent = Agent;
 
+export type TrainingType =
+  | "document"
+  | "faq"
+  | "sop"
+  | "script"
+  | "callflow"
+  | "policy"
+  | "intent";
+
+export type TrainingVersion = {
+  id: string;
+  createdAt: string;
+  author?: string;
+  notes?: string;
+  content: string;
+};
+
+export type TrainingItem = {
+  id: string;
+  title: string;
+  type: TrainingType;
+  description?: string;
+  tags?: string[];
+  scope: "master" | "client";
+  clientId?: string;
+  versions: TrainingVersion[];
+  publishedVersionId?: string;
+  archived?: boolean;
+};
+
 type AgentContextType = {
   masterAgent: MasterAgent;
   clientAgents: Agent[];
@@ -42,6 +72,31 @@ type AgentContextType = {
   updateMasterAgent: (updates: Partial<MasterAgent>) => void;
   updateClientAgent: (id: string, updates: Partial<Agent>) => void;
   addClientAgent: (agent: Omit<Agent, "id">) => Agent;
+  // Training
+  trainingItems: TrainingItem[];
+  getTrainingForMaster: () => TrainingItem[];
+  getTrainingForClient: (clientId: string) => TrainingItem[];
+  addTraining: (payload: {
+    scope: "master" | "client";
+    clientId?: string;
+    title: string;
+    type: TrainingType;
+    description?: string;
+    content: string;
+    tags?: string[];
+    author?: string;
+    notes?: string;
+  }) => TrainingItem;
+  updateTraining: (
+    id: string,
+    updates: Partial<TrainingItem> & { newContent?: string; notes?: string; author?: string }
+  ) => void;
+  publishTraining: (id: string, versionId?: string) => void;
+  archiveTraining: (id: string, archived?: boolean) => void;
+  duplicateTraining: (
+    id: string,
+    overrides?: Partial<Omit<TrainingItem, "id" | "versions" | "publishedVersionId">>
+  ) => TrainingItem | undefined;
 };
 
 const AgentContext = createContext<AgentContextType | undefined>(undefined);
@@ -129,28 +184,57 @@ const initialClients: Agent[] = [
 export const AgentProvider = ({ children }: { children: React.ReactNode }) => {
   const [masterAgent, setMasterAgent] = useState<MasterAgent>(initialMaster);
   const [clientAgents, setClientAgents] = useState<Agent[]>(initialClients);
+  const [trainingItems, setTrainingItems] = useState<TrainingItem[]>([
+    {
+      id: "t-master-1",
+      title: "Global Support SOP",
+      type: "sop",
+      description: "Tier-1 support workflow",
+      scope: "master",
+      versions: [
+        { id: "v1", createdAt: new Date().toISOString(), content: "Step 1: Greet. Step 2: Verify. Step 3: Resolve or escalate." }
+      ],
+      publishedVersionId: "v1",
+      archived: false
+    },
+    {
+      id: "t-master-2",
+      title: "Refund Policy FAQ",
+      type: "faq",
+      description: "Standard refund policy answers",
+      scope: "master",
+      versions: [
+        { id: "v1", createdAt: new Date().toISOString(), content: "Q: How to request refund? A: Within 30 days via portal." }
+      ],
+      publishedVersionId: "v1",
+      archived: false
+    }
+  ]);
 
-  // Load from localStorage on mount
+// Load from localStorage on mount
   useEffect(() => {
     try {
       const m = localStorage.getItem("cc.masterAgent");
       const c = localStorage.getItem("cc.clientAgents");
+      const t = localStorage.getItem("cc.training");
       if (m) setMasterAgent({ ...initialMaster, ...JSON.parse(m) });
       if (c) setClientAgents(JSON.parse(c));
+      if (t) setTrainingItems(JSON.parse(t));
     } catch (e) {
-      console.warn("Failed to load agents from storage", e);
+      console.warn("Failed to load agents/training from storage", e);
     }
   }, []);
 
-  // Persist on change
+// Persist on change
   useEffect(() => {
     try {
       localStorage.setItem("cc.masterAgent", JSON.stringify(masterAgent));
       localStorage.setItem("cc.clientAgents", JSON.stringify(clientAgents));
+      localStorage.setItem("cc.training", JSON.stringify(trainingItems));
     } catch (e) {
-      console.warn("Failed to save agents to storage", e);
+      console.warn("Failed to save agents/training to storage", e);
     }
-  }, [masterAgent, clientAgents]);
+  }, [masterAgent, clientAgents, trainingItems]);
   const getClientAgent = (id: string) => clientAgents.find((a) => a.id === id);
 
   const updateMasterAgent = (updates: Partial<MasterAgent>) =>
@@ -167,6 +251,114 @@ export const AgentProvider = ({ children }: { children: React.ReactNode }) => {
     return newAgent;
   };
 
+  // Training selectors and CRUD
+  const getTrainingForMaster = () => trainingItems.filter((t) => t.scope === "master" && !t.archived);
+
+  const getTrainingForClient = (clientId: string) =>
+    trainingItems.filter(
+      (t) => (t.scope === "master" || (t.scope === "client" && t.clientId === clientId)) && !t.archived
+    );
+
+  const addTraining = (payload: {
+    scope: "master" | "client";
+    clientId?: string;
+    title: string;
+    type: TrainingType;
+    description?: string;
+    content: string;
+    tags?: string[];
+    author?: string;
+    notes?: string;
+  }): TrainingItem => {
+    const id = `t-${Date.now()}`;
+    const vId = `v-${Date.now()}`;
+    const item: TrainingItem = {
+      id,
+      title: payload.title,
+      type: payload.type,
+      description: payload.description,
+      tags: payload.tags,
+      scope: payload.scope,
+      clientId: payload.scope === "client" ? payload.clientId : undefined,
+      versions: [
+        {
+          id: vId,
+          createdAt: new Date().toISOString(),
+          author: payload.author,
+          notes: payload.notes,
+          content: payload.content,
+        },
+      ],
+      publishedVersionId: vId,
+      archived: false,
+    };
+    setTrainingItems((prev) => [item, ...prev]);
+    return item;
+  };
+
+  const updateTraining = (
+    id: string,
+    updates: Partial<TrainingItem> & { newContent?: string; notes?: string; author?: string }
+  ) => {
+    setTrainingItems((prev) =>
+      prev.map((t) => {
+        if (t.id !== id) return t;
+        const { newContent, notes, author, ...meta } = updates;
+        let versions = t.versions;
+        let publishedVersionId = t.publishedVersionId;
+        if (newContent && newContent.trim()) {
+          const vId = `v-${Date.now()}`;
+          versions = [
+            ...t.versions,
+            { id: vId, createdAt: new Date().toISOString(), notes, author, content: newContent },
+          ];
+          // keep current published unless explicitly published later
+          publishedVersionId = t.publishedVersionId;
+        }
+        return { ...t, ...meta, versions, publishedVersionId };
+      })
+    );
+  };
+
+  const publishTraining = (id: string, versionId?: string) => {
+    setTrainingItems((prev) =>
+      prev.map((t) => (t.id === id ? { ...t, publishedVersionId: versionId ?? t.versions[t.versions.length - 1]?.id } : t))
+    );
+  };
+
+  const archiveTraining = (id: string, archived: boolean = true) => {
+    setTrainingItems((prev) => prev.map((t) => (t.id === id ? { ...t, archived } : t)));
+  };
+
+  const duplicateTraining = (
+    id: string,
+    overrides?: Partial<Omit<TrainingItem, "id" | "versions" | "publishedVersionId">>
+  ) => {
+    const src = trainingItems.find((t) => t.id === id);
+    if (!src) return undefined;
+    const vId = `v-${Date.now()}`;
+    const copy: TrainingItem = {
+      id: `t-${Date.now() + 1}`,
+      title: overrides?.title ?? `${src.title} (Copy)`,
+      type: overrides?.type ?? src.type,
+      description: overrides?.description ?? src.description,
+      tags: overrides?.tags ?? src.tags,
+      scope: overrides?.scope ?? src.scope,
+      clientId: overrides?.clientId ?? src.clientId,
+      versions: [
+        {
+          id: vId,
+          createdAt: new Date().toISOString(),
+          content: src.versions[src.versions.length - 1]?.content ?? "",
+        },
+      ],
+      publishedVersionId: vId,
+      archived: false,
+    };
+    setTrainingItems((prev) => [copy, ...prev]);
+    return copy;
+  };
+
   const value = useMemo(
     () => ({
       masterAgent,
@@ -175,8 +367,36 @@ export const AgentProvider = ({ children }: { children: React.ReactNode }) => {
       updateMasterAgent,
       updateClientAgent,
       addClientAgent,
+      // Training
+      trainingItems,
+      getTrainingForMaster,
+      getTrainingForClient,
+      addTraining,
+      updateTraining,
+      publishTraining,
+      archiveTraining,
+      duplicateTraining,
     }),
-    [masterAgent, clientAgents]
+    [masterAgent, clientAgents, trainingItems]
+  );
+    () => ({
+      masterAgent,
+      clientAgents,
+      getClientAgent,
+      updateMasterAgent,
+      updateClientAgent,
+      addClientAgent,
+      // Training
+      trainingItems,
+      getTrainingForMaster,
+      getTrainingForClient,
+      addTraining,
+      updateTraining,
+      publishTraining,
+      archiveTraining,
+      duplicateTraining,
+    }),
+    [masterAgent, clientAgents, trainingItems]
   );
 
   return <AgentContext.Provider value={value}>{children}</AgentContext.Provider>;

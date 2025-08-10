@@ -4,6 +4,7 @@ import { DashboardLayout } from "@/components/layouts/DashboardLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Switch } from "@/components/ui/switch";
 import { UserProvider } from "@/contexts/UserContext";
 import { AgentProvider, useAgent } from "@/contexts/AgentContext";
 
@@ -37,7 +38,7 @@ function useQuery() {
 }
 
 function ConsoleInner() {
-  const { masterAgent, getClientAgent } = useAgent();
+  const { masterAgent, getClientAgent, getTrainingForClient, getTrainingForMaster } = useAgent();
   const query = useQuery();
   const clientId = query.get("clientId");
   const clientAgent = clientId ? getClientAgent(clientId) : undefined;
@@ -52,6 +53,9 @@ function ConsoleInner() {
         : `Hi! I'm ${masterAgent.name}. Ask me anything.`,
     },
   ]);
+  const training = clientAgent ? getTrainingForClient(clientAgent.id) : getTrainingForMaster();
+  const [showTraining, setShowTraining] = useState(false);
+  const top3 = training.slice(0, 3);
 
   const send = () => {
     if (!input.trim()) return;
@@ -104,6 +108,20 @@ function ConsoleInner() {
           <div><strong>Active Agent:</strong> {clientAgent ? clientAgent.name : masterAgent.name}</div>
           <div><strong>Persona:</strong> {clientAgent ? clientAgent.persona : masterAgent.persona}</div>
           <div><strong>Channels:</strong> Chat {clientAgent ? clientAgent.channels.chat : masterAgent.channels.chat ? "On" : "Off"} • Voice {clientAgent ? clientAgent.channels.voice : masterAgent.channels.voice ? "On" : "Off"}</div>
+          <div className="pt-2 border-t mt-2">
+            <div className="flex items-center justify-between">
+              <span className="font-medium text-foreground">Show training</span>
+              <Switch checked={showTraining} onCheckedChange={setShowTraining} />
+            </div>
+            {showTraining && (
+              <ul className="mt-2 list-disc pl-4">
+                {top3.map((t) => (
+                  <li key={t.id}><span className="text-foreground">{t.title}</span> <span className="text-xs">• {t.type.toUpperCase()}</span></li>
+                ))}
+                {top3.length === 0 && <li>No training available.</li>}
+              </ul>
+            )}
+          </div>
         </CardContent>
       </Card>
     </section>

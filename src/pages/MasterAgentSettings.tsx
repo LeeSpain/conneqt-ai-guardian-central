@@ -45,7 +45,7 @@ export default function MasterAgentSettings() {
 }
 
 function AgentTabs() {
-  const { masterAgent, updateMasterAgent } = useAgent();
+  const { masterAgent, updateMasterAgent, getTrainingForMaster, addTraining, updateTraining, publishTraining, archiveTraining, duplicateTraining } = useAgent();
   const [name, setName] = useState(masterAgent.name);
   const [persona, setPersona] = useState(masterAgent.persona);
   const [systemPrompt, setSystemPrompt] = useState(masterAgent.systemPrompt);
@@ -71,6 +71,7 @@ function AgentTabs() {
   const [billing, setBilling] = useState(masterAgent.integrations?.billing ?? "");
   const [calendar, setCalendar] = useState(masterAgent.integrations?.calendar ?? "");
 const { toast } = useToast();
+  const [newTraining, setNewTraining] = useState<{ title: string; type: string; description: string; content: string }>({ title: "", type: "document", description: "", content: "" });
 const save = () => {
   updateMasterAgent({
     name,
@@ -107,11 +108,14 @@ const saveIntegrations = () => {
   toast({ title: "Integrations updated", description: [crm||"—",helpdesk||"—",billing||"—",calendar||"—"].join(" • ") });
 };
 
+  const masterTraining = getTrainingForMaster();
+
   return (
     <Tabs defaultValue="profile" className="w-full">
       <TabsList>
         <TabsTrigger value="profile">Profile</TabsTrigger>
         <TabsTrigger value="knowledge">Knowledge</TabsTrigger>
+        <TabsTrigger value="training">Training</TabsTrigger>
         <TabsTrigger value="tools">Tools</TabsTrigger>
         <TabsTrigger value="channels">Channels</TabsTrigger>
         <TabsTrigger value="languages">Languages</TabsTrigger>
@@ -167,6 +171,80 @@ const saveIntegrations = () => {
                 <li key={k.id}>{k.title} • {k.type.toUpperCase()}</li>
               ))}
             </ul>
+          </CardContent>
+        </Card>
+      </TabsContent>
+
+      <TabsContent value="training">
+        <Card>
+          <CardHeader>
+            <CardTitle>Training</CardTitle>
+            <CardDescription>Documents, FAQs, SOPs, scripts, call flows and policies used to train the agent.</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            <div className="grid sm:grid-cols-2 gap-4">
+              <div className="grid gap-2">
+                <label className="text-sm text-muted-foreground">Title</label>
+                <Input value={newTraining.title} onChange={(e)=>setNewTraining({...newTraining,title:e.target.value})}/>
+              </div>
+              <div className="grid gap-2">
+                <label className="text-sm text-muted-foreground">Type</label>
+                <Select value={newTraining.type} onValueChange={(v)=>setNewTraining({...newTraining,type:v})}>
+                  <SelectTrigger><SelectValue placeholder="Type" /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="document">Document</SelectItem>
+                    <SelectItem value="faq">FAQ</SelectItem>
+                    <SelectItem value="sop">SOP</SelectItem>
+                    <SelectItem value="script">Script</SelectItem>
+                    <SelectItem value="callflow">Call Flow</SelectItem>
+                    <SelectItem value="policy">Policy</SelectItem>
+                    <SelectItem value="intent">Intent</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="sm:col-span-2 grid gap-2">
+                <label className="text-sm text-muted-foreground">Description</label>
+                <Input value={newTraining.description} onChange={(e)=>setNewTraining({...newTraining,description:e.target.value})}/>
+              </div>
+              <div className="sm:col-span-2 grid gap-2">
+                <label className="text-sm text-muted-foreground">Content</label>
+                <Textarea rows={6} value={newTraining.content} onChange={(e)=>setNewTraining({...newTraining,content:e.target.value})}/>
+              </div>
+              <div className="sm:col-span-2">
+                <Button onClick={()=>{
+                  if(!newTraining.title || !newTraining.content){ toast({ title: "Please add title and content" }); return; }
+                  addTraining({ scope:"master", title:newTraining.title, type:newTraining.type as any, description:newTraining.description, content:newTraining.content });
+                  setNewTraining({ title:"", type:"document", description:"", content:""});
+                  toast({ title:"Training added", description:"Master training item created."});
+                }}>Add Training</Button>
+              </div>
+            </div>
+
+            <div className="space-y-3">
+              {masterTraining.map((t)=>(
+                <div key={t.id} className="border rounded-md p-3">
+                  <div className="flex items-center justify-between">
+                    <div className="space-y-1">
+                      <div className="font-medium">{t.title} <span className="text-xs text-muted-foreground">• {t.type.toUpperCase()}</span></div>
+                      <div className="text-xs text-muted-foreground">{t.description}</div>
+                    </div>
+                    <div className="flex gap-2">
+                      <Button variant="secondary" onClick={()=>publishTraining(t.id)}>Publish</Button>
+                      <Button variant="outline" onClick={()=>duplicateTraining(t.id)}>Duplicate</Button>
+                      <Button variant="destructive" onClick={()=>archiveTraining(t.id, true)}>Archive</Button>
+                    </div>
+                  </div>
+                  <div className="mt-2 text-sm text-muted-foreground line-clamp-3">
+                    {(t.versions.find(v=>v.id===t.publishedVersionId) ?? t.versions[t.versions.length-1])?.content}
+                  </div>
+                  <div className="mt-3 grid gap-2">
+                    <label className="text-xs text-muted-foreground">New Version Content</label>
+                    <Textarea rows={4} placeholder="Enter new version content..." onBlur={(e)=>{ const val=(e.target as HTMLTextAreaElement).value; if(val.trim()){ updateTraining(t.id,{ newContent: val }); (e.target as HTMLTextAreaElement).value=""; toast({ title:"Draft version added" }); } }} />
+                  </div>
+                </div>
+              ))}
+              {masterTraining.length === 0 && <p className="text-sm text-muted-foreground">No training yet.</p>}
+            </div>
           </CardContent>
         </Card>
       </TabsContent>
