@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useMemo, useState } from "react";
+import React, { createContext, useContext, useMemo, useState, useEffect } from "react";
 
 export type KnowledgeSource = {
   id: string;
@@ -130,6 +130,27 @@ export const AgentProvider = ({ children }: { children: React.ReactNode }) => {
   const [masterAgent, setMasterAgent] = useState<MasterAgent>(initialMaster);
   const [clientAgents, setClientAgents] = useState<Agent[]>(initialClients);
 
+  // Load from localStorage on mount
+  useEffect(() => {
+    try {
+      const m = localStorage.getItem("cc.masterAgent");
+      const c = localStorage.getItem("cc.clientAgents");
+      if (m) setMasterAgent({ ...initialMaster, ...JSON.parse(m) });
+      if (c) setClientAgents(JSON.parse(c));
+    } catch (e) {
+      console.warn("Failed to load agents from storage", e);
+    }
+  }, []);
+
+  // Persist on change
+  useEffect(() => {
+    try {
+      localStorage.setItem("cc.masterAgent", JSON.stringify(masterAgent));
+      localStorage.setItem("cc.clientAgents", JSON.stringify(clientAgents));
+    } catch (e) {
+      console.warn("Failed to save agents to storage", e);
+    }
+  }, [masterAgent, clientAgents]);
   const getClientAgent = (id: string) => clientAgents.find((a) => a.id === id);
 
   const updateMasterAgent = (updates: Partial<MasterAgent>) =>

@@ -9,7 +9,8 @@ import { Switch } from "@/components/ui/switch";
 import { UserProvider } from "@/contexts/UserContext";
 import { AgentProvider, useAgent } from "@/contexts/AgentContext";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-
+import { Link } from "react-router-dom";
+import { useToast } from "@/hooks/use-toast";
 export default function MasterAgentSettings() {
   useEffect(() => {
     document.title = "Master Agent Settings | ConneqtCentral";
@@ -20,9 +21,19 @@ export default function MasterAgentSettings() {
       <AgentProvider>
         <DashboardLayout>
           <main className="p-6 space-y-6">
-            <header>
-              <h1 className="text-2xl font-bold text-foreground">Master Agent</h1>
-              <p className="text-muted-foreground">Configure the global brain, knowledge, tools, and channels inherited by client agents.</p>
+            <header className="flex items-center justify-between gap-3">
+              <div>
+                <h1 className="text-2xl font-bold text-foreground">Master Agent</h1>
+                <p className="text-muted-foreground">Configure the global brain, knowledge, tools, and channels inherited by client agents.</p>
+              </div>
+              <div className="flex items-center gap-2">
+                <Button asChild variant="secondary">
+                  <Link to="/ai-agents/console">Open Console</Link>
+                </Button>
+                <Button asChild>
+                  <Link to="/ai-agents/clients">Manage Client Agents</Link>
+                </Button>
+              </div>
             </header>
 
             <AgentTabs />
@@ -40,6 +51,8 @@ function AgentTabs() {
   const [systemPrompt, setSystemPrompt] = useState(masterAgent.systemPrompt);
   const [chatEnabled, setChatEnabled] = useState(masterAgent.channels.chat);
   const [voiceEnabled, setVoiceEnabled] = useState(masterAgent.channels.voice);
+  const [voiceProvider, setVoiceProvider] = useState(masterAgent.voice?.provider ?? "elevenlabs");
+  const [voiceId, setVoiceId] = useState(masterAgent.voice?.voiceId ?? "");
 
   // Languages
   const [languages, setLanguages] = useState<string[]>(masterAgent.languages ?? ["en"]);
@@ -57,17 +70,21 @@ function AgentTabs() {
   const [helpdesk, setHelpdesk] = useState(masterAgent.integrations?.helpdesk ?? "");
   const [billing, setBilling] = useState(masterAgent.integrations?.billing ?? "");
   const [calendar, setCalendar] = useState(masterAgent.integrations?.calendar ?? "");
+const { toast } = useToast();
 const save = () => {
   updateMasterAgent({
     name,
     persona,
     systemPrompt,
     channels: { chat: chatEnabled, voice: voiceEnabled },
+    voice: { provider: voiceProvider, voiceId },
   });
+  toast({ title: "Master Agent updated", description: "Profile, channels and voice saved." });
 };
 
 const saveLanguages = () => {
   updateMasterAgent({ languages });
+  toast({ title: "Languages updated", description: languages.join(", ") || "None" });
 };
 
 const saveTelephony = () => {
@@ -80,12 +97,14 @@ const saveTelephony = () => {
       recordingEnabled,
     },
   });
+  toast({ title: "Telephony updated", description: `${telProvider.toUpperCase()} • Caller ID ${outboundCallerId || "unset"}` });
 };
 
 const saveIntegrations = () => {
   updateMasterAgent({
     integrations: { crm, helpdesk, billing, calendar },
   });
+  toast({ title: "Integrations updated", description: [crm||"—",helpdesk||"—",billing||"—",calendar||"—"].join(" • ") });
 };
 
   return (
@@ -178,18 +197,175 @@ const saveIntegrations = () => {
         <Card>
           <CardHeader>
             <CardTitle>Channels</CardTitle>
-            <CardDescription>Enable or disable chat/voice channels.</CardDescription>
+            <CardDescription>Enable or disable chat/voice channels and configure voice.</CardDescription>
           </CardHeader>
-          <CardContent className="flex items-center gap-6">
-            <div className="flex items-center gap-2">
-              <Switch checked={chatEnabled} onCheckedChange={setChatEnabled} />
-              <span>Chat</span>
+          <CardContent className="space-y-4">
+            <div className="flex items-center gap-6">
+              <div className="flex items-center gap-2">
+                <Switch checked={chatEnabled} onCheckedChange={setChatEnabled} />
+                <span>Chat</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <Switch checked={voiceEnabled} onCheckedChange={setVoiceEnabled} />
+                <span>Voice</span>
+              </div>
             </div>
-            <div className="flex items-center gap-2">
-              <Switch checked={voiceEnabled} onCheckedChange={setVoiceEnabled} />
-              <span>Voice</span>
+            <div className="grid sm:grid-cols-2 gap-4">
+              <div className="grid gap-2">
+                <label className="text-sm text-muted-foreground">Voice Provider</label>
+                <Select value={voiceProvider} onValueChange={setVoiceProvider}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select voice provider" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="elevenlabs">ElevenLabs</SelectItem>
+                    <SelectItem value="azure">Azure TTS</SelectItem>
+                    <SelectItem value="gcp">Google Cloud TTS</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="grid gap-2">
+                <label className="text-sm text-muted-foreground">Voice ID</label>
+                <Input value={voiceId} onChange={(e) => setVoiceId(e.target.value)} placeholder="e.g. TX3LPaxmHKxFdv7VOQHJ" />
+              </div>
             </div>
             <Button onClick={save}>Save</Button>
+          </CardContent>
+        </Card>
+      </TabsContent>
+
+      <TabsContent value="languages">
+        <Card>
+          <CardHeader>
+            <CardTitle>Languages</CardTitle>
+            <CardDescription>Enable languages for the Master Agent.</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="flex flex-col sm:flex-row sm:items-center gap-4">
+              {["en","es","nl"].map((code) => (
+                <div key={code} className="flex items-center gap-2">
+                  <Switch
+                    checked={languages.includes(code)}
+                    onCheckedChange={(v) => {
+                      const next = v ? Array.from(new Set([...languages, code])) : languages.filter((c) => c !== code);
+                      setLanguages(next);
+                    }}
+                  />
+                  <span>{code === "en" ? "English (EN)" : code === "es" ? "Spanish (ES)" : "Dutch (NL)"}</span>
+                </div>
+              ))}
+            </div>
+            <Button onClick={saveLanguages}>Save Languages</Button>
+          </CardContent>
+        </Card>
+      </TabsContent>
+
+      <TabsContent value="telephony">
+        <Card>
+          <CardHeader>
+            <CardTitle>Telephony</CardTitle>
+            <CardDescription>Configure provider and call options.</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="grid gap-2">
+              <label className="text-sm text-muted-foreground">Provider</label>
+              <Select value={telProvider} onValueChange={setTelProvider}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select provider" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="twilio">Twilio</SelectItem>
+                  <SelectItem value="vonage">Vonage</SelectItem>
+                  <SelectItem value="plivo">Plivo</SelectItem>
+                  <SelectItem value="sip">SIP</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="grid gap-2">
+              <label className="text-sm text-muted-foreground">Outbound Caller ID</label>
+              <Input value={outboundCallerId} onChange={(e) => setOutboundCallerId(e.target.value)} placeholder="+1XXXXXXXXXX" />
+            </div>
+            <div className="flex items-center gap-6">
+              <div className="flex items-center gap-2">
+                <Switch checked={recordingEnabled} onCheckedChange={setRecordingEnabled} />
+                <span>Call Recording</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <Switch checked={ivrEnabled} onCheckedChange={setIvrEnabled} />
+                <span>IVR Enabled</span>
+              </div>
+            </div>
+            <Button onClick={saveTelephony}>Save Telephony</Button>
+          </CardContent>
+        </Card>
+      </TabsContent>
+
+      <TabsContent value="integrations">
+        <Card>
+          <CardHeader>
+            <CardTitle>Integrations</CardTitle>
+            <CardDescription>Connect CRM, Helpdesk, Billing, Calendar.</CardDescription>
+          </CardHeader>
+          <CardContent className="grid sm:grid-cols-2 gap-4">
+            <div className="grid gap-2">
+              <label className="text-sm text-muted-foreground">CRM</label>
+              <Select value={crm} onValueChange={setCrm}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select CRM" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="">None</SelectItem>
+                  <SelectItem value="hubspot">HubSpot</SelectItem>
+                  <SelectItem value="salesforce">Salesforce</SelectItem>
+                  <SelectItem value="custom">Custom</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="grid gap-2">
+              <label className="text-sm text-muted-foreground">Helpdesk</label>
+              <Select value={helpdesk} onValueChange={setHelpdesk}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select Helpdesk" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="">None</SelectItem>
+                  <SelectItem value="zendesk">Zendesk</SelectItem>
+                  <SelectItem value="freshdesk">Freshdesk</SelectItem>
+                  <SelectItem value="custom">Custom</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="grid gap-2">
+              <label className="text-sm text-muted-foreground">Billing</label>
+              <Select value={billing} onValueChange={setBilling}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select Billing" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="">None</SelectItem>
+                  <SelectItem value="stripe">Stripe</SelectItem>
+                  <SelectItem value="chargebee">Chargebee</SelectItem>
+                  <SelectItem value="custom">Custom</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="grid gap-2">
+              <label className="text-sm text-muted-foreground">Calendar</label>
+              <Select value={calendar} onValueChange={setCalendar}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select Calendar" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="">None</SelectItem>
+                  <SelectItem value="google">Google</SelectItem>
+                  <SelectItem value="microsoft">Microsoft 365</SelectItem>
+                  <SelectItem value="custom">Custom</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="sm:col-span-2">
+              <Button onClick={saveIntegrations}>Save Integrations</Button>
+            </div>
           </CardContent>
         </Card>
       </TabsContent>
