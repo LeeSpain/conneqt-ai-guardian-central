@@ -2,7 +2,7 @@ import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import EmbeddedAssistant from '@/components/assessment/EmbeddedAssistant';
 import QuestionnaireForm from '@/components/assessment/QuestionnaireForm';
-
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 const SolutionBuilder = () => {
   return (
     <>
@@ -16,11 +16,21 @@ const SolutionBuilder = () => {
             </p>
           </header>
 
-          <div className="grid grid-cols-1 gap-10">
-            <EmbeddedAssistant />
-            <main>
-              <QuestionnaireForm />
-            </main>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
+            {/* Left: AI Assistant Chat (fixed height) */}
+            <div className="w-full">
+              <EmbeddedAssistant />
+            </div>
+
+            {/* Right: Questionnaire in a matching card */}
+            <Card className="h-[500px] flex flex-col">
+              <CardHeader className="pb-3">
+                <CardTitle>Business Questionnaire</CardTitle>
+              </CardHeader>
+              <CardContent className="flex-1 overflow-y-auto">
+                <QuestionnaireForm />
+              </CardContent>
+            </Card>
           </div>
         </div>
       </div>
