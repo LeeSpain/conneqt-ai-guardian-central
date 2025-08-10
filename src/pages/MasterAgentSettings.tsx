@@ -11,6 +11,7 @@ import { AgentProvider, useAgent } from "@/contexts/AgentContext";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Link } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
+import { OpenAIService } from "@/utils/OpenAIService";
 export default function MasterAgentSettings() {
   useEffect(() => {
     document.title = "Master Agent Settings | ConneqtCentral";
@@ -70,7 +71,8 @@ function AgentTabs() {
   const [helpdesk, setHelpdesk] = useState(masterAgent.integrations?.helpdesk ?? "");
   const [billing, setBilling] = useState(masterAgent.integrations?.billing ?? "");
   const [calendar, setCalendar] = useState(masterAgent.integrations?.calendar ?? "");
-const { toast } = useToast();
+  const [openAiKey, setOpenAiKey] = useState<string>(OpenAIService.getApiKey() ?? "");
+  const { toast } = useToast();
   const [newTraining, setNewTraining] = useState<{ title: string; type: string; description: string; content: string }>({ title: "", type: "document", description: "", content: "" });
 const save = () => {
   updateMasterAgent({
@@ -382,7 +384,7 @@ const saveIntegrations = () => {
         <Card>
           <CardHeader>
             <CardTitle>Integrations</CardTitle>
-            <CardDescription>Connect CRM, Helpdesk, Billing, Calendar.</CardDescription>
+            <CardDescription>Connect CRM, Helpdesk, Billing, Calendar, and LLM provider.</CardDescription>
           </CardHeader>
           <CardContent className="grid sm:grid-cols-2 gap-4">
             <div className="grid gap-2">
@@ -441,8 +443,30 @@ const saveIntegrations = () => {
                 </SelectContent>
               </Select>
             </div>
-            <div className="sm:col-span-2">
-              <Button onClick={saveIntegrations}>Save Integrations</Button>
+            <div className="sm:col-span-2 border-t pt-4 mt-2">
+              <div className="grid sm:grid-cols-3 gap-3 items-end">
+                <div className="sm:col-span-2 grid gap-2">
+                  <label className="text-sm text-muted-foreground">OpenAI API Key</label>
+                  <Input
+                    type="password"
+                    placeholder="sk-..."
+                    value={openAiKey}
+                    onChange={(e) => setOpenAiKey(e.target.value)}
+                  />
+                  <p className="text-xs text-muted-foreground">Stored in your browser's localStorage for this demo. For production, use Supabase Edge Functions and secrets.</p>
+                </div>
+                <div className="flex gap-2">
+                  <Button variant="secondary" onClick={async ()=>{
+                    if(!openAiKey){ toast({ title: "Missing key"}); return; }
+                    const ok = await OpenAIService.testApiKey(openAiKey);
+                    toast({ title: ok ? "Key valid" : "Key invalid" });
+                  }}>Test</Button>
+                  <Button onClick={()=>{ if(!openAiKey){ toast({ title:"Enter a key"}); return;} OpenAIService.saveApiKey(openAiKey); toast({ title: "OpenAI key saved"}); }}>Save</Button>
+                </div>
+              </div>
+              <div className="mt-4">
+                <Button onClick={saveIntegrations}>Save Integrations</Button>
+              </div>
             </div>
           </CardContent>
         </Card>

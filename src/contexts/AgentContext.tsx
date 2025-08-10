@@ -109,6 +109,8 @@ type AgentContextType = {
   ) => TrainingItem | undefined;
   // Privacy utilities
   getRedactedForAgent: (agentId: string, profile: any) => any;
+  // Prompt composition
+  buildSystemPrompt: (agentId: string) => string;
 };
 
 const AgentContext = createContext<AgentContextType | undefined>(undefined);
@@ -440,6 +442,33 @@ export const AgentProvider = ({ children }: { children: React.ReactNode }) => {
         const agent = agentId === "master" ? masterAgent : getClientAgent(agentId);
         const opts = agent?.privacy || {};
         return buildRedactedContext(profile, opts);
+      },
+      // Prompt composition for LLM
+      buildSystemPrompt: (agentId: string) => {
+        const agent = agentId === "master" ? masterAgent : getClientAgent(agentId) ?? masterAgent;
+        const masterTraining = getTrainingForMaster();
+        const clientTraining = agentId === "master" ? [] : trainingItems.filter((t) => t.scope === "client" && t.clientId === agentId && !t.archived);
+        const getPublished = (items: TrainingItem[]) =>
+          items
+            .map((t) => (t.versions.find((v) => v.id === t.publishedVersionId) ?? t.versions[t.versions.length - 1])?.content)
+            .filter(Boolean)
+            .join("\n\n---\n\n");
+        const masterTrainingText = getPublished(masterTraining);
+        const clientTrainingText = getPublished(clientTraining);
+        const privacy = agent?.privacy ?? {};
+        const privacyText = `Privacy: mask emails (${privacy.maskEmails ? "on" : "off"}), mask phones (${privacy.maskPhones ? "on" : "off"}), allow website (${privacy.allowWebsite ? "yes" : "no"}). Share upstream only allowlisted keys: ${privacy.allowlistKeys?.join(", ") || "none"}.`;
+        return [
+          `Master Persona: ${masterAgent.persona}`,
+          `Master System Prompt: ${masterAgent.systemPrompt}`,
+          agentId !== "master" ? `Agent Persona: ${agent.persona}` : undefined,
+          agentId !== "master" ? `Agent System Prompt: ${agent.systemPrompt}` : undefined,
+          "Customer Service Excellence: You are a world-class customer service expert. Be empathetic, concise, accurate. Confirm understanding, propose clear next steps, and summarize outcomes. Escalate complex or sensitive issues to the Master Agent when needed.",
+          privacyText,
+          masterTrainingText ? `Master Training:\n${masterTrainingText}` : undefined,
+          clientTrainingText ? `Agent Training:\n${clientTrainingText}` : undefined,
+        ]
+          .filter(Boolean)
+          .join("\n\n");
       },
     }),
     [masterAgent, clientAgents, trainingItems]

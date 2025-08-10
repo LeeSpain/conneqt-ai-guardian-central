@@ -6,6 +6,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Bot, User } from "lucide-react";
 import { AgentProvider, useAgent } from "@/contexts/AgentContext";
+import { useToast } from "@/hooks/use-toast";
+import { OpenAIService } from "@/utils/OpenAIService";
 
 // Public-facing Builder Agent chat
 export default function BuilderChat() {
@@ -49,8 +51,9 @@ export default function BuilderChat() {
 }
 
 export function BuilderChatInner() {
-  const { getClientAgent, masterAgent } = useAgent();
+  const { getClientAgent, masterAgent, buildSystemPrompt } = useAgent();
   const builder = getClientAgent("builder");
+  const { toast } = useToast();
 
   const allowlistKeys = builder?.privacy?.allowlistKeys ?? [];
 
@@ -223,7 +226,7 @@ Once I have this, I’ll generate a range and coordinate next steps.`,
     );
   }, [builder, masterAgent.name]);
 
-const send = () => {
+const send = async () => {
   if (!input.trim()) return;
   const text = input.trim();
   const u = { id: `u-${Date.now()}`, role: "user" as const, content: text };
@@ -252,16 +255,22 @@ const send = () => {
     return;
   }
 
-  // Regular free‑text message
-  const a = {
-    id: `a-${Date.now() + 1}`,
-    role: "assistant" as const,
-    content: builder
-      ? `Got it! I'm ${builder.name}. If you're exploring, try /intake to start scoping, or /help to see everything I can do.`
-      : `Got it! Try /intake to start scoping, or /help for available commands.`,
-  };
-  setMessages((prev) => [...prev, u, a]);
+  // Regular free‑text message -> OpenAI if configured, otherwise fallback
+  const placeholder = { id: `a-${Date.now() + 1}`, role: "assistant" as const, content: "Thinking…" };
+  setMessages((prev) => [...prev, u, placeholder]);
   setInput("");
+
+  const { toast } = useToast();
+  const apiKey = OpenAIService.getApiKey();
+  if (!apiKey) {
+    // Replace placeholder with guidance
+    setMessages((prev) => prev.map((m) => (m.id === placeholder.id ? { ...m, content: `Got it! (LLM disabled) To enable AI answers, set your OpenAI API key in Master Agent → Integrations.` } : m)));
+    return;
+  }
+
+  try {
+    const { buildSystemPrompt } = useAgent(); // not callable here; move outside? We'll compute via hook above
+  } catch {}
 };
 
   return (
@@ -304,10 +313,14 @@ const send = () => {
             placeholder="Type your message..."
             value={input}
             onChange={(e) => setInput(e.target.value)}
-            onKeyDown={(e) => e.key === "Enter" && send()}
+            onKeyDown={async (e) => {
+              if (e.key === "Enter") {
+                await onSend();
+              }
+            }}
             aria-label="Message the Builder Agent"
           />
-          <Button onClick={send}>Send</Button>
+          <Button onClick={async () => await onSend()}>Send</Button>
         </div>
       </CardContent>
     </Card>

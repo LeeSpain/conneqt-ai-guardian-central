@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { UserProvider } from "@/contexts/UserContext";
 import { AgentProvider, useAgent } from "@/contexts/AgentContext";
+import { OpenAIService } from "@/utils/OpenAIService";
 
  type Msg = { id: string; role: "user" | "assistant"; content: string };
 
@@ -22,7 +23,7 @@ export default function AgentConsole() {
           <main className="p-6 space-y-6">
             <header>
               <h1 className="text-2xl font-bold text-foreground">Agent Console</h1>
-              <p className="text-muted-foreground">Test conversations. This is a local demo (no external API calls).</p>
+              <p className="text-muted-foreground">Test conversations. Uses OpenAI when configured (local demo fallback otherwise).</p>
             </header>
             <ConsoleInner />
           </main>
@@ -38,7 +39,7 @@ function useQuery() {
 }
 
 function ConsoleInner() {
-  const { masterAgent, getClientAgent, getTrainingForClient, getTrainingForMaster } = useAgent();
+  const { masterAgent, getClientAgent, getTrainingForClient, getTrainingForMaster, buildSystemPrompt } = useAgent();
   const query = useQuery();
   const clientId = query.get("clientId");
   const clientAgent = clientId ? getClientAgent(clientId) : undefined;
@@ -57,18 +58,35 @@ function ConsoleInner() {
   const [showTraining, setShowTraining] = useState(false);
   const top3 = training.slice(0, 3);
 
-  const send = () => {
+  const send = async () => {
     if (!input.trim()) return;
-    const userMsg: Msg = { id: `u-${Date.now()}`, role: "user", content: input };
-    const reply: Msg = {
-      id: `a-${Date.now() + 1}`,
-      role: "assistant",
-      content: clientAgent
-        ? `Demo reply from ${clientAgent.name}. (Master fallback: ${masterAgent.name}).`
-        : `Demo reply from ${masterAgent.name}.` ,
-    };
-    setMessages((prev) => [...prev, userMsg, reply]);
+    const text = input.trim();
+    const userMsg: Msg = { id: `u-${Date.now()}`, role: "user", content: text };
+    const placeholder: Msg = { id: `a-${Date.now() + 1}`, role: "assistant", content: "Thinking…" };
+    setMessages((prev) => [...prev, userMsg, placeholder]);
     setInput("");
+
+    const apiKey = OpenAIService.getApiKey();
+    if (!apiKey) {
+      setMessages((prev) => prev.map((m) => (m.id === placeholder.id ? { ...m, content: clientAgent
+        ? `Demo reply from ${clientAgent.name}. (Master fallback: ${masterAgent.name}).`
+        : `Demo reply from ${masterAgent.name}.` } : m)));
+      return;
+    }
+
+    try {
+      const system = clientAgent ? buildSystemPrompt(clientAgent.id) : buildSystemPrompt("master");
+      const recent = messages.slice(-20).map((m) => ({ role: m.role, content: m.content })) as any[];
+      const openAiMessages = [
+        { role: "system", content: system },
+        ...recent,
+        { role: "user", content: text },
+      ];
+      const completion = await OpenAIService.chat(openAiMessages);
+      setMessages((prev) => prev.map((m) => (m.id === placeholder.id ? { ...m, content: completion || "(no response)" } : m)));
+    } catch (e: any) {
+      setMessages((prev) => prev.map((m) => (m.id === placeholder.id ? { ...m, content: `Error: ${e?.message || "Failed to call AI"}` } : m)));
+    }
   };
 
   return (
