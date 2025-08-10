@@ -95,6 +95,12 @@ const QuestionnaireForm: React.FC = () => {
       clearTimeout(t1); clearTimeout(t2); clearTimeout(t3);
     });
   }, [step, aiLoading, overviewDraft, answers.companyName, answers.industry, answers.website]);
+  useEffect(() => {
+    if (step === 1 && aiProgress === 100 && !aiLoading) {
+      setStep((s) => Math.min(totalSteps - 1, s + 1));
+    }
+  }, [step, aiProgress, aiLoading]);
+
   const progress = useMemo(() => Math.round(((step + 1) / totalSteps) * 100), [step]);
 
   const nextDisabled = useMemo(() => {
@@ -208,25 +214,9 @@ const QuestionnaireForm: React.FC = () => {
       {step === 1 && (
         <section aria-labelledby="agent-title" className="space-y-6">
           <h2 id="agent-title" className="text-2xl font-semibold tracking-tight">AI Agent is working</h2>
-          <p className="text-sm text-muted-foreground">
-            Our AI is analyzing your website and industry to craft a tailored overview. This usually takes a few seconds.
-          </p>
           <div className="space-y-3">
             <Progress value={aiProgress} />
-            <div className="text-xs text-muted-foreground">{aiLoading ? 'Analyzing...' : (overviewDraft ? 'Analysis complete' : 'Waiting to start')}</div>
-            {overviewDraft && (
-              <div className="rounded-md border p-3">
-                <div className="text-sm font-medium">Preview</div>
-                <p className="text-sm mt-1">{overviewDraft}</p>
-                {overviewKeyPoints.length > 0 && (
-                  <ul className="list-disc pl-5 mt-2 text-sm space-y-1">
-                    {overviewKeyPoints.map((k, i) => (
-                      <li key={i}>{k}</li>
-                    ))}
-                  </ul>
-                )}
-              </div>
-            )}
+            <div className="text-xs text-muted-foreground">{aiLoading ? 'Analyzing...' : 'Finalizing...'}</div>
           </div>
         </section>
       )}
@@ -384,15 +374,19 @@ const QuestionnaireForm: React.FC = () => {
           Back
         </Button>
         {step < totalSteps - 1 ? (
-          <Button onClick={() => {
-            if (nextDisabled) {
-              toast({ title: "Missing info", description: "Please complete the required fields to continue." });
-              return;
-            }
-            setStep((s) => Math.min(totalSteps - 1, s + 1));
-          }}>
-            Continue
-          </Button>
+          step === 1 ? (
+            <div className="h-10" />
+          ) : (
+            <Button onClick={() => {
+              if (nextDisabled) {
+                toast({ title: "Missing info", description: "Please complete the required fields to continue." });
+                return;
+              }
+              setStep((s) => Math.min(totalSteps - 1, s + 1));
+            }}>
+              Continue
+            </Button>
+          )
         ) : (
           <Button onClick={onConfirm}>
             Confirm & proceed
