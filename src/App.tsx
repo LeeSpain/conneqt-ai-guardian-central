@@ -26,6 +26,7 @@ import MasterAgentSettings from "./pages/MasterAgentSettings";
 import ClientAgents from "./pages/ClientAgents";
 import ClientAgentManager from "./pages/ClientAgentManager";
 import AgentConsole from "./pages/AgentConsole";
+import BuilderChat from "./pages/BuilderChat";
 import ClientOnboarding from "./pages/ClientOnboarding";
 import ClientHub from "./pages/ClientHub";
 import { ClientProfileProvider } from "@/contexts/ClientProfileContext";
@@ -59,6 +60,7 @@ const AppRoutes = () => {
       <Route path="/ai-agents/clients" element={<ClientAgents />} />
       <Route path="/ai-agents/clients/:clientId" element={<ClientAgentManager />} />
       <Route path="/ai-agents/console" element={<AgentConsole />} />
+      <Route path="/builder" element={<BuilderChat />} />
       <Route path="*" element={<NotFound />} />
     </Routes>
   );

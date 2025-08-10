@@ -150,12 +150,12 @@ const initialMaster: MasterAgent = {
 
 const initialClients: Agent[] = [
   {
-    id: "solution-builder",
-    name: "Solution Builder Agent",
-    persona: "Scoped onboarding assistant that gathers business basics only.",
+    id: "builder",
+    name: "Builder Agent",
+    persona: "Dedicated prospect assistant for solution building on the frontend. Collects only high-level, non-sensitive info.",
     systemPrompt:
-      "You are the Solution Builder. Collect only high-level, non-sensitive information needed for solution scoping. When escalating to the Master Agent, share a minimal, redacted context only.",
-    channels: { chat: false, voice: false },
+      "You are the Builder Agent. Assist potential clients via the public chat to scope their needs. Collect only high-level, non-sensitive information. When escalating to the Master Agent, share a minimal, redacted context only.",
+    channels: { chat: true, voice: false },
     tools: {},
     knowledgeSources: [],
     languages: ["en"],
@@ -264,10 +264,10 @@ export const AgentProvider = ({ children }: { children: React.ReactNode }) => {
       if (c) {
         try {
           const loaded = JSON.parse(c);
-          // Migration: ensure "Solution Builder" seed exists even if older storage is present
-          const hasSolutionBuilder = Array.isArray(loaded) && loaded.some((a: any) => a?.id === "solution-builder");
-          const seedSB = initialClients.find((a) => a.id === "solution-builder");
-          const merged = hasSolutionBuilder || !seedSB ? loaded : [seedSB, ...loaded];
+          // Migration: ensure "Builder" seed exists even if older storage is present
+          const hasBuilder = Array.isArray(loaded) && loaded.some((a: any) => a?.id === "builder");
+          const seedBuilder = initialClients.find((a) => a.id === "builder");
+          const merged = hasBuilder || !seedBuilder ? loaded : [seedBuilder, ...loaded];
           setClientAgents(merged);
         } catch {
           setClientAgents(initialClients);

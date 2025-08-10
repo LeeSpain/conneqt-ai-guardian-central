@@ -25,6 +25,19 @@ export default function AIAgents() {
             <section className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
               <Card className="shadow-sm">
                 <CardHeader>
+                  <CardTitle className="flex items-center gap-2"><Bot className="h-5 w-5"/> Builder Agent</CardTitle>
+                  <CardDescription>Public-facing chat for prospects. Gathers only safe basics.</CardDescription>
+                </CardHeader>
+                <CardContent className="flex justify-between items-end">
+                  <div className="text-sm text-muted-foreground">Frontend chat, inherits Master policies</div>
+                  <Button asChild>
+                    <Link to="/builder">Open</Link>
+                  </Button>
+                </CardContent>
+              </Card>
+
+              <Card className="shadow-sm">
+                <CardHeader>
                   <CardTitle className="flex items-center gap-2"><BrainCircuit className="h-5 w-5"/> Master Agent</CardTitle>
                   <CardDescription>Configure the global brain and policies.</CardDescription>
                 </CardHeader>
