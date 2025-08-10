@@ -95,12 +95,6 @@ const QuestionnaireForm: React.FC = () => {
       clearTimeout(t1); clearTimeout(t2); clearTimeout(t3);
     });
   }, [step, aiLoading, overviewDraft, answers.companyName, answers.industry, answers.website]);
-  useEffect(() => {
-    if (step === 1 && aiProgress === 100 && !aiLoading) {
-      setStep((s) => Math.min(totalSteps - 1, s + 1));
-    }
-  }, [step, aiProgress, aiLoading]);
-
   const progress = useMemo(() => Math.round(((step + 1) / totalSteps) * 100), [step]);
 
   const nextDisabled = useMemo(() => {
@@ -368,19 +362,15 @@ const QuestionnaireForm: React.FC = () => {
           Back
         </Button>
         {step < totalSteps - 1 ? (
-          step === 1 ? (
-            <div className="h-10" />
-          ) : (
-            <Button onClick={() => {
-              if (nextDisabled) {
-                toast({ title: "Missing info", description: "Please complete the required fields to continue." });
-                return;
-              }
-              setStep((s) => Math.min(totalSteps - 1, s + 1));
-            }}>
-              Continue
-            </Button>
-          )
+          <Button onClick={() => {
+            if (nextDisabled) {
+              toast({ title: "Missing info", description: "Please complete the required fields to continue." });
+              return;
+            }
+            setStep((s) => Math.min(totalSteps - 1, s + 1));
+          }}>
+            Continue
+          </Button>
         ) : (
           <Button onClick={onConfirm}>
             Confirm & proceed
