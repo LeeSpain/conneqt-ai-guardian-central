@@ -31,7 +31,7 @@ const Navbar = () => {
             <Link to="/admin-dashboard" className="text-conneqt-slate hover:text-conneqt-blue px-3 py-2 font-medium transition-colors">
               Admin Dashboard
             </Link>
-            <Link to="/client-management" className="text-conneqt-slate hover:text-conneqt-blue px-3 py-2 font-medium transition-colors">
+            <Link to="/client-hub" className="text-conneqt-slate hover:text-conneqt-blue px-3 py-2 font-medium transition-colors">
               Healthcare Dashboard
             </Link>
             <Link to="/client-hub" className="text-conneqt-slate hover:text-conneqt-blue px-3 py-2 font-medium transition-colors">
@@ -87,7 +87,7 @@ const Navbar = () => {
               Admin Dashboard
             </Link>
             <Link 
-              to="/client-management" 
+              to="/client-hub" 
               className="block px-3 py-2 text-conneqt-slate hover:text-conneqt-blue font-medium"
               onClick={() => setIsMenuOpen(false)}
             >
