@@ -10,24 +10,12 @@ const CTASection = () => {
           Join successful entrepreneurs and agencies already offering AI-powered customer service 
           solutions to their clients. Start building your solution today.
         </p>
-        <div className="flex flex-col sm:flex-row justify-center gap-4">
+        <div className="flex justify-center">
           <Link 
             to="/solution-builder" 
             className="bg-conneqt-blue hover:bg-blue-500 text-white px-6 py-3 rounded-md font-medium transition-colors"
           >
             Build Your Solution
-          </Link>
-          <Link 
-            to="/admin-dashboard" 
-            className="bg-conneqt-navy hover:bg-slate-800 text-white px-6 py-3 rounded-md font-medium transition-colors"
-          >
-            Access Dashboard
-          </Link>
-          <Link 
-            to="/ai-agents" 
-            className="bg-white hover:bg-gray-50 text-conneqt-navy border border-conneqt-navy px-6 py-3 rounded-md font-medium transition-colors"
-          >
-            Try AI Demo
           </Link>
         </div>
       </div>
