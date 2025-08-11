@@ -29,9 +29,49 @@ const Quote = () => {
         </div>
       </section>
       
-      {/* Quote Form Section */}
+      {/* Quote Options Section */}
       <section className="py-16">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+          {/* Quote Method Selection */}
+          <div className="mb-8">
+            <div className="grid md:grid-cols-2 gap-6">
+              {/* Traditional Quote Option */}
+              <div className="bg-white border border-gray-200 rounded-xl p-6 hover:border-conneqt-blue transition-colors">
+                <h3 className="text-xl font-semibold mb-3">Traditional Quote</h3>
+                <p className="text-conneqt-slate mb-4">
+                  Fill out our standard form with your requirements and get a custom quote based on hours and services needed.
+                </p>
+                <ul className="text-sm text-conneqt-slate mb-4 space-y-1">
+                  <li>• Manual requirement specification</li>
+                  <li>• Standard pricing structure</li>
+                  <li>• Quick turnaround time</li>
+                </ul>
+              </div>
+              
+              {/* Solution Builder Option */}
+              <div className="bg-gradient-to-br from-conneqt-blue to-blue-600 text-white rounded-xl p-6 relative overflow-hidden">
+                <div className="absolute top-2 right-2 bg-white/20 text-xs px-2 py-1 rounded-full">
+                  Recommended
+                </div>
+                <h3 className="text-xl font-semibold mb-3">Intelligent Solution Builder</h3>
+                <p className="mb-4 text-blue-50">
+                  Answer a smart questionnaire and get AI-powered recommendations tailored specifically to your business needs.
+                </p>
+                <ul className="text-sm text-blue-100 mb-4 space-y-1">
+                  <li>• AI-powered business analysis</li>
+                  <li>• Personalized recommendations</li>
+                  <li>• Detailed solution breakdown</li>
+                </ul>
+                <Link 
+                  to="/solution-builder"
+                  className="inline-flex items-center bg-white text-conneqt-blue px-4 py-2 rounded-lg font-medium hover:bg-gray-50 transition-colors"
+                >
+                  Start Solution Builder →
+                </Link>
+              </div>
+            </div>
+          </div>
+          
           <div className="grid md:grid-cols-3 gap-8">
             {/* Sidebar */}
             <div className="md:col-span-1">
