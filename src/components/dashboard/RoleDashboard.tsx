@@ -197,11 +197,19 @@ export const RoleDashboard = () => {
       )}
 
       {/* Metrics Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        {metrics.map((metric, index) => (
-          <MetricCard key={index} {...metric} />
-        ))}
-      </div>
+      {metrics.length === 0 ? (
+        <Card>
+          <CardContent className="p-6 text-muted-foreground">
+            No metrics to display yet. Connect your data sources to see insights.
+          </CardContent>
+        </Card>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          {metrics.map((metric, index) => (
+            <MetricCard key={index} {...metric} />
+          ))}
+        </div>
+      )}
 
       {/* Quick Actions */}
       {quickActions.length > 0 && (
@@ -251,35 +259,8 @@ export const RoleDashboard = () => {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="space-y-3">
-            {isViewer ? (
-              <div className="flex items-center gap-3 p-3 rounded-lg bg-muted/50">
-                <Lock className="w-4 h-4 text-muted-foreground" />
-                <span className="text-sm text-muted-foreground">
-                  Activity history requires additional permissions
-                </span>
-              </div>
-            ) : (
-              <>
-                <div className="flex items-center gap-3 p-3 rounded-lg bg-muted/50">
-                  <div className="w-2 h-2 rounded-full bg-green-500"></div>
-                  <span className="text-sm">Client "Tech Solutions Inc" status updated</span>
-                  <span className="text-xs text-muted-foreground ml-auto">2 min ago</span>
-                </div>
-                <div className="flex items-center gap-3 p-3 rounded-lg bg-muted/50">
-                  <div className="w-2 h-2 rounded-full bg-blue-500"></div>
-                  <span className="text-sm">New support ticket created</span>
-                  <span className="text-xs text-muted-foreground ml-auto">15 min ago</span>
-                </div>
-                {(isOwner || isManager) && (
-                  <div className="flex items-center gap-3 p-3 rounded-lg bg-muted/50">
-                    <div className="w-2 h-2 rounded-full bg-orange-500"></div>
-                    <span className="text-sm">Monthly report generated</span>
-                    <span className="text-xs text-muted-foreground ml-auto">1 hour ago</span>
-                  </div>
-                )}
-              </>
-            )}
+          <div className="p-3 rounded-lg bg-muted/50 text-sm text-muted-foreground">
+            No recent activity to display.
           </div>
         </CardContent>
       </Card>

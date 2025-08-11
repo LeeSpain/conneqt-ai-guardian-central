@@ -12,106 +12,18 @@ import { TeamMember } from "@/types/team";
 import { UserProvider, useUser } from "@/contexts/UserContext";
 import { useUserRole } from "@/hooks/useUserRole";
 
-// Mock team data
-const mockTeamMembers: TeamMember[] = [
-  {
-    id: 1,
-    name: "John Smith",
-    email: "john@company.com",
-    role: "Owner",
-    status: "Active",
-    joinedDate: "2024-01-15",
-    lastActive: "2024-01-31 14:30",
-    permissions: {
-      canViewClients: true,
-      canEditClients: true,
-      canDeleteClients: true,
-      canViewReports: true,
-      canManageTeam: true,
-      canViewSettings: true,
-      canEditSettings: true,
-      canViewAgents: true,
-      canManageAgents: true,
-      canOperateAgents: true,
-    },
-  },
-  {
-    id: 2,
-    name: "Sarah Johnson",
-    email: "sarah@company.com",
-    role: "Manager",
-    status: "Active",
-    joinedDate: "2024-01-20",
-    lastActive: "2024-01-31 13:45",
-    permissions: {
-      canViewClients: true,
-      canEditClients: true,
-      canDeleteClients: false,
-      canViewReports: true,
-      canManageTeam: true,
-      canViewSettings: true,
-      canEditSettings: false,
-      canViewAgents: true,
-      canManageAgents: true,
-      canOperateAgents: true,
-    },
-  },
-  {
-    id: 3,
-    name: "Mike Wilson",
-    email: "mike@company.com",
-    role: "Staff",
-    status: "Active",
-    joinedDate: "2024-01-25",
-    lastActive: "2024-01-31 12:15",
-    permissions: {
-      canViewClients: true,
-      canEditClients: true,
-      canDeleteClients: false,
-      canViewReports: false,
-      canManageTeam: false,
-      canViewSettings: false,
-      canEditSettings: false,
-      canViewAgents: true,
-      canManageAgents: false,
-      canOperateAgents: false,
-    },
-  },
-  {
-    id: 4,
-    name: "Emma Davis",
-    email: "emma@company.com",
-    role: "Viewer",
-    status: "Pending",
-    joinedDate: "2024-01-30",
-    lastActive: "-",
-    permissions: {
-      canViewClients: true,
-      canEditClients: false,
-      canDeleteClients: false,
-      canViewReports: false,
-      canManageTeam: false,
-      canViewSettings: false,
-      canEditSettings: false,
-      canViewAgents: false,
-      canManageAgents: false,
-      canOperateAgents: false,
-    },
-  },
-];
+const initialTeamMembers: TeamMember[] = [];
 
 const TeamManagementContent = () => {
-  const [teamMembers, setTeamMembers] = useState<TeamMember[]>(mockTeamMembers);
+  const [teamMembers, setTeamMembers] = useState<TeamMember[]>(initialTeamMembers);
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const { canAccessFeature, getRestrictedMessage } = useUserRole();
 
   const canManageTeam = canAccessFeature('team');
 
   const handleAddTeamMember = (newMember: Omit<TeamMember, "id">) => {
-    const member: TeamMember = {
-      ...newMember,
-      id: Math.max(...teamMembers.map(m => m.id)) + 1,
-    };
+    const nextId = teamMembers.length ? Math.max(...teamMembers.map(m => m.id)) + 1 : 1;
+    const member: TeamMember = { ...newMember, id: nextId };
     setTeamMembers([...teamMembers, member]);
   };
 
