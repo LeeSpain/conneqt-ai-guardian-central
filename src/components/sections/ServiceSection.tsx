@@ -116,16 +116,17 @@ const ServiceSection = () => {
         </header>
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full grid-cols-2 lg:grid-cols-4 mb-12 bg-muted/50 p-2 h-auto">
+          <TabsList className="grid w-full grid-cols-2 lg:grid-cols-4 mb-12 bg-gradient-to-r from-background to-muted/30 p-1 h-auto rounded-2xl shadow-lg border">
             {Object.entries(businessGroups).map(([key, group]) => (
               <TabsTrigger 
                 key={key} 
                 value={key} 
-                className="flex items-center gap-2 py-4 px-6 data-[state=active]:bg-background data-[state=active]:shadow-sm"
+                className="flex flex-col items-center gap-3 py-6 px-4 rounded-xl data-[state=active]:bg-gradient-to-br data-[state=active]:from-primary data-[state=active]:to-primary/80 data-[state=active]:text-primary-foreground data-[state=active]:shadow-md transition-all duration-300 hover:bg-muted/50 group"
               >
-                {group.icon}
-                <span className="hidden sm:inline font-medium">{group.title}</span>
-                <span className="sm:hidden font-medium">{group.title.split(' ')[0]}</span>
+                <div className="p-2 rounded-lg bg-muted/50 group-data-[state=active]:bg-white/20 transition-colors">
+                  {group.icon}
+                </div>
+                <span className="text-sm font-semibold text-center leading-tight">{group.title}</span>
               </TabsTrigger>
             ))}
           </TabsList>

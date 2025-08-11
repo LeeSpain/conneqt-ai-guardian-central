@@ -19,14 +19,8 @@ const Navbar = () => {
           
           {/* Desktop Menu */}
           <div className="hidden md:flex items-center space-x-8">
-            <Link to="/" className="text-conneqt-slate hover:text-conneqt-blue px-3 py-2 font-medium transition-colors">
-              Home
-            </Link>
             <Link to="/about" className="text-conneqt-slate hover:text-conneqt-blue px-3 py-2 font-medium transition-colors">
               About Us
-            </Link>
-            <Link to="/solution-builder" className="text-conneqt-slate hover:text-conneqt-blue px-3 py-2 font-medium transition-colors">
-              Solution Builder
             </Link>
             <Link to="/admin-dashboard" className="text-conneqt-slate hover:text-conneqt-blue px-3 py-2 font-medium transition-colors">
               Admin Dashboard
@@ -56,25 +50,11 @@ const Navbar = () => {
         <div className="md:hidden bg-white border-t">
           <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
             <Link 
-              to="/" 
-              className="block px-3 py-2 text-conneqt-slate hover:text-conneqt-blue font-medium"
-              onClick={() => setIsMenuOpen(false)}
-            >
-              Home
-            </Link>
-            <Link 
               to="/about" 
               className="block px-3 py-2 text-conneqt-slate hover:text-conneqt-blue font-medium"
               onClick={() => setIsMenuOpen(false)}
             >
               About Us
-            </Link>
-            <Link 
-              to="/solution-builder" 
-              className="block px-3 py-2 text-conneqt-slate hover:text-conneqt-blue font-medium"
-              onClick={() => setIsMenuOpen(false)}
-            >
-              Solution Builder
             </Link>
             <Link 
               to="/admin-dashboard"
