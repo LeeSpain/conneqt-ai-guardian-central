@@ -1,4 +1,5 @@
 import { ClientProfile } from "@/contexts/ClientProfileContext";
+import { SERVICE_CATALOG, ServiceKey } from "@/types/services";
 
 export type QuoteLine = {
   label: string;
@@ -35,10 +36,23 @@ export function calculateBuilderQuote(profile: ClientProfile): BuilderQuotePrici
   const basePlatform = basePlatformByTier[tier] ?? 499;
 
   // Module fees (monthly) — simple, can be tuned later
-  const moduleFees: Record<string, number> = {
+  const moduleFees: Record<ServiceKey, number> = {
     ai_agent_calling: 600,
     live_chat: 300,
-    analytics: 200,
+    analytics: 250,
+    customer_support: 900,
+    sales_marketing: 800,
+    data_reporting: 500,
+    hr_recruitment: 700,
+    finance: 650,
+    operations_project: 750,
+    conversation_intelligence: 550,
+    compliance_security: 600,
+    industry_healthcare: 400,
+    industry_ecommerce: 350,
+    industry_saas: 350,
+    industry_hospitality: 300,
+    custom_enhancements: 0,
   };
 
   const coverage = answers.coverage as string | undefined; // business-hours | extended | 24/7
@@ -65,18 +79,11 @@ export function calculateBuilderQuote(profile: ClientProfile): BuilderQuotePrici
   lines.push({ label: `Platform (${tier[0].toUpperCase() + tier.slice(1)})`, amount: basePlatform });
 
   let modulesSubtotal = 0;
-  for (const svc of services) {
+  for (const svc of services as ServiceKey[]) {
     const fee = moduleFees[svc] ?? 0;
     modulesSubtotal += fee;
-    const label =
-      svc === "ai_agent_calling"
-        ? "AI Agent Calling module"
-        : svc === "live_chat"
-        ? "Live Chat module"
-        : svc === "analytics"
-        ? "Analytics module"
-        : svc;
-    lines.push({ label, amount: fee });
+    const label = SERVICE_CATALOG.find((d) => d.key === svc)?.name || String(svc).replace(/_/g, ' ');
+    lines.push({ label: `${label} module`, amount: fee });
   }
 
   const preUpliftSubtotal = basePlatform + modulesSubtotal;

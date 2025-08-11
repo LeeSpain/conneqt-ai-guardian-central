@@ -15,6 +15,7 @@ import { useClientProfile } from "@/contexts/ClientProfileContext";
 import { SERVICE_CATALOG, type ServiceKey } from "@/types/services";
 import { CompanyAnalyzer } from "@/utils/CompanyAnalyzer";
 import { PerplexityService } from "@/utils/PerplexityService";
+import { isServiceEnabled, getServiceLabel, getServiceDescription } from "@/utils/serviceConfig";
 
 const industries = [
   "Retail",
@@ -335,7 +336,7 @@ const QuestionnaireForm: React.FC = () => {
           <h2 id="services-title" className="text-2xl font-semibold tracking-tight">Service interests</h2>
           <p className="text-sm text-muted-foreground">Choose the modules you want enabled. You can adjust later.</p>
           <div className="space-y-3">
-            {SERVICE_CATALOG.map((svc) => (
+            {SERVICE_CATALOG.filter((svc) => isServiceEnabled(svc.key)).map((svc) => (
               <label key={svc.key} className="flex items-start gap-3 p-3 rounded-md border cursor-pointer">
                 <Checkbox
                   checked={selectedServices.includes(svc.key)}
@@ -347,8 +348,8 @@ const QuestionnaireForm: React.FC = () => {
                   }}
                 />
                 <div>
-                  <div className="font-medium">{svc.name}</div>
-                  <div className="text-sm text-muted-foreground">{svc.description}</div>
+                  <div className="font-medium">{getServiceLabel(svc.key)}</div>
+                  <div className="text-sm text-muted-foreground">{getServiceDescription(svc.key)}</div>
                 </div>
               </label>
             ))}

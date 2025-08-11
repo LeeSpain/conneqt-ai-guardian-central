@@ -4,6 +4,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useClientProfile } from "@/contexts/ClientProfileContext";
 import { ServiceKey } from "@/types/services";
 import AIAgentCalling from "@/components/modules/AIAgentCalling";
+import LiveAnalytics from "@/components/solution/LiveAnalytics";
 
 function useSEO() {
   useEffect(() => {
@@ -28,6 +29,8 @@ const ModuleRenderer = ({ service }: { service: ServiceKey }) => {
   switch (service) {
     case "ai_agent_calling":
       return <AIAgentCalling />;
+    case "analytics":
+      return <LiveAnalytics />;
     default:
       return (
         <div className="rounded-xl border border-conneqt-slate/20 p-5">

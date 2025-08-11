@@ -5,6 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { Check } from 'lucide-react';
 import { SERVICE_CATALOG, ServiceKey } from '@/types/services';
 import { useClientProfile } from '@/contexts/ClientProfileContext';
+import { isServiceEnabled, getServiceLabel, getServiceDescription } from '@/utils/serviceConfig';
 
 interface ServiceSelectionProps {
   onContinue?: () => void;
@@ -46,34 +47,48 @@ const ServiceSelection: React.FC<ServiceSelectionProps> = ({ onContinue }) => {
           </div>
         ) : null}
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {SERVICE_CATALOG.map((svc) => (
-            <button
-              key={svc.key}
-              type="button"
-              onClick={() => toggle(svc.key)}
-              className={`w-full text-left rounded-xl border transition-colors px-5 py-4 ${
-                selectedSet.has(svc.key)
-                  ? 'border-conneqt-blue bg-conneqt-blue/5'
-                  : 'border-conneqt-slate/20 hover:border-conneqt-blue/40'
-              }`}
-            >
-              <div className="flex items-start gap-3">
-                <div
-                  className={`mt-1 h-5 w-5 rounded-full border flex items-center justify-center ${
-                    selectedSet.has(svc.key)
-                      ? 'border-conneqt-blue bg-conneqt-blue text-white'
-                      : 'border-conneqt-slate/40'
-                  }`}
-                >
-                  {selectedSet.has(svc.key) && <Check size={14} />}
-                </div>
-                <div>
-                  <h3 className="text-conneqt-navy font-semibold">{svc.name}</h3>
-                  <p className="text-conneqt-slate/80 text-sm mt-1">{svc.description}</p>
-                </div>
+        <div className="space-y-6">
+          {Object.entries(
+            SERVICE_CATALOG.filter((s) => isServiceEnabled(s.key)).reduce<Record<string, typeof SERVICE_CATALOG>>((acc, s) => {
+              const cat = s.category || 'Other';
+              if (!acc[cat]) acc[cat] = [] as any;
+              acc[cat].push(s);
+              return acc;
+            }, {})
+          ).map(([cat, list]) => (
+            <div key={cat}>
+              <h4 className="text-conneqt-navy font-semibold mb-2 capitalize">{cat.replace(/_/g, ' ')}</h4>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {list.map((svc) => (
+                  <button
+                    key={svc.key}
+                    type="button"
+                    onClick={() => toggle(svc.key)}
+                    className={`w-full text-left rounded-xl border transition-colors px-5 py-4 ${
+                      selectedSet.has(svc.key)
+                        ? 'border-conneqt-blue bg-conneqt-blue/5'
+                        : 'border-conneqt-slate/20 hover:border-conneqt-blue/40'
+                    }`}
+                  >
+                    <div className="flex items-start gap-3">
+                      <div
+                        className={`mt-1 h-5 w-5 rounded-full border flex items-center justify-center ${
+                          selectedSet.has(svc.key)
+                            ? 'border-conneqt-blue bg-conneqt-blue text-white'
+                            : 'border-conneqt-slate/40'
+                        }`}
+                      >
+                        {selectedSet.has(svc.key) && <Check size={14} />}
+                      </div>
+                      <div>
+                        <h3 className="text-conneqt-navy font-semibold">{getServiceLabel(svc.key)}</h3>
+                        <p className="text-conneqt-slate/80 text-sm mt-1">{getServiceDescription(svc.key)}</p>
+                      </div>
+                    </div>
+                  </button>
+                ))}
               </div>
-            </button>
+            </div>
           ))}
         </div>
 

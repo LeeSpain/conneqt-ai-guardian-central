@@ -31,6 +31,7 @@ import BuilderAgentDashboard from "./pages/BuilderAgentDashboard";
 import ClientOnboarding from "./pages/ClientOnboarding";
 import ClientHub from "./pages/ClientHub";
 import { ClientProfileProvider } from "@/contexts/ClientProfileContext";
+import AdminServices from "./pages/AdminServices";
 
 const queryClient = new QueryClient();
 
@@ -63,6 +64,7 @@ const AppRoutes = () => {
       <Route path="/ai-agents/console" element={<AgentConsole />} />
       <Route path="/ai-agents/builder" element={<BuilderAgentDashboard />} />
       <Route path="/builder" element={<BuilderChat />} />
+      <Route path="/admin/services" element={<AdminServices />} />
       <Route path="*" element={<NotFound />} />
     </Routes>
   );
