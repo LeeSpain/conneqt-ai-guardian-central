@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -31,6 +31,7 @@ const teamSizes = ["1-10", "11-50", "51-200", "200+"];
 
 const QuestionnaireForm: React.FC = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const { toast } = useToast();
   const { setSelectedServices, setAssessment, setCompanyOverview } = useClientProfile();
   
@@ -53,6 +54,26 @@ const QuestionnaireForm: React.FC = () => {
   });
 
   const [selectedServices, setSelected] = useState<ServiceKey[]>([]);
+
+  // Preselect services from URL (?preselect=key1,key2)
+  useEffect(() => {
+    try {
+      const params = new URLSearchParams(location.search);
+      const pre = params.get('preselect');
+      if (!pre) return;
+      const keys = pre.split(',').map((s) => s.trim()).filter(Boolean) as ServiceKey[];
+      const valid = keys.filter((k) => SERVICE_CATALOG.some((s) => s.key === k) && isServiceEnabled(k));
+      if (valid.length) {
+        setSelected((prev) => {
+          const set = new Set(prev);
+          valid.forEach((k) => set.add(k));
+          return Array.from(set);
+        });
+      }
+    } catch {}
+    // run only on mount or when the query changes
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [location.search]);
 
   const [aiLoading, setAiLoading] = useState(false);
   const [aiProgress, setAiProgress] = useState(0);
