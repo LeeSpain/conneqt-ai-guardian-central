@@ -1,9 +1,26 @@
 import { SERVICE_CATALOG, ServiceKey } from '@/types/services';
 
-export type ServiceOverride = { name?: string; description?: string };
+export type ServiceOverride = { 
+  name?: string; 
+  description?: string; 
+  monthlyPrice?: number;
+  setupFee?: number;
+};
+
+export type CustomService = {
+  id: string;
+  name: string;
+  description: string;
+  category: string;
+  monthlyPrice: number;
+  setupFee: number;
+  enabled: boolean;
+};
+
 export type AdminServiceConfig = {
   enabled: Partial<Record<ServiceKey, boolean>>;
   overrides: Partial<Record<ServiceKey, ServiceOverride>>;
+  customServices: CustomService[];
 };
 
 const STORAGE_KEY = 'service_admin_config_v1';
@@ -19,14 +36,15 @@ function getDefaultEnabled(): Record<ServiceKey, boolean> {
 export function getAdminServiceConfig(): AdminServiceConfig {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
-    if (!raw) return { enabled: getDefaultEnabled(), overrides: {} };
+    if (!raw) return { enabled: getDefaultEnabled(), overrides: {}, customServices: [] };
     const parsed: AdminServiceConfig = JSON.parse(raw);
     // Ensure all current services exist in config
     const enabled = { ...getDefaultEnabled(), ...(parsed.enabled || {}) } as Partial<Record<ServiceKey, boolean>>;
     const overrides = parsed.overrides || {};
-    return { enabled, overrides };
+    const customServices = parsed.customServices || [];
+    return { enabled, overrides, customServices };
   } catch {
-    return { enabled: getDefaultEnabled(), overrides: {} };
+    return { enabled: getDefaultEnabled(), overrides: {}, customServices: [] };
   }
 }
 
@@ -54,4 +72,36 @@ export function getServiceDescription(key: ServiceKey): string {
   if (override) return override;
   const svc = SERVICE_CATALOG.find(s => s.key === key);
   return svc?.description || '';
+}
+
+export function getServicePrice(key: ServiceKey): number {
+  const cfg = getAdminServiceConfig();
+  const override = cfg.overrides?.[key]?.monthlyPrice;
+  if (typeof override === 'number') return override;
+  // Default pricing based on category
+  const svc = SERVICE_CATALOG.find(s => s.key === key);
+  if (!svc) return 150;
+  
+  const categoryPricing: Record<string, number> = {
+    customer_support: 200,
+    sales_marketing: 180,
+    data_reporting: 160,
+    hr_recruitment: 140,
+    finance: 170,
+    operations_project: 150,
+    conversation_intelligence: 190,
+    compliance_security: 220,
+    industry: 130,
+    custom_enhancements: 250,
+  };
+  
+  return categoryPricing[svc.category] || 150;
+}
+
+export function getServiceSetupFee(key: ServiceKey): number {
+  const cfg = getAdminServiceConfig();
+  const override = cfg.overrides?.[key]?.setupFee;
+  if (typeof override === 'number') return override;
+  // Default setup fee is 2x monthly price
+  return getServicePrice(key) * 2;
 }
