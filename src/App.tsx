@@ -20,6 +20,7 @@ import PlatformSettings from "./pages/PlatformSettings";
 import WebsiteIntegration from "./pages/WebsiteIntegration";
 import ManagedServices from "./pages/ManagedServices";
 import SolutionBuilder from "./pages/SolutionBuilder";
+import BuilderQuote from "./pages/BuilderQuote";
 import AIAgents from "./pages/AIAgents";
 import MasterAgentSettings from "./pages/MasterAgentSettings";
 import ClientAgents from "./pages/ClientAgents";
@@ -40,6 +41,7 @@ const AppRoutes = () => {
       <Route path="/about" element={<About />} />
       <Route path="/quote" element={<Quote />} />
       <Route path="/solution-builder" element={<SolutionBuilder />} />
+      <Route path="/builder-quote" element={<BuilderQuote />} />
       <Route path="/managed-services" element={<ManagedServices />} />
       <Route path="/quote-confirmation" element={<QuoteConfirmation />} />
       <Route path="/subscriptions" element={<SubscriptionServices />} />

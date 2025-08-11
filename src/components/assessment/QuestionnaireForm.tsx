@@ -175,7 +175,7 @@ const QuestionnaireForm: React.FC = () => {
     );
 
     toast({ title: "Selections saved", description: "We will prepare your onboarding next." });
-    navigate("/client-onboarding");
+    navigate("/builder-quote");
   };
 
   return (
