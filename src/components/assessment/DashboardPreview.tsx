@@ -5,6 +5,7 @@ import { useClientProfile } from '@/contexts/ClientProfileContext';
 import { SERVICE_CATALOG } from '@/types/services';
 import { useNavigate } from 'react-router-dom';
 import { useToast } from '@/hooks/use-toast';
+import { getServiceLabel, getServiceDescription } from '@/utils/serviceConfig';
 
 const DashboardPreview: React.FC = () => {
   const { profile } = useClientProfile();
@@ -30,8 +31,8 @@ const DashboardPreview: React.FC = () => {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {selected.map((s) => (
               <div key={s.key} className="rounded-lg border p-4">
-                <h3 className="font-semibold text-conneqt-navy">{s.name}</h3>
-                <p className="text-sm text-conneqt-slate/80 mt-1">{s.description}</p>
+                <h3 className="font-semibold text-conneqt-navy">{getServiceLabel(s.key)}</h3>
+                <p className="text-sm text-conneqt-slate/80 mt-1">{getServiceDescription(s.key)}</p>
                 <div className="mt-3 text-xs text-muted-foreground">Module will be enabled on your dashboard.</div>
               </div>
             ))}

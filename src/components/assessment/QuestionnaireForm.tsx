@@ -374,10 +374,9 @@ const QuestionnaireForm: React.FC = () => {
               {selectedServices.length === 0 ? (
                 <span className="text-muted-foreground">No services selected yet.</span>
               ) : (
-                selectedServices.map((k) => {
-                  const svc = SERVICE_CATALOG.find((s) => s.key === k)!;
-                  return <Badge key={k} variant="secondary">{svc.name}</Badge>;
-                })
+                selectedServices.map((k) => (
+                  <Badge key={k} variant="secondary">{getServiceLabel(k)}</Badge>
+                ))
               )}
             </div>
           </div>

@@ -8,6 +8,7 @@ import { Switch } from '@/components/ui/switch';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
+import { useToast } from '@/hooks/use-toast';
 
 const setMeta = () => {
   document.title = 'Admin: Services | Conneqt Central';
@@ -33,7 +34,8 @@ function groupByCategory() {
 const AdminServices = () => {
   useEffect(() => { setMeta(); }, []);
   const initial = useMemo(() => getAdminServiceConfig(), []);
-  const [config, setConfig] = useState<AdminServiceConfig>(initial);
+const [config, setConfig] = useState<AdminServiceConfig>(initial);
+const { toast } = useToast();
 
   const groups = useMemo(() => groupByCategory(), []);
 
@@ -44,9 +46,10 @@ const AdminServices = () => {
     setConfig((c) => ({ ...c, overrides: { ...c.overrides, [key]: { ...(c.overrides?.[key] || {}), [field]: val } } }));
   };
 
-  const onSave = () => {
-    saveAdminServiceConfig(config);
-  };
+const onSave = () => {
+  saveAdminServiceConfig(config);
+  toast({ title: 'Changes saved', description: 'Service settings were updated.' });
+};
 
   return (
     <>

@@ -5,6 +5,7 @@ import { useClientProfile } from "@/contexts/ClientProfileContext";
 import { SERVICE_CATALOG, ServiceKey } from "@/types/services";
 import { Check, CreditCard } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { isServiceEnabled, getServiceLabel, getServiceDescription } from "@/utils/serviceConfig";
 
 function useSEO() {
   useEffect(() => {
@@ -101,12 +102,12 @@ const ClientOnboarding: React.FC = () => {
         <section>
           <h2 className="text-xl font-semibold text-conneqt-navy mb-4">Select Services</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {SERVICE_CATALOG.map((s) => (
+            {SERVICE_CATALOG.filter((s) => isServiceEnabled(s.key)).map((s) => (
               <ToggleTile
                 key={s.key}
                 active={selectedSet.has(s.key)}
-                name={s.name}
-                description={s.description}
+                name={getServiceLabel(s.key)}
+                description={getServiceDescription(s.key)}
                 onClick={() => toggleService(s.key)}
               />
             ))}
