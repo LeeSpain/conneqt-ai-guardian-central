@@ -11,7 +11,8 @@ import {
   Headphones,
   BarChart3,
   FileText,
-  BrainCircuit
+  BrainCircuit,
+  Boxes
 } from "lucide-react";
 import {
   Sidebar,
@@ -76,6 +77,7 @@ export const DashboardSidebar = () => {
           <SidebarGroupContent>
             <SidebarMenu>
               {[
+                { title: "Platform Products", icon: Boxes, path: "/admin/services" },
                 { title: "Platform Settings", icon: Settings, path: "/platform-settings" },
                 { title: "Website Integration", icon: Globe, path: "/website-integration" },
                 { title: "AI Agents", icon: BrainCircuit, path: "/ai-agents" }
