@@ -8,11 +8,12 @@ import { Switch } from '@/components/ui/switch';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
+import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
 
 const setMeta = () => {
-  document.title = 'Admin: Services | Conneqt Central';
-  const desc = 'Enable/disable services and edit display text for the platform service menu.';
+  document.title = 'Admin: Platform Products | Conneqt Central';
+  const desc = 'Manage platform products: enable/disable and edit labels/descriptions for Builder & Homepage.';
   let meta = document.querySelector('meta[name="description"]');
   if (!meta) { meta = document.createElement('meta'); meta.setAttribute('name', 'description'); document.head.appendChild(meta); }
   meta.setAttribute('content', desc);
@@ -21,9 +22,9 @@ const setMeta = () => {
   canonical.setAttribute('href', window.location.origin + '/admin/services');
 };
 
-function groupByCategory() {
+function groupByCategory(list = SERVICE_CATALOG) {
   const groups: Record<string, typeof SERVICE_CATALOG> = {} as any;
-  for (const s of SERVICE_CATALOG) {
+  for (const s of list) {
     const cat = s.category || 'Other';
     if (!groups[cat]) groups[cat] = [] as any;
     groups[cat].push(s);
@@ -34,10 +35,19 @@ function groupByCategory() {
 const AdminServices = () => {
   useEffect(() => { setMeta(); }, []);
   const initial = useMemo(() => getAdminServiceConfig(), []);
-const [config, setConfig] = useState<AdminServiceConfig>(initial);
-const { toast } = useToast();
+  const [config, setConfig] = useState<AdminServiceConfig>(initial);
+  const [query, setQuery] = useState('');
+  const { toast } = useToast();
 
-  const groups = useMemo(() => groupByCategory(), []);
+  const filteredServices = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    if (!q) return SERVICE_CATALOG;
+    return SERVICE_CATALOG.filter((s) =>
+      s.name.toLowerCase().includes(q) || s.description.toLowerCase().includes(q)
+    );
+  }, [query]);
+
+  const groups = useMemo(() => groupByCategory(filteredServices), [filteredServices]);
 
   const updateEnabled = (key: ServiceKey, val: boolean) => {
     setConfig((c) => ({ ...c, enabled: { ...c.enabled, [key]: val } }));
@@ -55,15 +65,23 @@ const onSave = () => {
     <>
       <Navbar />
       <main className="max-w-6xl mx-auto px-4 py-10">
-        <header className="mb-6">
-          <h1 className="text-3xl font-bold text-conneqt-navy">Services configuration</h1>
-          <p className="text-conneqt-slate/80 mt-2">Enable services and customize their labels and descriptions.</p>
+        <header className="mb-6 flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
+          <div>
+            <h1 className="text-3xl font-bold text-conneqt-navy">Platform Products</h1>
+            <p className="text-conneqt-slate/80 mt-2">Toggle visibility and customize labels/descriptions. Changes apply to the Builder and homepage.</p>
+            <div className="text-xs text-muted-foreground mt-1">
+              Enabled {SERVICE_CATALOG.filter(s => (config.enabled[s.key] !== false)).length} of {SERVICE_CATALOG.length}
+            </div>
+          </div>
+          <div className="w-full md:w-80">
+            <Input placeholder="Search services..." value={query} onChange={(e) => setQuery(e.target.value)} />
+          </div>
         </header>
 
         {Object.entries(groups).map(([cat, list]) => (
           <Card key={cat} className="mb-6">
             <CardHeader>
-              <CardTitle className="capitalize">{cat}</CardTitle>
+              <CardTitle className="capitalize">{cat.replace(/_/g, ' ')}</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               {list.map((svc, idx) => (
@@ -82,7 +100,7 @@ const onSave = () => {
                     </div>
                     <div>
                       <label className="text-xs text-muted-foreground">Description</label>
-                      <Input value={config.overrides[svc.key]?.description || ''} onChange={(e) => updateOverride(svc.key, 'description', e.target.value)} placeholder={svc.description} />
+                      <Textarea rows={3} value={config.overrides[svc.key]?.description || ''} onChange={(e) => updateOverride(svc.key, 'description', e.target.value)} placeholder={svc.description} />
                     </div>
                   </div>
                   {idx < list.length - 1 && <Separator className="my-2" />}
