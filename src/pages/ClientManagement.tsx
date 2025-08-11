@@ -15,6 +15,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog";
 import { LockIcon, Users, Check, Settings } from 'lucide-react';
 import { Input } from "@/components/ui/input";
+import { AdminContainer } from "@/components/layouts/AdminContainer";
 
 // Mock data for clients
 const mockClients: Client[] = [

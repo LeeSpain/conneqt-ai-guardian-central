@@ -11,6 +11,7 @@ import { UserPlus, Users, Shield, Clock, Lock } from "lucide-react";
 import { TeamMember } from "@/types/team";
 import { UserProvider, useUser } from "@/contexts/UserContext";
 import { useUserRole } from "@/hooks/useUserRole";
+import { AdminContainer } from "@/components/layouts/AdminContainer";
 
 const initialTeamMembers: TeamMember[] = [];
 
@@ -42,7 +43,7 @@ const TeamManagementContent = () => {
 
   if (!canManageTeam) {
     return (
-      <div className="p-6 space-y-6">
+      <AdminContainer>
         <DashboardHeader />
         <Alert>
           <Lock className="h-4 w-4" />
@@ -50,12 +51,12 @@ const TeamManagementContent = () => {
             {getRestrictedMessage('team management')}
           </AlertDescription>
         </Alert>
-      </div>
+      </AdminContainer>
     );
   }
 
   return (
-    <div className="p-6 space-y-6">
+    <AdminContainer>
       <DashboardHeader />
       
       {/* Header Section */}
@@ -144,7 +145,7 @@ const TeamManagementContent = () => {
         onOpenChange={setIsAddDialogOpen}
         onAdd={handleAddTeamMember}
       />
-    </div>
+    </AdminContainer>
   );
 };
 

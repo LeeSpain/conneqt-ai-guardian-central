@@ -8,6 +8,7 @@ import { Switch } from "@/components/ui/switch";
 import { UserProvider } from "@/contexts/UserContext";
 import { AgentProvider, useAgent } from "@/contexts/AgentContext";
 import { OpenAIService } from "@/utils/OpenAIService";
+import { AdminContainer } from "@/components/layouts/AdminContainer";
 
  type Msg = { id: string; role: "user" | "assistant"; content: string };
 
@@ -20,13 +21,13 @@ export default function AgentConsole() {
     <UserProvider>
       <AgentProvider>
         <DashboardLayout>
-          <main className="p-6 space-y-6">
+          <AdminContainer>
             <header>
               <h1 className="text-2xl font-bold text-foreground">Agent Console</h1>
               <p className="text-muted-foreground">Test conversations. Uses OpenAI when configured (local demo fallback otherwise).</p>
             </header>
             <ConsoleInner />
-          </main>
+          </AdminContainer>
         </DashboardLayout>
       </AgentProvider>
     </UserProvider>

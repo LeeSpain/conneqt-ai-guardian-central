@@ -5,6 +5,7 @@ import { useUserRole } from "@/hooks/useUserRole";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
+import { AdminContainer } from "@/components/layouts/AdminContainer";
 import { 
   BarChart, 
   Bar, 
@@ -52,8 +53,8 @@ function ReportsContent() {
 
   if (!canAccessFeature('reports')) {
     return (
-      <div className="flex items-center justify-center h-96">
-        <Card className="w-full max-w-md text-center">
+      <AdminContainer>
+        <Card className="w-full max-w-md text-center mx-auto">
           <CardHeader>
             <CardTitle>Access Restricted</CardTitle>
             <CardDescription>
@@ -61,7 +62,7 @@ function ReportsContent() {
             </CardDescription>
           </CardHeader>
         </Card>
-      </div>
+      </AdminContainer>
     );
   }
 
@@ -96,10 +97,10 @@ export default function Reports() {
   return (
     <UserProvider>
       <DashboardLayout>
-        <div className="p-6 space-y-6">
-          <DashboardHeader />
-          <ReportsContent />
-        </div>
+          <AdminContainer>
+            <DashboardHeader />
+            <ReportsContent />
+          </AdminContainer>
       </DashboardLayout>
     </UserProvider>
   );
