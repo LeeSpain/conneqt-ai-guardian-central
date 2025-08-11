@@ -1,8 +1,7 @@
 
 import { ReactNode, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
   MessageCircle,
   Megaphone,
@@ -18,7 +17,10 @@ import {
   Hotel,
   Wand2,
   PhoneCall,
-  MessageSquare
+  MessageSquare,
+  Building2,
+  TrendingUp,
+  Shield
 } from 'lucide-react';
 import ServiceCard from '@/components/ServiceCard';
 import { SERVICE_CATALOG } from '@/types/services';
@@ -60,108 +62,135 @@ const colorByCategory: Record<string, string> = {
   custom_enhancements: 'bg-cyan-500',
 };
 
-const ServiceSection = () => {
-  const [query, setQuery] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState<string>('all');
-  const [showAll, setShowAll] = useState(false);
+// Business-focused service groupings
+const businessGroups = {
+  core: {
+    title: 'Core Business Operations',
+    icon: <Building2 size={20} />,
+    categories: ['customer_support', 'sales_marketing', 'finance', 'hr_recruitment']
+  },
+  intelligence: {
+    title: 'Intelligence & Analytics',
+    icon: <TrendingUp size={20} />,
+    categories: ['data_reporting', 'conversation_intelligence', 'compliance_security']
+  },
+  industry: {
+    title: 'Industry Solutions',
+    icon: <Shield size={20} />,
+    categories: ['industry']
+  },
+  advanced: {
+    title: 'Custom & Advanced',
+    icon: <Wand2 size={20} />,
+    categories: ['operations_project', 'custom_enhancements']
+  }
+};
 
-  const categories = useMemo(() => {
-    const set = new Set(SERVICE_CATALOG.map((s) => s.category));
-    return ['all', ...Array.from(set)];
-  }, []);
+const ServiceSection = () => {
+  const [activeTab, setActiveTab] = useState('core');
+  const [showAll, setShowAll] = useState(false);
 
   const enabledServices = useMemo(() => SERVICE_CATALOG.filter((s) => isServiceEnabled(s.key)), []);
 
-  const filtered = useMemo(() => {
-    const q = query.trim().toLowerCase();
-    return enabledServices.filter((s) => {
-      const inCategory = selectedCategory === 'all' || s.category === selectedCategory;
-      if (!inCategory) return false;
-      if (!q) return true;
-      const name = getServiceLabel(s.key).toLowerCase();
-      const desc = getServiceDescription(s.key).toLowerCase();
-      return name.includes(q) || desc.includes(q);
-    });
-  }, [enabledServices, selectedCategory, query]);
+  const getServicesForGroup = (groupKey: string) => {
+    const group = businessGroups[groupKey as keyof typeof businessGroups];
+    return enabledServices.filter(service => group.categories.includes(service.category));
+  };
 
-  const visible = showAll ? filtered : filtered.slice(0, 9);
+  const currentServices = getServicesForGroup(activeTab);
+  const visible = showAll ? currentServices : currentServices.slice(0, 6);
 
   return (
-    <section className="section-padding bg-gradient-to-b from-gray-50 via-white to-gray-50">
+    <section className="py-20 bg-gradient-to-b from-gray-50 via-white to-gray-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <header className="text-center mb-10">
-          <h2 className="text-4xl font-bold mb-4">
-            <span className="bg-gradient-to-r from-conneqt-blue via-blue-500 to-blue-600 bg-clip-text text-transparent">
-              Complete AI Business Agent — Services
+        <header className="text-center mb-16">
+          <h2 className="text-4xl md:text-5xl font-bold mb-6">
+            <span className="bg-gradient-to-r from-primary via-blue-600 to-primary bg-clip-text text-transparent">
+              Complete AI Business Solutions
             </span>
           </h2>
-          <p className="text-conneqt-slate text-lg max-w-2xl mx-auto">
-            Your all-in-one AI agent. Choose exactly what your business needs — start with the builder.
+          <p className="text-muted-foreground text-xl max-w-3xl mx-auto leading-relaxed">
+            Transform your business operations with our comprehensive AI agent platform. 
+            Choose from our curated solutions designed for modern enterprises.
           </p>
         </header>
 
-        <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4 mb-8">
-          <div className="flex gap-2 overflow-x-auto">
-            {categories.map((cat) => (
-              <Button
-                key={cat}
-                variant={cat === selectedCategory ? 'default' : 'secondary'}
-                onClick={() => { setSelectedCategory(cat); setShowAll(false); }}
-                className="whitespace-nowrap"
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+          <TabsList className="grid w-full grid-cols-2 lg:grid-cols-4 mb-12 bg-muted/50 p-2 h-auto">
+            {Object.entries(businessGroups).map(([key, group]) => (
+              <TabsTrigger 
+                key={key} 
+                value={key} 
+                className="flex items-center gap-2 py-4 px-6 data-[state=active]:bg-background data-[state=active]:shadow-sm"
               >
-                {cat === 'all' ? 'All' : cat.replace(/_/g, ' ')}
-              </Button>
+                {group.icon}
+                <span className="hidden sm:inline font-medium">{group.title}</span>
+                <span className="sm:hidden font-medium">{group.title.split(' ')[0]}</span>
+              </TabsTrigger>
             ))}
+          </TabsList>
+
+          {Object.entries(businessGroups).map(([key, group]) => (
+            <TabsContent key={key} value={key} className="space-y-8">
+              <div className="text-center mb-8">
+                <h3 className="text-2xl font-semibold mb-3 flex items-center justify-center gap-3">
+                  {group.icon}
+                  {group.title}
+                </h3>
+                <div className="w-20 h-1 bg-gradient-to-r from-primary to-blue-600 mx-auto rounded-full"></div>
+              </div>
+
+              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 relative">
+                <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-blue-600/5 opacity-50 -z-10 blur-3xl rounded-3xl" />
+                {visible.map((service, index) => {
+                  const icon = iconByKey[service.key] || iconByCategory[service.category] || <MessageCircle size={24} />;
+                  const color = colorByCategory[service.category] || 'bg-primary';
+                  return (
+                    <Link
+                      key={service.key}
+                      to={`/solution-builder?preselect=${encodeURIComponent(service.key)}`}
+                      aria-label={`Select ${getServiceLabel(service.key)} in solution builder`}
+                      className="w-full animate-fade-in"
+                      style={{ animationDelay: `${index * 100}ms` }}
+                    >
+                      <ServiceCard
+                        title={getServiceLabel(service.key)}
+                        description={getServiceDescription(service.key)}
+                        icon={icon}
+                        color={color}
+                        delay={index * 100}
+                      />
+                    </Link>
+                  );
+                })}
+              </div>
+
+              {currentServices.length > 6 && (
+                <div className="text-center mt-10">
+                  <button 
+                    onClick={() => setShowAll(prev => !prev)}
+                    className="inline-flex items-center gap-2 px-6 py-3 rounded-lg border border-border bg-background hover:bg-muted transition-colors text-sm font-medium"
+                  >
+                    {showAll ? 'Show Less' : `View All ${currentServices.length} Solutions`}
+                  </button>
+                </div>
+              )}
+            </TabsContent>
+          ))}
+        </Tabs>
+
+        <div className="text-center mt-16 pt-12 border-t border-border">
+          <div className="mb-6">
+            <h3 className="text-xl font-semibold mb-2">Ready to Build Your Solution?</h3>
+            <p className="text-muted-foreground">Start with our intelligent builder to create your custom AI business agent</p>
           </div>
-          <div className="w-full md:w-80">
-            <Input
-              value={query}
-              onChange={(e) => { setQuery(e.target.value); setShowAll(false); }}
-              placeholder="Search services..."
-              aria-label="Search services"
-            />
-          </div>
-        </div>
-
-        <div className="mb-4 text-sm text-muted-foreground">
-          Showing {visible.length} of {filtered.length} services
-        </div>
-
-        <div className="grid md:grid-cols-3 gap-10 place-items-center relative">
-          <div className="absolute inset-0 bg-gradient-to-br from-blue-50 to-purple-50 opacity-30 -z-10 blur-3xl" />
-          {visible.map((service) => {
-            const icon = iconByKey[service.key] || iconByCategory[service.category] || <MessageCircle size={24} />;
-            const color = colorByCategory[service.category] || 'bg-blue-500';
-            return (
-              <Link
-                key={service.key}
-                to={`/solution-builder?preselect=${encodeURIComponent(service.key)}`}
-                aria-label={`Select ${getServiceLabel(service.key)} in builder`}
-                className="w-full"
-              >
-                <ServiceCard
-                  title={getServiceLabel(service.key)}
-                  description={getServiceDescription(service.key)}
-                  icon={icon}
-                  color={color}
-                />
-              </Link>
-            );
-          })}
-        </div>
-
-        {filtered.length > 9 && (
-          <div className="text-center mt-8">
-            <Button onClick={() => setShowAll((s) => !s)} variant="outline">
-              {showAll ? 'Show less' : `Show all ${filtered.length} services`}
-            </Button>
-          </div>
-        )}
-
-        <div className="text-center mt-10">
-          <a href="/solution-builder" className="inline-block px-6 py-3 rounded-md bg-conneqt-blue text-white hover:bg-blue-500 transition-colors">
-            Start with the Builder
-          </a>
+          <Link 
+            to="/solution-builder" 
+            className="inline-flex items-center gap-2 px-8 py-4 rounded-lg bg-primary hover:bg-primary/90 text-primary-foreground font-semibold transition-all transform hover:scale-105 shadow-lg hover:shadow-xl"
+          >
+            <Wand2 size={20} />
+            Launch Solution Builder
+          </Link>
         </div>
       </div>
     </section>
