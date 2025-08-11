@@ -5,6 +5,7 @@ import { useClientProfile } from "@/contexts/ClientProfileContext";
 import { ServiceKey } from "@/types/services";
 import AIAgentCalling from "@/components/modules/AIAgentCalling";
 import LiveAnalytics from "@/components/solution/LiveAnalytics";
+import useScrollToTop from '@/hooks/useScrollToTop';
 
 function useSEO() {
   useEffect(() => {
@@ -42,6 +43,7 @@ const ModuleRenderer = ({ service }: { service: ServiceKey }) => {
 };
 
 const ClientHub: React.FC = () => {
+  useScrollToTop();
   useSEO();
   const navigate = useNavigate();
   const { profile } = useClientProfile();

@@ -5,8 +5,8 @@ import { AspectRatio } from '@/components/ui/aspect-ratio';
 
 const Hero = () => {
   return (
-    <div className="hero-gradient min-h-[85vh] flex flex-col justify-center">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+    <div className="hero-gradient min-h-[80vh] flex flex-col justify-center">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <div className="grid lg:grid-cols-2 gap-10 items-center">
           <div className="animate-fade-in">
             <h1 className="mb-6">

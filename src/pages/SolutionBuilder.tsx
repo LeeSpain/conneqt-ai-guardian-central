@@ -1,11 +1,14 @@
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
+import useScrollToTop from '@/hooks/useScrollToTop';
 
 import QuestionnaireForm from '@/components/assessment/QuestionnaireForm';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useEffect } from 'react';
 import { AgentProvider } from '@/contexts/AgentContext';
 const SolutionBuilder = () => {
+  useScrollToTop();
+  
   useEffect(() => {
     document.title = 'Solution Builder: Company Basics';
     let meta = document.querySelector('meta[name="description"]') as HTMLMetaElement | null;
