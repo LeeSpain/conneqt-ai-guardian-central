@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import Navbar from "@/components/Navbar";
 import { Link, useNavigate } from "react-router-dom";
 import { useClientProfile } from "@/contexts/ClientProfileContext";
@@ -6,6 +6,13 @@ import { ServiceKey } from "@/types/services";
 import AIAgentCalling from "@/components/modules/AIAgentCalling";
 import LiveAnalytics from "@/components/solution/LiveAnalytics";
 import useScrollToTop from '@/hooks/useScrollToTop';
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { BusinessDetails as BusinessDetailsCard } from "@/components/client/BusinessDetails";
+import { TicketList } from "@/components/client/TicketList";
+import { NewTicketDialog } from "@/components/client/NewTicketDialog";
+import { EditBusinessDialog } from "@/components/client/EditBusinessDialog";
+import { toast } from "@/components/ui/use-toast";
 
 function useSEO() {
   useEffect(() => {
@@ -46,7 +53,9 @@ const ClientHub: React.FC = () => {
   useScrollToTop();
   useSEO();
   const navigate = useNavigate();
-  const { profile } = useClientProfile();
+  const { profile, addTicket, updateBusinessDetails } = useClientProfile();
+  const [ticketOpen, setTicketOpen] = useState(false);
+  const [editOpen, setEditOpen] = useState(false);
 
   const hasModules = profile.selectedServices.length > 0;
 

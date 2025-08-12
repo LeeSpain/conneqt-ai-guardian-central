@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useEffect, useMemo, useState } from "react";
 import type { ServiceKey } from "@/types/services";
-
+import type { BusinessDetails, Ticket } from "@/types/client";
 export type CompanyOverview = {
   website?: string;
   summary: string;
@@ -23,12 +23,15 @@ export type ClientProfile = {
     suggestedServices: ServiceKey[];
   };
   companyOverview?: CompanyOverview;
+  businessDetails?: BusinessDetails;
+  tickets: Ticket[];
 };
 
 const DEFAULT_PROFILE: ClientProfile = {
   selectedServices: [],
   paid: false,
   createdAt: new Date().toISOString(),
+  tickets: [],
 };
 
 const STORAGE_KEY = "client_profile";
@@ -44,6 +47,8 @@ type ClientProfileContextType = {
     result: NonNullable<ClientProfile["assessmentResult"]>
   ) => void;
   setCompanyOverview: (overview: CompanyOverview) => void;
+  updateBusinessDetails: (details: BusinessDetails) => void;
+  addTicket: (input: { subject: string; priority: Ticket["priority"] }) => Ticket;
 };
 
 const ClientProfileContext = createContext<ClientProfileContextType | undefined>(undefined);
@@ -91,11 +96,37 @@ const setCompanyOverview: ClientProfileContextType["setCompanyOverview"] = (over
 
   const isModuleEnabled = (service: ServiceKey) => profile.selectedServices.includes(service);
 
-const value = useMemo(
-  () => ({ profile, setSelectedServices, markPaid, resetProfile, isModuleEnabled, setAssessment, setCompanyOverview }),
-  [profile]
-);
+  const updateBusinessDetails: ClientProfileContextType["updateBusinessDetails"] = (details) => {
+    setProfile((p) => ({ ...p, businessDetails: details }));
+  };
 
+  const addTicket: ClientProfileContextType["addTicket"] = (input) => {
+    const newTicket: Ticket = {
+      id: Date.now(),
+      clientId: 1,
+      subject: input.subject,
+      status: "Open",
+      priority: input.priority,
+      created: new Date().toISOString(),
+    };
+    setProfile((p) => ({ ...p, tickets: [newTicket, ...(p.tickets ?? [])] }));
+    return newTicket;
+  };
+
+  const value = useMemo(
+    () => ({
+      profile,
+      setSelectedServices,
+      markPaid,
+      resetProfile,
+      isModuleEnabled,
+      setAssessment,
+      setCompanyOverview,
+      updateBusinessDetails,
+      addTicket,
+    }),
+    [profile]
+  );
   return <ClientProfileContext.Provider value={value}>{children}</ClientProfileContext.Provider>;
 };
 
